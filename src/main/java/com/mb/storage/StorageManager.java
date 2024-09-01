@@ -1,5 +1,6 @@
 package com.mb.storage;
 
+import com.mb.core.ErrorHandler;
 import com.mb.core.Service;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,7 +13,7 @@ public class StorageManager {
     private static StorageManager instance;
     private Map<String, InterfaceInfo> interfaceRegistry;
     private Map<String, List<Service>> serviceRegistry;
-    private Map<String, List<Service>> errorHandlerRegistry;
+    private Map<String, List<ErrorHandler>> errorHandlerRegistry;
 
     private StorageManager() {
         if (StorageManager.instance == null) {
@@ -46,9 +47,9 @@ public class StorageManager {
         }
     }
 
-    public void setErrorHandlerRegistry(Map<String, List<Service>> errorHandlers){
+    public void setErrorHandlerRegistry(Map<String, List<ErrorHandler>> errorHandlers){
         for(String id : errorHandlers.keySet()){
-            List<Service> errorHandlerList = errorHandlers.get(id);
+            List<ErrorHandler> errorHandlerList = errorHandlers.get(id);
             if (errorHandlerList.isEmpty())
                 throw new IllegalArgumentException("ErrorHandler list for errorHandler id '" + id + "' is empty");
             this.errorHandlerRegistry.put(id, errorHandlerList);
@@ -56,9 +57,11 @@ public class StorageManager {
     }
 
     /**
-     * Get a InterfaceInfo by id
+     * Get an InterfaceInfo by id
      * */
     public InterfaceInfo getInterfaceInfo(String interfaceId) {
+        if (interfaceId == null)
+            return null;
         return instance.interfaceRegistry.get(interfaceId);
     }
 
@@ -66,22 +69,38 @@ public class StorageManager {
      * Get a service list by id
      * */
     public List<Service> getServices(String id) {
+        if (id == null)
+            return null;
         return instance.serviceRegistry.get(id);
     }
 
     /**
-     * Get a error handler list by id
+     * Get an error handler list by id
      * */
-    public List<Service> getErrorHandlersById(String id) {
+    public List<ErrorHandler> getErrorHandlersById(String id) {
+        if (id == null)
+            return null;
         return instance.errorHandlerRegistry.get(id);
     }
 
-    public void activateInterface(String interfaceId) {
+    /**
+     * @return The result of activation. It returns false when an InterfaceInfo is not exist.
+     * */
+    public boolean activateInterface(String interfaceId) {
+        if (interfaceId == null)
+            return false;
         getInterfaceInfo(interfaceId).setActivated(true);
+        return true;
     }
 
-    public void inactivateInterface(String interfaceId) {
+    /**
+     * @return The result of activation. It returns false when an InterfaceInfo is not exist.
+     * */
+    public boolean inactivateInterface(String interfaceId) {
+        if (interfaceId == null)
+            return false;
         getInterfaceInfo(interfaceId).setActivated(false);
+        return true;
     }
 
 }

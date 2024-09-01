@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.util.*;
 
 @Getter
-public class TransactionContext {
+public class ServiceContext {
     private String txId;
     private InterfaceInfo info;
     private Date startTime;
@@ -23,9 +23,10 @@ public class TransactionContext {
     private Throwable error;
     private List<Class<? extends Service>> serviceTrace;
     private Map<Class<? extends Service>, Throwable> errorTrace;
+    private Map<String, Object> contextParams;
 
 
-    public TransactionContext(InterfaceInfo info) {
+    public ServiceContext(InterfaceInfo info) {
         if (info == null) {
             throw new IllegalArgumentException("InterfaceInfo is null");
         }
@@ -34,6 +35,7 @@ public class TransactionContext {
         txId = TxIdGenerator.generateTxId(info.getInterfaceId(), startTime);
         serviceTrace = new ArrayList<>();
         errorTrace = new LinkedHashMap<>();
+        contextParams = new HashMap<>();
     }
 
     public void addServiceTrace(Class<? extends Service> service) {
@@ -79,5 +81,15 @@ public class TransactionContext {
 
     public void stampEndTime() {
         endTime = new Date();
+    }
+
+    public void addContextParam(String key, Object value) {
+        contextParams.put(key, value);
+    }
+
+    public Object getContextParam(String key) {
+        if (key == null)
+            return null;
+        return contextParams.get(key);
     }
 }
