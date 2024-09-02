@@ -18,7 +18,6 @@ public class MappingFactory {
             instance.keyMapper = new HashMap<>();
             instance.valueMapper = new HashMap<>();
             instance.functionClassAliases = new HashMap<>();
-            instance.setWellKnownClassAliases();
         }
     }
 
@@ -64,14 +63,6 @@ public class MappingFactory {
 
     public String getFunctionClassByAlias(String alias) {
         return functionClassAliases.get(alias);
-    }
-
-    private void setWellKnownClassAliases() {
-        functionClassAliases.put("String", "java.lang.String");
-        functionClassAliases.put("Boolean", "java.lang.Boolean");
-        /*
-        * ...
-        * */
     }
 
 }

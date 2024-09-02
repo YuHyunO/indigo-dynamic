@@ -6,7 +6,6 @@ import java.util.Map;
 public class ValueMapper extends Mapper {
     private boolean createNullKey = true;
     private boolean nullToEmptyString = false;
-    private Map<String, Object> map;
 
     public ValueMapper() {
         map = new HashMap<>();

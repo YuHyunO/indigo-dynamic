@@ -1,7 +1,11 @@
 package com.mb.mapper;
 
+import java.util.Map;
+
 public abstract class Mapper {
     protected String id;
+    protected Map<String, Object> map;
+
 
     public void setId(String id) {
         this.id = id;

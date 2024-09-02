@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class KeyMapper extends Mapper {
     private boolean createNullKey = true;
-    private Map<String, Object> map;
+
 
     public KeyMapper() {
         map = new HashMap<>();
