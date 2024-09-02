@@ -1,20 +1,17 @@
 package com.mb.access.db;
 
-import com.mb.code.QueryType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Transactional
-public class MyBatisQueryExecutor implements QueryExecutor {
+public class MyBatisQueryExecutor {
 
     private SqlSessionFactory sqlSessionFactory;
     private Map<ExecutorType, SqlSessionTemplate> sqlSessionTemplateMap;
@@ -45,41 +42,32 @@ public class MyBatisQueryExecutor implements QueryExecutor {
     private SqlSessionTemplate getBatchExecutor() {
         return getSqlSessionTemplate(ExecutorType.BATCH);
     }
-
-    @Override
-    public String getSqlId(String namespace, QueryType queryType) {
-        if ((namespace == null || queryType == null)) {
-            throw new IllegalArgumentException("namespace and query type can't be null");
-        }
-        return namespace + "." + queryType.name();
-    }
-
-    @Override
+    
     public List<Map<String, Object>> select(String sqlId, Map<String, Object> selectParam) {
         return getSimpleExecutor().selectList(sqlId, selectParam);
     }
 
-    @Override
+    
     public int insert(String sqlId, Map<String, Object> insertRow) {
         return getSimpleExecutor().insert(sqlId, insertRow);
     }
 
-    @Override
+    
     public int update(String sqlId, Map<String, Object> updateParam) {
         return getSimpleExecutor().update(sqlId, updateParam);
     }
 
-    @Override
+    
     public int delete(String sqlId, Map<String, Object> deleteParam) {
         return getSimpleExecutor().delete(sqlId, deleteParam);
     }
 
-    @Override
+    
     public int batchInsert(String sqlId, List<Map<String, Object>> insertRows) {
         return batchInsert(sqlId, insertRows, defaultPatchSize);
     }
 
-    @Override
+    
     public int batchInsert(String sqlId, List<Map<String, Object>> insertRows, int patchSize) {
         SqlSessionTemplate session = getBatchExecutor();
         int insertCount = 0;
@@ -110,12 +98,12 @@ public class MyBatisQueryExecutor implements QueryExecutor {
         return insertCount;
     }
 
-    @Override
+    
     public int batchUpdate(String sqlId, List<Map<String, Object>> updateParams) {
         return batchUpdate(sqlId, updateParams, defaultPatchSize);
     }
 
-    @Override
+    
     public int batchUpdate(String sqlId, List<Map<String, Object>> updateParams, int patchSize) {
         SqlSessionTemplate session = getBatchExecutor();
         int updateCount = 0;
@@ -146,12 +134,12 @@ public class MyBatisQueryExecutor implements QueryExecutor {
         return updateCount;
     }
 
-    @Override
+    
     public int batchDelete(String sqlId, List<Map<String, Object>> deleteParams) {
         return batchDelete(sqlId, deleteParams, defaultPatchSize);
     }
 
-    @Override
+    
     public int batchDelete(String sqlId, List<Map<String, Object>> deleteParams, int patchSize) {
         SqlSessionTemplate session = getBatchExecutor();
         int deleteCount = 0;
@@ -182,7 +170,7 @@ public class MyBatisQueryExecutor implements QueryExecutor {
         return deleteCount;
     }
 
-    @Override
+    
     public void setDefaultPatchSize(int patchSize) {
         if (patchSize < 0) {
             patchSize = 0;
