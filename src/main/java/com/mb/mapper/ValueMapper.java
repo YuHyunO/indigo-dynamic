@@ -3,7 +3,6 @@ package com.mb.mapper;
 import java.util.Map;
 
 public class ValueMapper extends Mapper {
-    private String mapperId;
     private boolean createNullKey = true;
     private boolean nullToEmptyString = false;
     private Map<String, String> map;
@@ -12,5 +11,26 @@ public class ValueMapper extends Mapper {
     @Override
     public Object getMapped(String toMapped) {
         return null;
+    }
+
+    public void setCreateNullKey(boolean createNullKey) {
+        this.createNullKey = createNullKey;
+    }
+
+    public void setNullToEmptyString(boolean nullToEmptyString) {
+        this.nullToEmptyString = nullToEmptyString;
+    }
+
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ValueMapper{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", create_null_key=").append(createNullKey);
+        sb.append(", null_to_empty_string=").append(nullToEmptyString);
+        sb.append(", map=").append(map);
+        sb.append('}');
+        return sb.toString();
     }
 }
