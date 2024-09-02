@@ -10,12 +10,15 @@ public class MappingFactory {
     private Map<String, KeyMapper> keyMapper;
     private Map<String, ValueMapper> valueMapper;
     private List<String> mapperFileLocations;
+    private Map<String, String> functionClassAliases;
 
     private MappingFactory() {
         if (instance == null) {
             instance = this;
             instance.keyMapper = new HashMap<>();
             instance.valueMapper = new HashMap<>();
+            instance.functionClassAliases = new HashMap<>();
+            instance.setWellKnownClassAliases();
         }
     }
 
@@ -41,6 +44,34 @@ public class MappingFactory {
                 }
             }
         }
+    }
+
+    public void setMapperFileLocations(List<String> mapperFileLocations) {
+        this.mapperFileLocations = mapperFileLocations;
+    }
+
+    public List<String> getMapperFileLocations() {
+        return mapperFileLocations;
+    }
+
+    public void setFunctionClassAliases(Map<String, String> functionClassAliases) {
+        this.functionClassAliases = functionClassAliases;
+    }
+
+    public Map<String, String> getFunctionClassAliases() {
+        return functionClassAliases;
+    }
+
+    public String getFunctionClassByAlias(String alias) {
+        return functionClassAliases.get(alias);
+    }
+
+    private void setWellKnownClassAliases() {
+        functionClassAliases.put("String", "java.lang.String");
+        functionClassAliases.put("Boolean", "java.lang.Boolean");
+        /*
+        * ...
+        * */
     }
 
 }

@@ -1,10 +1,20 @@
 package com.mb.mapper;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class KeyMapper extends Mapper {
     private boolean createNullKey = true;
-    private Map<String, String> map;
+    private Map<String, Object> map;
+
+    public KeyMapper() {
+        map = new HashMap<>();
+    }
+
+    @Override
+    public void addMap(String key, Object value) {
+        map.put(key, value);
+    }
 
     @Override
     public Object getMapped(String toMapped) {

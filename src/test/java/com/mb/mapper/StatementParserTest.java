@@ -106,5 +106,35 @@ public class StatementParserTest {
 
     }
 
+    @Test
+    public void substring_test() {
+        String test = "{";
+        String bb = test.substring(1).trim();
+        log.info("{}", bb.length());
+    }
+
+    @Test
+    public void substring_test2() {
+        String test = "abcd//efg//";
+        int idx = test.indexOf("//");
+
+        log.info("{}", test.substring(0, idx));
+    }
+
+    @Test
+    public void int_test() {
+        int i = 0;
+        for (int c = 0; c < 10; c++) {
+            ++i;
+            addInt(i);
+        }
+        log.info("{}", i);
+    }
+
+    public void addInt(int i) {
+        while (i <= 10) {
+            ++i;
+        }
+    }
 
 }

@@ -11,6 +11,8 @@ public abstract class Mapper {
         return id;
     }
 
+    public abstract void addMap(String key, Object value);
+
     public abstract Object getMapped(String toMapped);
 
     @Override

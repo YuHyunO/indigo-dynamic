@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-    
+
+    <bean class="com.mb.mapper.MappingFactory">
+        <property name="mapperFileLocations">
+            <list>
+                <value>mapper_*.mp</value>
+            </list>
+        </property>
+        <property name="functionClassAliases">
+            <map>
+                <entry key="String" value="java.lang.String"/>
+                <entry key="Integer" value="java.lang.Integer"/>
+            </map>
+        </property>
+    </bean>
+
 </beans>
