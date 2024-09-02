@@ -11,6 +11,14 @@ public class ValueMapper extends Mapper {
         map = new HashMap<>();
     }
 
+    public void setCreateNullKey(boolean createNullKey) {
+        this.createNullKey = createNullKey;
+    }
+
+    public void setNullToEmptyString(boolean nullToEmptyString) {
+        this.nullToEmptyString = nullToEmptyString;
+    }
+
     @Override
     public void addMap(String key, Object value) {
         map.put(key, value);
@@ -20,15 +28,6 @@ public class ValueMapper extends Mapper {
     public Object getMapped(String toMapped) {
         return null;
     }
-
-    public void setCreateNullKey(boolean createNullKey) {
-        this.createNullKey = createNullKey;
-    }
-
-    public void setNullToEmptyString(boolean nullToEmptyString) {
-        this.nullToEmptyString = nullToEmptyString;
-    }
-
 
 
     @Override

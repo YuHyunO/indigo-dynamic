@@ -1,11 +1,12 @@
 package com.mb.mapper;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 
 public abstract class Mapper {
     protected String id;
     protected Map<String, Object> map;
-
+    protected Map<String, Method> functions; //cached at initialization
 
     public void setId(String id) {
         this.id = id;

@@ -34,7 +34,7 @@ public class StringFunctionTest {
     @Test
     public void build_test() {
         String delimiter = "$";
-        String result = new StringFunction().build(delimiter, "ABC", "가나다", "1239999");
+        String result = new StringFunction().build(delimiter, "ABC", "가나다", "1239999", 111222);
 
         log.info("{}", result);
     }

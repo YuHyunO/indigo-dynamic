@@ -12,6 +12,7 @@ public class MappingFactory {
     private List<String> mapperFileLocations;
     private Map<String, String> functionClassAliases;
 
+
     private MappingFactory() {
         if (instance == null) {
             instance = this;
