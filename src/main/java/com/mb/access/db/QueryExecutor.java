@@ -5,7 +5,7 @@ import com.mb.code.QueryType;
 import java.util.List;
 import java.util.Map;
 
-@Deprecated
+
 public interface QueryExecutor {
 
     public String getSqlId(String namespace, QueryType queryType);

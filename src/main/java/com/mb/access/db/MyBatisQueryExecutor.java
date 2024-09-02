@@ -14,7 +14,6 @@ import java.util.Map;
 
 @Slf4j
 @Transactional
-@Deprecated
 public class MyBatisQueryExecutor implements QueryExecutor {
 
     private SqlSessionFactory sqlSessionFactory;
