@@ -101,9 +101,14 @@ public class ServiceContext {
         if (querySequence == null) {
             return null;
         }
-        int seqSize = querySequence.length;
 
-        return null;
+        int seqSize = querySequence.length;
+        if (currentQueryOrder > seqSize)
+            return null;
+        String query = querySequence[currentQueryOrder];
+        ++currentQueryOrder;
+
+        return query;
     }
 
     public String getQueryExecutorName() {

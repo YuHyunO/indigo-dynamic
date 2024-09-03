@@ -76,16 +76,16 @@ public class InterfaceInfo {
             //DataSource separating character '$' index
             int dsSepIdx = query.indexOf('$');
             if (dsSepIdx == -1) {
-                throw new IllegalArgumentException("The query must contain the DataSource separating character '$': " + query);
+                throw new IllegalArgumentException("The query must contain the QueryExecutor separating character '$': " + query);
             }
             if (dsSepIdx != query.lastIndexOf('$')) {
-                throw new IllegalArgumentException("The query has the duplicated DataSource separating character '$': " + query);
+                throw new IllegalArgumentException("The query has the duplicated QueryExecutor separating character '$': " + query);
             }
             String dsName = query.substring(0, dsSepIdx).trim();
             String queryId = query.substring(dsSepIdx + 1).trim();
 
             if (dsName.isEmpty())
-                throw new IllegalArgumentException("The DataSource name is empty: " + query);
+                throw new IllegalArgumentException("The QueryExecutor name is empty: " + query);
 
             if (queryId.isEmpty())
                 throw new IllegalArgumentException("The query id is empty: " + query);
