@@ -7,11 +7,11 @@
     	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
     	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
 
-    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <!--<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
-    </bean>
+    </bean>-->
 
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+    <bean id="DB1" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="org.postgresql.Driver"/>
         <property name="url" value="jdbc:postgresql://postgresql-database-1.cro82oqc0rbi.ap-northeast-2.rds.amazonaws.com:5432/app_dev"/>
         <property name="username" value="indigo"/>
@@ -19,14 +19,21 @@
         <property name="defaultAutoCommit"  value="false"/>
     </bean>
 
-    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="configLocation" value="mybatis-confiuration.xml"/>
-        <property name="mapperLocations" value="SQL_*.xml"/>
+    <bean id="DB2" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@//localhost:1521/ORCL"/>
+        <property name="username" value="ESB_USER"/>
+        <property name="password" value="ESB_USER"/>
+        <property name="defaultAutoCommit"  value="false"/>
     </bean>
 
-    <bean id="myBatisSqlExecutor" class="com.mb.access.db.MyBatisQueryExecutor">
-        <property name="sqlSessionFactory" ref="sessionFactory"/>
-    </bean>
+    <!--<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="DB1"/>
+        <property name="configLocation" value="mybatis-confiuration.xml"/>
+        <property name="mapperLocations" value="SQL_*.xml"/>
+    </bean>-->
+
+
+
 
 </beans>
