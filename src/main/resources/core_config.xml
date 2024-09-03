@@ -6,16 +6,16 @@
     <import resource="datasource.xml"/>
 
     <!-- DB Access Component -->
-    <bean class="com.mb.access.db.DataSourceProvider">
+    <bean class="com.mb.dnm.access.db.DataSourceProvider">
         <property name="queryExecutors">
             <list>
-                <bean class="com.mb.access.db.DataSourceProvider$ExecutorFactory">
+                <bean class="com.mb.dnm.access.db.DataSourceProvider$ExecutorFactory">
                     <property name="name"   value="DB1"/>
                     <property name="dataSource"     ref="DB1"/>
                     <property name="configLocation" value="mybatis-confiuration.xml"/>
                     <property name="mapperLocations" value="SQL_*.xml"/>
                 </bean>
-                <bean class="com.mb.access.db.DataSourceProvider$ExecutorFactory">
+                <bean class="com.mb.dnm.access.db.DataSourceProvider$ExecutorFactory">
                     <property name="name"   value="DB2"/>
                     <property name="dataSource"     ref="DB2"/>
                     <property name="configLocation" value="mybatis-confiuration.xml"/>

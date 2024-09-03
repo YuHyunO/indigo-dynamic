@@ -1,6 +1,6 @@
 package com.mb.mapper;
 
-import com.mb.util.CastUtil;
+import com.mb.dnm.util.CastUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
