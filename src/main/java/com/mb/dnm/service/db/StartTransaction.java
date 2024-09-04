@@ -2,14 +2,14 @@ package com.mb.dnm.service.db;
 
 import com.mb.dnm.core.context.ServiceContext;
 import com.mb.dnm.exeption.InvalidServiceConfigurationException;
-import com.mb.dnm.service.ParameterAssignableAbstractService;
+import com.mb.dnm.service.ParameterAssignableService;
 import com.mb.dnm.storage.InterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
 
 @Slf4j
-public class StartTransaction extends ParameterAssignableAbstractService {
+public class StartTransaction extends ParameterAssignableService {
     @Override
     public void process(ServiceContext ctx) {
         String txId = ctx.getTxId();

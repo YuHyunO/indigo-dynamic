@@ -21,7 +21,8 @@ public class TransactionProxyInterceptor implements MethodInterceptor {
 
     @Override
     public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-        if (!method.getName().startsWith("do"))
+        String methodName = method.getName();
+        if (!methodName.startsWith("do") || methodName.equals("doSelect"))
             return methodProxy.invoke(proxy, args);
 
         if (args[0] == null)

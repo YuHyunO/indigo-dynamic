@@ -2,7 +2,7 @@ package com.mb.dnm.service;
 
 import com.mb.dnm.core.context.ServiceContext;
 
-public abstract class ParameterAssignableAbstractService extends AbstractService {
+public abstract class ParameterAssignableService extends AbstractService {
     protected String inputParamName;
     protected String outputParamName;
 

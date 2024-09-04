@@ -4,7 +4,7 @@ import com.mb.dnm.access.db.DataSourceProvider;
 import com.mb.dnm.core.context.ServiceContext;
 import com.mb.dnm.core.context.TransactionContext;
 import com.mb.dnm.exeption.InvalidServiceConfigurationException;
-import com.mb.dnm.service.ParameterAssignableAbstractService;
+import com.mb.dnm.service.ParameterAssignableService;
 import com.mb.dnm.storage.InterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public class EndTransaction extends ParameterAssignableAbstractService {
+public class EndTransaction extends ParameterAssignableService {
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         String txId = ctx.getTxId();

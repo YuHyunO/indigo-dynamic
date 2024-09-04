@@ -6,12 +6,12 @@ import com.mb.dnm.access.db.QueryMap;
 import com.mb.dnm.core.context.ServiceContext;
 import com.mb.dnm.core.context.TransactionContext;
 import com.mb.dnm.exeption.InvalidServiceConfigurationException;
-import com.mb.dnm.service.ParameterAssignableAbstractService;
+import com.mb.dnm.service.ParameterAssignableService;
 
 import java.util.List;
 import java.util.Map;
 
-public class SelectProtoType extends ParameterAssignableAbstractService {
+public class SelectProtoType extends ParameterAssignableService {
 
     @Override
     public void process(ServiceContext ctx) {
