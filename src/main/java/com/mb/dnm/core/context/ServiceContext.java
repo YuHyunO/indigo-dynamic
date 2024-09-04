@@ -1,6 +1,8 @@
-package com.mb.dnm.core;
+package com.mb.dnm.core.context;
 
+import com.mb.dnm.access.db.QueryMap;
 import com.mb.dnm.code.ProcessCode;
+import com.mb.dnm.core.Service;
 import com.mb.dnm.storage.InterfaceInfo;
 import com.mb.dnm.util.MessageUtil;
 import com.mb.dnm.util.TxIdGenerator;
@@ -27,7 +29,7 @@ public class ServiceContext {
 
     private int currentQueryOrder = 0;
     private int currentMappingOrder = 0;
-
+    private Map<String, TransactionContext> txContextMap;
 
     public ServiceContext(InterfaceInfo info) {
         if (info == null) {
@@ -39,6 +41,7 @@ public class ServiceContext {
         serviceTrace = new ArrayList<>();
         errorTrace = new LinkedHashMap<>();
         contextParams = new HashMap<>();
+        txContextMap = new HashMap<>();
     }
 
     public void addServiceTrace(Class<? extends Service> service) {
@@ -96,23 +99,76 @@ public class ServiceContext {
         return contextParams.get(key);
     }
 
-    public String getCurrentQuery() {
+    public boolean hasMoreQueryMaps() {
+        String[] querySequence = info.getQuerySequence();
+        int seqSize = querySequence.length;
+        if (currentQueryOrder <= seqSize)
+            return true;
+        return false;
+    }
+
+    public QueryMap nextQueryMap() {
         String[] querySequence = info.getQuerySequence();
         if (querySequence == null) {
-            return null;
+            throw new NoSuchElementException("Query sequence is null");
         }
 
         int seqSize = querySequence.length;
         if (currentQueryOrder > seqSize)
-            return null;
+            throw new NoSuchElementException("Query sequence reached to the last");
         String query = querySequence[currentQueryOrder];
         ++currentQueryOrder;
 
-        return query;
+        int executorNameIdx = query.indexOf('$');
+        String executorName = query.substring(0, executorNameIdx);
+        String queryId = query.substring(executorNameIdx + 1);
+
+        QueryMap qmap = new QueryMap(executorName, queryId);
+        addTransactionContext(qmap);
+
+        return new QueryMap(executorName, queryId);
     }
 
-    public String getQueryExecutorName() {
-        return null;
+    void addTransactionContext(QueryMap queryMap) {
+        String executorName = queryMap.getExecutorName();
+        TransactionContext txCtx = null;
+        if (!txContextMap.containsKey(executorName)) {
+            txCtx = new TransactionContext(executorName);
+            txCtx.addQueryHistory(queryMap.getQueryId());
+            txContextMap.put(executorName, txCtx);
+        } else {
+            txContextMap.get(executorName).addQueryHistory(queryMap.getQueryId());
+        }
     }
+
+    /**
+     * @return 'true' if the TransactionContext is newly created. 'false' if the TransactionContext is already exist.
+     * */
+    public boolean registerEmptyTransactionContext(String executorName, boolean groupTxEnabled) {
+        TransactionContext txCtx = txContextMap.get(executorName);
+        if (txCtx == null) {
+            txCtx = new TransactionContext(executorName);
+            txCtx.setGroupTxEnabled(groupTxEnabled);
+            txContextMap.put(executorName, txCtx);
+            return true;
+        }
+        return false;
+    }
+
+    public TransactionContext getTransactionContext(QueryMap queryMap) {
+        return txContextMap.get(queryMap.getExecutorName());
+    }
+
+    public TransactionContext getTransactionContext(String executorName) {
+        return txContextMap.get(executorName);
+    }
+
+    public Map<String, TransactionContext> getTransactionContextMap() {
+        return txContextMap;
+    }
+
+
+
+
 
 }

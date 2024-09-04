@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.nio.file.Path;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -26,6 +27,7 @@ public class InterfaceInfo {
     //Properties for DB interfaces
     protected String[] querySequence;
     protected String[] errorQuerySequence;
+    protected Set<String> executorNames;
 
     //Properties for File interfaces
     protected Path sourceFileSendPath;
@@ -81,11 +83,12 @@ public class InterfaceInfo {
             if (dsSepIdx != query.lastIndexOf('$')) {
                 throw new IllegalArgumentException("The query has the duplicated QueryExecutor separating character '$': " + query);
             }
-            String dsName = query.substring(0, dsSepIdx).trim();
+            String executorName = query.substring(0, dsSepIdx).trim();
             String queryId = query.substring(dsSepIdx + 1).trim();
 
-            if (dsName.isEmpty())
+            if (executorName.isEmpty())
                 throw new IllegalArgumentException("The QueryExecutor name is empty: " + query);
+            executorNames.add(executorName);
 
             if (queryId.isEmpty())
                 throw new IllegalArgumentException("The query id is empty: " + query);

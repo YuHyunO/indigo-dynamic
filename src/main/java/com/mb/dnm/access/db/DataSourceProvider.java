@@ -5,7 +5,9 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -16,13 +18,16 @@ import java.util.Map;
 public class DataSourceProvider {
     private static DataSourceProvider instance;
     private Map<String, QueryExecutor> executorMap;
+    private Map<String, DataSourceTransactionManager> txManagers;
     private boolean initilized = false;
 
     private DataSourceProvider() {
         if (instance == null) {
             instance = this;
             instance.executorMap = new HashMap<>();
+            instance.txManagers = new HashMap<>();
         }
+
     }
 
     public static DataSourceProvider access() {
@@ -63,8 +68,17 @@ public class DataSourceProvider {
                     sqlFactoryBean.setMapperLocations(mapperLocations);
                 }
 
-                QueryExecutor executor = new QueryExecutor(sqlFactoryBean.getObject(), dataSource);
-                executorMap.put(name, executor);
+                QueryExecutor executor = new QueryExecutor();
+
+                DataSourceTransactionManager txManager = new DataSourceTransactionManager(dataSource);
+                txManagers.put(name, txManager);
+                executor.initialize(sqlFactoryBean.getObject());
+
+                Enhancer enhancer = new Enhancer();
+                enhancer.setSuperclass(QueryExecutor.class);
+                enhancer.setCallback(new TransactionProxyInterceptor(executor));
+                QueryExecutor proxy = (QueryExecutor) enhancer.create();
+                executorMap.put(name, proxy);
             }
             initilized = true;
             return;
@@ -72,8 +86,12 @@ public class DataSourceProvider {
         throw new IllegalStateException("DataSourceProvider is already initialized");
     }
 
-    public QueryExecutor getExecutor(String dsName) {
-        return executorMap.get(dsName);
+    public QueryExecutor getExecutor(String executorName) {
+        return executorMap.get(executorName);
+    }
+
+    public DataSourceTransactionManager getTransactionManager(String txManagerName) {
+        return txManagers.get(txManagerName);
     }
 
     @Setter @Getter

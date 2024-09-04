@@ -1,14 +1,25 @@
 package com.mb.dnm.core;
 
+import com.mb.dnm.core.callback.AfterProcessListener;
+import com.mb.dnm.core.callback.TransactionCleanupListener;
+import com.mb.dnm.core.context.ServiceContext;
 import com.mb.dnm.storage.InterfaceInfo;
 import com.mb.dnm.storage.StorageManager;
 import com.mb.dnm.util.MessageUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 public class ServiceProcessor {
+
+    private static List<AfterProcessListener> callbacks;
+
+    public ServiceProcessor() {
+        callbacks = new ArrayList<>();
+        addCallbackListener(new TransactionCleanupListener()); //Set default CallbackListener
+    }
 
     public static ServiceContext unfoldServices(ServiceContext ctx) {
         if (ctx == null)
@@ -30,6 +41,7 @@ public class ServiceProcessor {
         int cnt1 = 0;
         try {
 
+            //Processing service chaining
             for (Service service : services) {
                 Class serviceClass = service.getClass();
                 ctx.addServiceTrace(serviceClass);
@@ -56,6 +68,7 @@ public class ServiceProcessor {
                 }
             }
         } catch (Throwable t1) {
+            //Processing error handling
             List<ErrorHandler> errorHandlers = StorageManager.access().getErrorHandlersById(errorHandlerId);
             if (errorHandlers == null || errorHandlers.isEmpty()) {
                 log.warn("[{}]No error handlers '{}' found for interface id '{}'", txId, serviceId, interfaceId);
@@ -80,8 +93,24 @@ public class ServiceProcessor {
                 }
             }
 
+        } finally {
+            //Processing callbacks
+            for (AfterProcessListener listener : callbacks) {
+                try {
+                    log.debug("[{}]Processing callback: {}", txId, listener.getClass());
+                    listener.afterProcess(ctx);
+                } catch (Throwable t) {
+                    log.error("[" + txId + "]Callback " + listener.getClass() + " process failed. Cause: ", t);
+                }
+            }
         }
         return ctx;
     }
 
+
+    public void addCallbackListener(AfterProcessListener listener) {
+        if (callbacks == null)
+            throw new IllegalArgumentException("Callback listener must not be null");
+        callbacks.add(listener);
+    }
 }
