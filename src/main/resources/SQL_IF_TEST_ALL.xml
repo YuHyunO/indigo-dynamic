@@ -3,15 +3,50 @@
 <mapper namespace="IF_TEST">
 
     <select id="SELECT" resultType="java.util.HashMap">
-        SELECT * FROM ifs_hosiptal_info LIMIT 2
+        SELECT * FROM ifs_hosiptal_info where esb_link_stcd_mid = 'N' LIMIT 2
     </select>
 
     <insert id="INSERT">
-
+        INSERT INTO "ifr2_hosiptal_info"
+        (encryption_symbol,
+         nursing_agency_name,
+         category_code,
+         category_code_name,
+         sido_code,
+         sido_code_name,
+         sigungu_code,
+         sigungu_code_name,
+         eupmyeondong_name,
+         zip_code,
+         address,
+         phone_number,
+         homepage_url,
+         opening_date,
+         total_doctor,
+         latitude,
+         longtitude)
+        VALUES
+            (#{encryption_symbol},
+             #{nursing_agency_name},
+             #{category_code},
+             #{category_code_name},
+             #{sido_code},
+             #{sido_code_name},
+             #{sigungu_code},
+             #{sigungu_code_name},
+             #{eupmyeondong_name},
+             #{zip_code},
+             #{address},
+             #{phone_number},
+             #{homepage_url},
+             #{opening_date},
+             #{total_doctor},
+             #{latitude},
+             #{longtitude})
     </insert>
 
     <update id="UPDATE">
-
+        UPDATE "ifr2_hosiptal_info" SET esb_link_stcd_mid='S' where encryption_symbol=#{encryption_symbol}
     </update>
 
     <delete id="DELETE">

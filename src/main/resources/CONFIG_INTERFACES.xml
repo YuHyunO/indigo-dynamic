@@ -21,7 +21,7 @@
 
         <bean class="mb.dnm.storage.InterfaceInfo">
             <property name="interfaceId"            value="IF_TEST"/>
-            <property name="querySequence"          value="DB1$@{if_id}.SELECT"/>
+            <property name="querySequence"          value="DB1$@{if_id}.SELECT, DB2$@{if_id}.INSERT, DB1$@{if_id}.UPDATE"/>
             <property name="serviceId"              value="TEST"/>
         </bean>
 
