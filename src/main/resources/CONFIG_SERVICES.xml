@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+    <import resource="service_2.xml"/>
+    <import resource="service_3.xml"/>
+
+
+    <util:map id="serviceStrategies">
+        <entry key="service_2"  value-ref="service_2"/>
+        <entry key="service_3"  value-ref="service_3"/>
+
+        <entry key="TEST">
+            <list>
+
+                <bean class="mb.dnm.service.db.Select">
+                    <property name="output" value="Data"/>
+                </bean>
+
+            </list>
+        </entry>
+    </util:map>
+
+
+</beans>

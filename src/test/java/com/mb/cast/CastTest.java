@@ -1,15 +1,16 @@
-package com.mb.mapper;
+package com.mb.cast;
 
-import mb.dnm.util.CastUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+
+import java.util.Map;
 
 @Slf4j
 public class CastTest {
 
     @Test
     public void cast_test() {
-        CastUtil.simpleTypeCast(Boolean.class, "true");
+        Object test = "asda";
+        //Map <String, Object> map = (Map<String, Object>) test;
     }
-
 }

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+    <import resource="CONFIG_CORE.xml"/>
 
-    <bean class="com.mb.dnm.mapper.MappingFactory">
-        <property name="mapperFileLocations">
-            <list>
-                <value>mapper_*.mp</value>
-            </list>
+    <bean class="com.indigo.springsupport.schedule.ScheduleBean" id="adaptorTemplateSchedule">
+        <description><![CDATA[adaptorTemplateSchedule]]></description>
+        <property name="targetObject">
+            <bean class="mb.dnm.dispatcher.SimpleDispatcher"/>
         </property>
-        <property name="functionClassAliases">
-            <map>
-                <entry key="String" value="java.lang.String"/>
-                <entry key="Integer" value="java.lang.Integer"/>
-            </map>
+        <property name="threadCount" value="1"/>
+        <property name="timeList">
+            <list>
+                <value>[cronExpression=0/5 * * * * ?,args=IF_TEST,concurrent=false,targetMethod=dispatch]</value>
+            </list>
         </property>
     </bean>
 

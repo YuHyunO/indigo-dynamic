@@ -1,6 +1,6 @@
 package com.mb.infotest;
 
-import com.mb.dnm.storage.InterfaceInfo;
+import mb.dnm.storage.InterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 

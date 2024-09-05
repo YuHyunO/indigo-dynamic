@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+    <util:list id="interfaces">
+
+       <!-- <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="IF_SRC_TGT_001"/>
+            <property name="querySequence"          value="DB1$IF_SRC_TGT_001.SELECT, DB2$IF_SRC_TGT_001.INSERT, DB1$IF_SRC_TGT_001.UPDATE"/>
+            <property name="errorQuerySequence"     value="DB1$IF_SRC_TGT_001.ERROR_SELECT, DB2$IF_SRC_TGT_001.ERROR_INSERT, DB1$IF_SRC_TGT_001.ERROR_UPDATE"/>
+        </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="IF_SRC_TGT_002"/>
+            <property name="querySequence"          value="DB1$@{if_id}.SELECT, DB2$@{if_id}.INSERT, DB1$@{if_id}.UPDATE"/>
+            <property name="errorQuerySequence"     value="DB1$@{if_id}.ERROR_SELECT, DB2$@{if_id}.ERROR_INSERT, DB1$@{if_id}.ERROR_UPDATE"/>
+        </bean>-->
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="IF_TEST"/>
+            <property name="querySequence"          value="DB1$@{if_id}.SELECT"/>
+            <property name="serviceId"              value="TEST"/>
+        </bean>
+
+    </util:list>
+
+
+</beans>

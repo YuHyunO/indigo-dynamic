@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.indigo</groupId>
             <artifactId>AdaptorTemplate-dongwon</artifactId>
-            <version>1.0.0</version>
+            <version>202408091</version>
         </dependency>
         <dependency>
             <groupId>com.indigo</groupId>
@@ -210,16 +210,6 @@
             <artifactId>commons-pool</artifactId>
             <version>1.6</version>
         </dependency>
-        <dependency>
-            <groupId>com.oracle.ojdbc</groupId>
-            <artifactId>ojdbc8</artifactId>
-            <version>19.3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.6.0</version>
-        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -234,6 +224,26 @@
             <version>1.18.30</version>
             <scope>compile</scope>
         </dependency>
+
+
+
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc7</artifactId>
+            <version>12.1.0.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/etc/ojdbc7-12.1.0.2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.29.jre7</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/etc/postgresql-42.2.29.jre7.jar</systemPath>
+        </dependency>
+
+
+
 
     </dependencies>
 

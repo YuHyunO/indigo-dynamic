@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="euc-kr"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <import resource="commons_configures.xml"/>
+    <import resource="CONFIG_INTERFACES.xml"/>
+    <import resource="CONFIG_SERVICES.xml"/>
+    <import resource="CONFIG_ERROR_HANDLERS.xml"/>
+
+    <!-- Storage Manager -->
+    <bean class="mb.dnm.storage.StorageManager">
+        <property name="interfaceRegistry" ref="interfaces"/>
+        <property name="serviceRegistry" ref="serviceStrategies"/>
+        <property name="errorHandlerRegistry" ref="errorHandlers"/>
+    </bean>
+
+    <!-- DB Access Component -->
+    <bean class="mb.dnm.access.db.DataSourceProvider">
+        <property name="queryExecutors">
+            <list>
+                <bean class="mb.dnm.access.db.ExecutorFactory">
+                    <property name="name"   value="DB1"/>
+                    <property name="dataSource"     ref="DB1"/>
+                    <property name="configLocation" value="mybatis-confiuration.xml"/>
+                    <property name="mapperLocations" value="SQL_*.xml"/>
+                </bean>
+                <bean class="mb.dnm.access.db.ExecutorFactory">
+                    <property name="name"   value="DB2"/>
+                    <property name="dataSource"     ref="DB2"/>
+                    <property name="configLocation" value="mybatis-confiuration.xml"/>
+                    <property name="mapperLocations" value="SQL_*.xml"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+</beans>
