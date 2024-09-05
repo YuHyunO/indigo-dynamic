@@ -49,7 +49,7 @@ public class EndTransaction extends ParameterAssignableService {
                 txManager.rollback(txStatus);
                 log.error("[" + txId + "]Commit failed. Processed rollback for executor: " + executorName + ". Cause: ", t);
             } finally {
-                txContextMap.remove(executorName);
+                txContextMap.remove(executorName); //Commit 이나 Rollback 처리를 한 뒤 항상 작업한 DataSource와 관련된 TransactionContext 객체를 지워줌
             }
         }
 

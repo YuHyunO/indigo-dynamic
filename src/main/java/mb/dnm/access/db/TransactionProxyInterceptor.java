@@ -10,6 +10,21 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.lang.reflect.Method;
 
+
+/**
+ *
+ * 어댑터 자체적으로 Transaction을 관리하기 위한 클래스
+ * <br>
+ * <code>QueryExecutor</code> 의 <code>do*(**)</code> 메소드와 관련해서만 proxy 로 실행됨
+ * 
+ * @see QueryExecutor
+ * @see DataSourceProvider
+ * @see TransactionContext
+ *
+ * @author Yuhyun O
+ * @version 2024.09.05
+ *
+ * */
 @Slf4j
 public class TransactionProxyInterceptor implements MethodInterceptor {
 
@@ -25,7 +40,7 @@ public class TransactionProxyInterceptor implements MethodInterceptor {
         if (!methodName.startsWith("do"))
             return methodProxy.invoke(proxy, args);
 
-        if (args[0] == null)
+        if (args[0] == null) //TransactionContext 객체가 null 인 경우
             return methodProxy.invoke(proxy, args);
 
 
@@ -35,20 +50,30 @@ public class TransactionProxyInterceptor implements MethodInterceptor {
         try {
             txCtx = (TransactionContext) args[0];
             txManager = DataSourceProvider.access().getTransactionManager(txCtx.getName());
+            String executorName = txCtx.getName();
 
-            if (txCtx.isGroupTxEnabled()
-                    && !txStatus.isCompleted()) { //트랜잭션이 그룹으로 묶인 경우, 명시적인 commit 또는 rollback 명령이 있기전까지 하나의 트랜잭션을 유지
+            if (txCtx.isGroupTxEnabled()) { //트랜잭션이 그룹으로 묶인 경우, 명시적인 commit 또는 rollback 명령이 있기전까지 하나의 트랜잭션을 유지
 
-                log.info("[TX]Create a new transaction for executor: {}", txCtx.getName());
-                txStatus = txManager.getTransaction(new DefaultTransactionDefinition());
-                txCtx.setTransactionStatus(txStatus);
-
+                txStatus = txCtx.getTransactionStatus();
+                if (txStatus == null) { //TransactionStatus가 존재하는 경우 쿼리작업을 하려는 dataSource에 대한 트랜잭션을 새로 생성하지 않음
+                    log.info("[TX]A group transaction for executor: {} is assigned.", executorName);
+                    DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+                    txDef.setName(executorName);
+                    txStatus = txManager.getTransaction(txDef);
+                    txCtx.setTransactionStatus(txStatus);
+                } else {
+                    log.info("[TX]Continuing with group transaction for executor: {}", executorName);
+                }
                 return methodProxy.invoke(target, args);
 
             } else { //트랜잭션 그룹이 지정되지 않은 경우, QueryExecutor 의 do*(*) 메소드 실행 시 마다 트랜잭션이 생성되고, 메소드 종료 시 commit 또는 rollback 됨
-                txStatus = txManager.getTransaction(new DefaultTransactionDefinition());
+                DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+                txDef.setName(executorName);
+                txStatus = txManager.getTransaction(txDef);
                 Object rtVal = methodProxy.invoke(target, args);
+                if (!txStatus.isCompleted()) {
                 txManager.commit(txStatus);
+                }
                 return rtVal;
             }
         } catch (Throwable t) {

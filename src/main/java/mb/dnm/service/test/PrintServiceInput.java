@@ -11,6 +11,7 @@ public class PrintServiceInput extends ParameterAssignableService {
     public void process(ServiceContext ctx) throws Throwable {
         Object input = getInputValue(ctx);
         log.info("{}", input.toString());
+
     }
 
 

@@ -68,7 +68,7 @@ public class Delete extends ParameterAssignableService {
 
         updatedRows = executor.doBatchUpdate(txContext, queryMap.getQueryId(), updateParams);
 
-        log.info("[{}]{} rows selected", ctx.getTxId(), updatedRows);
+        log.info("[{}]{} rows deleted", ctx.getTxId(), updatedRows);
 
         setOutputValue(ctx, updatedRows);
     }

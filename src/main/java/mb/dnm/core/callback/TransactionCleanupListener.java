@@ -17,17 +17,18 @@ public class TransactionCleanupListener implements AfterProcessListener{
     public void afterProcess(ServiceContext ctx) {
         Map<String, TransactionContext> txCtxMap = ctx.getTransactionContextMap();
 
+        Throwable error = ctx.getError();
         for (String executorName : txCtxMap.keySet()) {
             TransactionContext txCtx = txCtxMap.get(executorName);
             TransactionStatus txStatus = txCtx.getTransactionStatus();
             if (txStatus != null) {
                 if (!txStatus.isCompleted()) {
                     DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
-                    Throwable error = txCtx.getError();
+
                     if (error != null) {
                         txManager.rollback(txStatus);
                         log.warn("[{}]Rollback transaction context for executor {}, Because an error is exist in the TransactionContext.\n{}"
-                                , ctx.getTxId(), executorName, MessageUtil.toString(error));
+                                , ctx.getTxId(), executorName, error.getMessage());
                     } else {
                         log.debug("[{}]Cleaning up transaction context for executor {}", ctx.getTxId(), executorName);
                         txManager.commit(txStatus);

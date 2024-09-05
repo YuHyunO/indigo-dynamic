@@ -75,7 +75,7 @@ public class ServiceProcessor {
             //Processing error handling
             List<ErrorHandler> errorHandlers = StorageManager.access().getErrorHandlersById(errorHandlerId);
             if (errorHandlers == null || errorHandlers.isEmpty()) {
-                log.warn("[{}]No error handlers '{}' found for interface id '{}'", txId, serviceId, interfaceId);
+                log.warn("[{}]No error handlers '{}' found for interface id '{}'", txId, errorHandlerId, interfaceId);
                 return ctx;
             }
 

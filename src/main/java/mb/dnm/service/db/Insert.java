@@ -68,7 +68,7 @@ public class Insert extends ParameterAssignableService {
 
         insertedRows = executor.doBatchInsert(txContext, queryMap.getQueryId(), insertParams);
 
-        log.info("[{}]{} rows selected", ctx.getTxId(), insertedRows);
+        log.info("[{}]{} rows inserted", ctx.getTxId(), insertedRows);
 
         setOutputValue(ctx, insertedRows);
     }

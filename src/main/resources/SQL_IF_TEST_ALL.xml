@@ -7,7 +7,7 @@
     </select>
 
     <insert id="INSERT">
-        INSERT INTO "ifr2_hosiptal_info"
+        INSERT INTO ifr2_hosiptal_info
         (encryption_symbol,
          nursing_agency_name,
          category_code,
@@ -46,7 +46,7 @@
     </insert>
 
     <update id="UPDATE">
-        UPDATE "ifr2_hosiptal_info" SET esb_link_stcd_mid='S' where encryption_symbol=#{encryption_symbol}
+        UPDATE ifs_hosiptal_info SET esb_link_stcd_mid='S' where encryption_symbol=#{encryption_symbol}
     </update>
 
     <delete id="DELETE">

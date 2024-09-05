@@ -12,13 +12,34 @@
         <entry key="service_2"  value-ref="service_2"/>
         <entry key="service_3"  value-ref="service_3"/>
 
-        <entry key="TEST">
+        <entry key="DB_WORKING_NO_GROUP_TX">
             <list>
-
                 <bean class="mb.dnm.service.db.Select">
                     <property name="output" value="Data"/>
                 </bean>
+                <bean class="mb.dnm.service.db.Insert">
+                    <property name="input" value="Data"/>
+                </bean>
+                <bean class="mb.dnm.service.db.Update">
+                    <property name="input" value="Data"/>
+                </bean>
+            </list>
+        </entry>
 
+        <entry key="DB_WORKING_IN_GROUP_TX">
+            <list>
+                <bean class="mb.dnm.service.db.Select">
+                    <property name="output" value="Data"/>
+                </bean>
+                <bean class="mb.dnm.service.db.StartTransaction"/>
+                <bean class="mb.dnm.service.db.Insert">
+                    <property name="input" value="Data"/>
+                </bean>
+                <bean class="mb.dnm.service.db.Update">
+                    <property name="input" value="Data"/>
+                </bean>
+                <bean class="mb.dnm.service.test.ThrowException"/>
+                <bean class="mb.dnm.service.db.EndTransaction"/>
             </list>
         </entry>
     </util:map>
