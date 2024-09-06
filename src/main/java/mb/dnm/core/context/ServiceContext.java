@@ -21,8 +21,6 @@ public class ServiceContext {
     private boolean processOn = true;
     @Setter
     private ProcessCode processCode = ProcessCode.NOT_STARTED;
-    @Setter
-    private Throwable error;
     private List<Class<? extends Service>> serviceTrace;
     private Map<Class<? extends Service>, Throwable> errorTrace;
     private Map<String, Object> contextParams;
@@ -145,16 +143,20 @@ public class ServiceContext {
 
     /**
      * @return 'true' if the TransactionContext is newly created. 'false' if the TransactionContext is already exist.
+     * <br>
+     * But the group transaction property is always enabled in both cases.
      * */
-    public boolean registerEmptyTransactionContext(String executorName, boolean groupTxEnabled) {
+    public boolean setGroupTransaction(String executorName, boolean groupTxEnabled) {
         TransactionContext txCtx = txContextMap.get(executorName);
         if (txCtx == null) {
             txCtx = new TransactionContext(executorName);
             txCtx.setGroupTxEnabled(groupTxEnabled);
             txContextMap.put(executorName, txCtx);
             return true;
+        } else {
+            txCtx.setGroupTxEnabled(groupTxEnabled);
+            return false;
         }
-        return false;
     }
 
     public TransactionContext getTransactionContext(QueryMap queryMap) {
@@ -169,6 +171,11 @@ public class ServiceContext {
         return txContextMap;
     }
 
-
+    public boolean isErrorExist() {
+        if (!errorTrace.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 
 }

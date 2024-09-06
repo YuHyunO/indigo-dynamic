@@ -19,7 +19,7 @@ public class StartTransaction extends ParameterAssignableService {
             throw new InvalidServiceConfigurationException(StartTransaction.class, "There is no query sequences which contains the information of an Executor.");
         }
         for (String executorName : executorNames) {
-            boolean result = ctx.registerEmptyTransactionContext(executorName, true);
+            boolean result = ctx.setGroupTransaction(executorName, true);
             if (result) {
                 log.info("[{}]A TranscationContext is ready for the executor: {}", txId, executorName);
             } else {

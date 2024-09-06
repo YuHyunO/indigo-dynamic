@@ -6,6 +6,10 @@
         SELECT * FROM ifs_hosiptal_info where esb_link_stcd_mid = 'N' LIMIT 2
     </select>
 
+    <select id="SELECT2" resultType="java.util.HashMap">
+        select * from ifs_hosiptal_info where esb_link_stcd_mid='N' and encryption_symbol = 'JDQ4MTYyMiM1MSMkMSMkMCMkNzIkNTgxMzUxIzMxIyQyIyQ3IyQwMCQyNjE4MzIjNTEjJDEjJDYjJDgz'
+    </select>
+
     <insert id="INSERT">
         INSERT INTO ifr2_hosiptal_info
         (encryption_symbol,
