@@ -32,13 +32,16 @@
                     <property name="output" value="Data"/>
                 </bean>
                 <bean class="mb.dnm.service.db.StartTransaction"/>
+                <!--<bean class="mb.dnm.service.db.Delete">
+                    <property name="input"  value="Data"/>
+                </bean>-->
                 <bean class="mb.dnm.service.db.Insert">
                     <property name="input" value="Data"/>
                 </bean>
                 <bean class="mb.dnm.service.db.Update">
                     <property name="input" value="Data"/>
                 </bean>
-                <bean class="mb.dnm.service.test.ThrowException"/>
+                <!--<bean class="mb.dnm.service.test.ThrowException"/>-->
                 <bean class="mb.dnm.service.db.EndTransaction"/>
             </list>
         </entry>

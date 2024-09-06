@@ -3,7 +3,7 @@
 <mapper namespace="IF_TEST">
 
     <select id="SELECT" resultType="java.util.HashMap">
-        SELECT * FROM ifs_hosiptal_info where esb_link_stcd_mid = 'N' LIMIT 2
+        SELECT * FROM ifs_hosiptal_info where esb_link_stcd_mid = 'N' LIMIT 1
     </select>
 
     <select id="SELECT2" resultType="java.util.HashMap">
@@ -54,7 +54,7 @@
     </update>
 
     <delete id="DELETE">
-
+        DELETE FROM ifr2_hosiptal_info where encryption_symbol=#{encryption_symbol}
     </delete>
 
 </mapper>

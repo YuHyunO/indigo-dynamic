@@ -70,8 +70,9 @@ public class Select extends ParameterAssignableService {
                 throw new IllegalArgumentException("The type of input parameter is invalid: " + inValue.getClass());
             }
 
+            String queryId = queryMap.getQueryId();
             for (Map<String, Object> param : selectParameters) {
-                selectResult.addAll(executor.doSelect(txContext, queryMap.getQueryId(), param));
+                selectResult.addAll(executor.doSelect(txContext, queryId, param));
             }
         } else { //(4) Execute query when parameter is null
             selectResult = executor.doSelect(txContext, queryMap.getQueryId(), null);
