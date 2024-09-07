@@ -16,7 +16,7 @@
   <p>
     <h3>※테스트 환경 정보</h3> 
     <div>[FTP/SFTP 서버 생성 및 관련설정 완료 (2024-09-07)]</div>
-    <div>-FTP 접속정보: 52.78.68.15:7021 (oyh1/oyh123)</div>
+    <div>-FTP 접속정보: 52.78.68.15:7021 (oyh/oyh123)</div>
     <div>-SFTP 접속정보: 52.78.68.15:7022 (sftpuser1/sftpuser1, sftpuser2/sftpuser2)</div>
   </p>  
 
