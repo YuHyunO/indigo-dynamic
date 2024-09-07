@@ -1,11 +1,13 @@
 <div align="left">
-  <h3>프로젝트 환경설정 정보</h3>
   <p>
+    <h3>※프로젝트 환경설정 정보</h3>
     <div>-JDK version: 1.7</div>
     <div>-MAVEN version: 3.8.8 / Download link: <a href="https://dlcdn.apache.org/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.zip">apache-maven-3.8.8-bin.zip</a></div>
     <div>-MAVEN JVM option: -Dhttps.protocols=TLSv1.1,TLSv1.2</div>
   </p>
-  <div>※배포 시 log level 조정 필요함</div>
+
+  <h3>※</h3> 
+  <div>-배포 시 log level 조정 필요함</div>
   <br>
   <div>FTP/SFTP 서버 생성 및 설정 완료</div>
 </div>
