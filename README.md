@@ -9,7 +9,7 @@
   <br>
   <p>
     <h3>※기타</h3> 
-    <div>-배포 시 logging level 조정, 불필요 로그 제거 및 주석 처리 작업 선행</div>
+    <div>-최종 배포 시 logging level 조정, 불필요 로그 제거 및 주석 처리 작업 선행</div>
   </p>
   
   <br>
