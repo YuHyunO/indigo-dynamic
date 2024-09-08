@@ -13,26 +13,49 @@
         <property name="errorHandlerRegistry" ref="errorHandlers"/>
     </bean>
 
-    <!-- DB Access Component -->
+    <!-- ¡ØDB Access Component -->
     <!--<bean class="mb.dnm.access.db.DataSourceProvider">
         <property name="queryExecutors">
             <list>
                 <bean class="mb.dnm.access.db.ExecutorFactory">
-                    <property name="name"   value="DB1"/>
-                    <property name="dataSource"     ref="DB1"/>
-                    <property name="configLocation" value="mybatis-confiuration.xml"/>
-                    <property name="mapperLocations" value="SQL_*.xml"/>
+                    <property name="name"               value="DB1"/>
+                    <property name="dataSource"         ref="DB1"/>
+                    <property name="configLocation"     value="mybatis-confiuration.xml"/>
+                    <property name="mapperLocations"    value="SQL_*.xml"/>
                 </bean>
                 <bean class="mb.dnm.access.db.ExecutorFactory">
-                    <property name="name"   value="DB2"/>
-                    <property name="dataSource"     ref="DB2"/>
-                    <property name="configLocation" value="mybatis-confiuration.xml"/>
-                    <property name="mapperLocations" value="SQL_*.xml"/>
+                    <property name="name"               value="DB2"/>
+                    <property name="dataSource"         ref="DB2"/>
+                    <property name="configLocation"     value="mybatis-confiuration.xml"/>
+                    <property name="mapperLocations"    value="SQL_*.xml"/>
                 </bean>
             </list>
         </property>
     </bean>-->
 
+    <!-- ¡ØFTP Access Component -->
+    <bean class="mb.dnm.access.file.FTPConnectionProvider">
+        <property name="ftpClientTemplates">
+            <list>
+                <bean class="mb.dnm.access.file.FTPClientTemplate">
+                    <property name="templateName"       value="FTP1"/>
+                    <property name="host"               value="52.78.68.15"/>
+                    <property name="port"               value="7021"/>
+                    <property name="user"               value="oyh"/>
+                    <property name="password"           value="oyh123"/>
+                    <property name="controlEncoding"    value="UTF-8"/>
+                </bean>
+                <bean class="mb.dnm.access.file.FTPClientTemplate">
+                    <property name="templateName"       value="FTP2"/>
+                    <property name="host"               value="52.78.68.15"/>
+                    <property name="port"               value="7021"/>
+                    <property name="user"               value="ftpuser"/>
+                    <property name="password"           value="ftpuser123"/>
+                    <property name="controlEncoding"    value="UTF-8"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
 
 
 </beans>
