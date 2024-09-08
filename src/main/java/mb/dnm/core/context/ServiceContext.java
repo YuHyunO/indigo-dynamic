@@ -126,6 +126,7 @@ public class ServiceContext {
         String queryId = query.substring(executorNameIdx + 1);
 
         QueryMap qmap = new QueryMap(executorName, queryId);
+        qmap.setTimeoutSecond(info.getTxTimeoutSecond());
         addTransactionContext(qmap);
 
         return new QueryMap(executorName, queryId);
@@ -136,6 +137,7 @@ public class ServiceContext {
         TransactionContext txCtx = null;
         if (!txContextMap.containsKey(executorName)) {
             txCtx = new TransactionContext(executorName);
+            txCtx.setTimeoutSecond(queryMap.getTimeoutSecond());
             txCtx.addQueryHistory(queryMap.getQueryId());
             txContextMap.put(executorName, txCtx);
         } else {

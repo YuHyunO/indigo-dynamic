@@ -29,6 +29,7 @@ public class InterfaceInfo {
     protected String[] querySequence;
     protected String[] errorQuerySequence;
     protected Set<String> executorNames;
+    protected int txTimeoutSecond = -1;
 
     //Properties for File interfaces
     protected Path sourceFileSendPath;

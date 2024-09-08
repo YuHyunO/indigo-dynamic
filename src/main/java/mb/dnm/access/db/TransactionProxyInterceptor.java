@@ -59,6 +59,7 @@ public class TransactionProxyInterceptor implements MethodInterceptor {
                     log.info("[TX]A group transaction for executor: {} is assigned.", executorName);
                     DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
                     txDef.setName(executorName);
+                    txDef.setTimeout(txCtx.getTimeoutSecond());
                     txStatus = txManager.getTransaction(txDef);
                     txCtx.setTransactionStatus(txStatus);
                 } else {
@@ -69,6 +70,7 @@ public class TransactionProxyInterceptor implements MethodInterceptor {
             } else { //트랜잭션 그룹이 지정되지 않은 경우, QueryExecutor 의 do*(*) 메소드 실행 시 마다 트랜잭션이 생성되고, 메소드 종료 시 commit 또는 rollback 됨
                 DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
                 txDef.setName(executorName);
+                txDef.setTimeout(txCtx.getTimeoutSecond());
                 txStatus = txManager.getTransaction(txDef);
                 Object rtVal = methodProxy.invoke(target, args);
                 if (!txStatus.isCompleted()) {

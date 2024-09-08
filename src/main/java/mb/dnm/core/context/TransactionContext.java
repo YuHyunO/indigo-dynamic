@@ -6,6 +6,7 @@ public class TransactionContext {
     private String name;
     private boolean groupTxEnabled = false;
     private TransactionStatus txStatus;
+    private int timeoutSecond = -1;
     private StringBuffer queryHistory;
     private Throwable error;
 
@@ -48,6 +49,14 @@ public class TransactionContext {
 
     public boolean isGroupTxEnabled() {
         return groupTxEnabled;
+    }
+
+    public void setTimeoutSecond(int timeoutSecond) {
+        this.timeoutSecond = timeoutSecond;
+    }
+
+    public int getTimeoutSecond() {
+        return timeoutSecond;
     }
 
 
