@@ -71,15 +71,15 @@ public class Select extends ParameterAssignableService {
             }
 
             String queryId = queryMap.getQueryId();
-            for (Map<String, Object> param : selectParameters) {
-                selectResult.addAll(executor.doSelect(txContext, queryId, param));
-            }
+            selectResult = executor.doSelects(txContext, queryId, selectParameters);
         } else { //(4) Execute query when parameter is null
             selectResult = executor.doSelect(txContext, queryMap.getQueryId(), null);
         }
 
         log.info("[{}]{} rows selected", ctx.getTxId(), selectResult.size());
 
-        setOutputValue(ctx, selectResult);
+        if (getOutput() != null) {
+            setOutputValue(ctx, selectResult);
+        }
     }
 }

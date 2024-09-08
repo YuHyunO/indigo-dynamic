@@ -210,6 +210,16 @@
             <artifactId>commons-pool</artifactId>
             <version>1.6</version>
         </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.mwiede</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.2.19</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

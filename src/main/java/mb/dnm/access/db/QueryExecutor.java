@@ -9,6 +9,7 @@ import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,16 @@ public class QueryExecutor {
 
     public List<Map<String, Object>> doSelect(TransactionContext txCtx, String sqlId, Map<String, Object> selectParam) {
         return getDefaultExecutor().selectList(sqlId, selectParam);
+    }
+
+    public List<Map<String, Object>> doSelects(TransactionContext txCtx, String sqlId, List<Map<String, Object>> selectParam) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        SqlSessionTemplate executor = getDefaultExecutor();
+        for (Map<String, Object> param : selectParam) {
+            List<Map<String, Object>> subResult = executor.selectList(sqlId, param);
+            result.addAll(subResult);
+        }
+        return result;
     }
 
     

@@ -24,10 +24,11 @@ public class ServiceContext {
     private List<Class<? extends Service>> serviceTrace;
     private Map<Class<? extends Service>, Throwable> errorTrace;
     private Map<String, Object> contextParams;
+    private Map<String, TransactionContext> txContextMap;
+    private Map<String, SessionContext> sessionContextMap;
 
     private int currentQueryOrder = 0;
     private int currentMappingOrder = 0;
-    private Map<String, TransactionContext> txContextMap;
     @Setter @Getter
     private ProcessCode processStatus = ProcessCode.NOT_STARTED;
 
@@ -42,6 +43,7 @@ public class ServiceContext {
         errorTrace = new LinkedHashMap<>();
         contextParams = new HashMap<>();
         txContextMap = new HashMap<>();
+        sessionContextMap = new HashMap<>();
     }
 
     public void addServiceTrace(Class<? extends Service> service) {

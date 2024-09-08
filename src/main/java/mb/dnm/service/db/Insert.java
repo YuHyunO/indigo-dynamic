@@ -70,7 +70,9 @@ public class Insert extends ParameterAssignableService {
 
         log.info("[{}]{} rows inserted", ctx.getTxId(), insertedRows);
 
-        setOutputValue(ctx, insertedRows);
+        if (getOutput() != null) {
+            setOutputValue(ctx, insertedRows);
+        }
     }
 
 }

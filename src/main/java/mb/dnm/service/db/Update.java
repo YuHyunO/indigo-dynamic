@@ -70,7 +70,9 @@ public class Update extends ParameterAssignableService {
 
         log.info("[{}]{} rows updated", ctx.getTxId(), updatedRows);
 
-        setOutputValue(ctx, updatedRows);
+        if (getOutput() != null) {
+            setOutputValue(ctx, updatedRows);
+        }
     }
 
 }

@@ -70,7 +70,9 @@ public class Delete extends ParameterAssignableService {
 
         log.info("[{}]{} rows deleted", ctx.getTxId(), updatedRows);
 
-        setOutputValue(ctx, updatedRows);
+        if (getOutput() != null) {
+            setOutputValue(ctx, updatedRows);
+        }
     }
 
 }
