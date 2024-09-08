@@ -14,7 +14,7 @@
     </bean>
 
     <!-- DB Access Component -->
-    <bean class="mb.dnm.access.db.DataSourceProvider">
+    <!--<bean class="mb.dnm.access.db.DataSourceProvider">
         <property name="queryExecutors">
             <list>
                 <bean class="mb.dnm.access.db.ExecutorFactory">
@@ -31,6 +31,8 @@
                 </bean>
             </list>
         </property>
-    </bean>
+    </bean>-->
+
+
 
 </beans>

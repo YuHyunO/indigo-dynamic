@@ -8,21 +8,28 @@
     <util:list id="interfaces">
 
        <!-- <bean class="mb.dnm.storage.InterfaceInfo">
-            <property name="interfaceId"            value="IF_SRC_TGT_001"/>
+            <property name="interfaceId"            value="SAMPLE_1"/>
             <property name="querySequence"          value="DB1$IF_SRC_TGT_001.SELECT, DB2$IF_SRC_TGT_001.INSERT, DB1$IF_SRC_TGT_001.UPDATE"/>
             <property name="errorQuerySequence"     value="DB1$IF_SRC_TGT_001.ERROR_SELECT, DB2$IF_SRC_TGT_001.ERROR_INSERT, DB1$IF_SRC_TGT_001.ERROR_UPDATE"/>
         </bean>
 
         <bean class="mb.dnm.storage.InterfaceInfo">
-            <property name="interfaceId"            value="IF_SRC_TGT_002"/>
+            <property name="interfaceId"            value="SAMPLE_2"/>
             <property name="querySequence"          value="DB1$@{if_id}.SELECT, DB2$@{if_id}.INSERT, DB1$@{if_id}.UPDATE"/>
             <property name="errorQuerySequence"     value="DB1$@{if_id}.ERROR_SELECT, DB2$@{if_id}.ERROR_INSERT, DB1$@{if_id}.ERROR_UPDATE"/>
         </bean>-->
 
         <bean class="mb.dnm.storage.InterfaceInfo">
-            <property name="interfaceId"            value="IF_TEST"/>
+            <property name="interfaceId"            value="DB_IF_TEST"/>
+            <property name="description"            value="DB 인터페이스 테스트"/>
             <property name="querySequence"          value="DB1$@{if_id}.SELECT, DB2$@{if_id}.INSERT, DB1$@{if_id}.UPDATE"/>
             <property name="serviceId"              value="DB_WORKING_IN_GROUP_TX"/>
+        </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="FILE_IF_TEST"/>
+            <property name="description"            value="FILE 인터페이스 테스트"/>
+            <property name="serviceId"              value="FILE_WORKING"/>
         </bean>
 
     </util:list>
