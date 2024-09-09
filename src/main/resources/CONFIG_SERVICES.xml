@@ -31,6 +31,9 @@
                 <bean class="mb.dnm.service.db.Select">
                     <property name="output" value="Data"/>
                 </bean>
+                <bean class="mb.dnm.service.db.Select">
+                    <property name="output" value="Data"/>
+                </bean>
                 <bean class="mb.dnm.service.db.StartTransaction"/>
                 <!--<bean class="mb.dnm.service.db.Delete">
                     <property name="input"  value="Data"/>
@@ -49,7 +52,10 @@
         <entry key="FTP_WORKING">
             <list>
                 <bean class="mb.dnm.service.ftp.FTPLogin">
-                    <property name="sourceName" value="FTP1"/>
+                    <property name="sourceAlias" value="SRC"/>
+                </bean>
+                <bean class="mb.dnm.service.ftp.FTPLogin">
+                    <property name="sourceAlias" value="TGT"/>
                 </bean>
             </list>
         </entry>

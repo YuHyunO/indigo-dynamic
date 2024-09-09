@@ -4,7 +4,7 @@ import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.service.SourceAccessService;
 
-public class DownloadFiles extends SourceAccessService {
+public class DownloadFiles extends AbstractFTPService {
     @Override
     public void process(ServiceContext ctx) throws Throwable {
 

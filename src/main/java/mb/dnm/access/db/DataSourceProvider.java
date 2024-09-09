@@ -1,7 +1,5 @@
 package mb.dnm.access.db;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.cglib.proxy.Enhancer;
@@ -12,6 +10,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 @Slf4j
 public class DataSourceProvider {
