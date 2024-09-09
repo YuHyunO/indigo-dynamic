@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Setter
@@ -47,6 +49,8 @@ public class InterfaceInfo {
     protected String remoteTargetFileReceivePath;
     protected String remoteTargetFileErrorPath;
     protected String remoteTargetFileTempPath;
+
+    protected Map<String, String> sourceAliasMap;
 
     //Property for mapping
     protected String[] mappingSequence;
@@ -105,6 +109,47 @@ public class InterfaceInfo {
             ++i;
         }
         return queries;
+    }
+
+    public void setSourceAliases(String aliasExpression) {
+        aliasExpression = aliasExpression.trim();
+        if (aliasExpression.isEmpty()) {
+            throw new IllegalArgumentException("The aliasExpression is empty");
+        }
+        String[] aliasExpressions = aliasExpression.split(",");
+
+        if (sourceAliasMap == null) {
+            sourceAliasMap = new HashMap<>();
+        }
+
+        for (String expression : aliasExpressions) {
+            expression = expression.trim();
+            if (expression.isEmpty())
+                continue;
+            String[] aliasAndSource = expression.split(":");
+            if (aliasAndSource.length != 2) {
+                throw new IllegalArgumentException("The expression must contain the alias and source expression[alias:source]: " + expression);
+            }
+            String alias = aliasAndSource[0].trim();
+            String source = aliasAndSource[1].trim();
+            if (alias.isEmpty())
+                throw new IllegalArgumentException("The alias part of sourceAlias expression is empty: " + expression);
+            if (source.isEmpty())
+                throw new IllegalArgumentException("The source part sourceAlias expression is empty: " + expression);
+
+            if (sourceAliasMap.containsKey(alias))
+                throw new IllegalStateException("The alias '" + alias + "' already exists: " + expression);
+
+            sourceAliasMap.put(alias, source);
+        }
+
+    }
+
+    public String getSourceNameByAlias(String alias) {
+        if (sourceAliasMap == null) {
+            return null;
+        }
+        return sourceAliasMap.get(alias);
     }
 
 

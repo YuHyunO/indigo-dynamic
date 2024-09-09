@@ -27,9 +27,10 @@
         </bean>
 
         <bean class="mb.dnm.storage.InterfaceInfo">
-            <property name="interfaceId"            value="FILE_IF_TEST"/>
-            <property name="description"            value="FILE 인터페이스 테스트"/>
-            <property name="serviceId"              value="FILE_WORKING"/>
+            <property name="interfaceId"            value="FTP_IF_TEST"/>
+            <property name="description"            value="FTP 인터페이스 테스트"/>
+            <property name="serviceId"              value="FTP_WORKING"/>
+            <property name="sourceAliases"          value="SRC:FTP1, TGT:FTP2"/>
         </bean>
 
     </util:list>

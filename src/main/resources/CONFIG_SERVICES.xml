@@ -45,6 +45,16 @@
                 <bean class="mb.dnm.service.db.EndTransaction"/>
             </list>
         </entry>
+
+        <entry key="FTP_WORKING">
+            <list>
+                <bean class="mb.dnm.service.ftp.FTPLogin">
+                    <property name="sourceName" value="FTP1"/>
+                </bean>
+            </list>
+        </entry>
+
+
     </util:map>
 
 

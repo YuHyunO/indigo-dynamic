@@ -4,6 +4,8 @@ import mb.dnm.storage.InterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
+import java.util.Map;
+
 @Slf4j
 public class InterfaceInfoTest {
 
@@ -23,6 +25,20 @@ public class InterfaceInfoTest {
         for (String query : interfaceInfo.getErrorQuerySequence()) {
             log.info(query);
         }
+    }
+
+    @Test
+    public void setSourceAlias_test() {
+        InterfaceInfo info = new InterfaceInfo();
+        String sourceAlias = "SRC:FTP1, TGT:FTP2, SRC2:FTPSERVER3,";
+        info.setSourceAliases(sourceAlias);
+
+        Map<String, String> sourceAliasMap = info.getSourceAliasMap();
+        for (String alias : sourceAliasMap.keySet()) {
+            log.info("[#alias:{}, sourceName:{}]", alias, sourceAliasMap.get(alias));
+        }
+
+        log.info("SRC: [{}]", info.getSourceNameByAlias("SRC"));
     }
 
 }

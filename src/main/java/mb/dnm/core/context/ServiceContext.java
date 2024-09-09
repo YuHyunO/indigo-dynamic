@@ -1,5 +1,6 @@
 package mb.dnm.core.context;
 
+import mb.dnm.access.ClosableSession;
 import mb.dnm.access.db.QueryMap;
 import mb.dnm.code.ProcessCode;
 import mb.dnm.core.Service;
@@ -25,7 +26,7 @@ public class ServiceContext {
     private Map<Class<? extends Service>, Throwable> errorTrace;
     private Map<String, Object> contextParams;
     private Map<String, TransactionContext> txContextMap;
-    private Map<String, SessionContext> sessionContextMap;
+    private Map<String, ClosableSession> sessionMap;
 
     private int currentQueryOrder = 0;
     private int currentMappingOrder = 0;
@@ -43,7 +44,7 @@ public class ServiceContext {
         errorTrace = new LinkedHashMap<>();
         contextParams = new HashMap<>();
         txContextMap = new HashMap<>();
-        sessionContextMap = new HashMap<>();
+        sessionMap = new HashMap<>();
     }
 
     public void addServiceTrace(Class<? extends Service> service) {
@@ -173,6 +174,22 @@ public class ServiceContext {
 
     public Map<String, TransactionContext> getTransactionContextMap() {
         return txContextMap;
+    }
+
+    public void addSession(String sourceName, ClosableSession session) {
+        sessionMap.put(sourceName, session);
+    }
+
+    public ClosableSession getSession(String sourceName) {
+        return sessionMap.get(sourceName);
+    }
+
+    public boolean isSessionExist(String sourceName) {
+        return sessionMap.containsKey(sourceName);
+    }
+
+    public Map<String, ClosableSession> getSessionMap() {
+        return sessionMap;
     }
 
     public boolean isErrorExist() {

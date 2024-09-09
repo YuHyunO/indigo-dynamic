@@ -1,8 +1,9 @@
 package mb.dnm.core;
 
 import mb.dnm.code.ProcessCode;
-import mb.dnm.core.callback.AfterProcessListener;
-import mb.dnm.core.callback.TransactionCleanupListener;
+import mb.dnm.core.callback.AfterProcessCallback;
+import mb.dnm.core.callback.SessionCleanupCallback;
+import mb.dnm.core.callback.TransactionCleanupCallback;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.storage.StorageManager;
@@ -15,10 +16,11 @@ import java.util.List;
 @Slf4j
 public class ServiceProcessor {
 
-    private static List<AfterProcessListener> callbacks = new ArrayList<>();
+    private static List<AfterProcessCallback> callbacks = new ArrayList<>();
 
     static {
-        callbacks.add(new TransactionCleanupListener()); //Set default CallbackListener
+        callbacks.add(new TransactionCleanupCallback()); //Set default
+        callbacks.add(new SessionCleanupCallback()); //Set default
     }
 
 
@@ -99,7 +101,7 @@ public class ServiceProcessor {
 
         } finally {
             //Processing callbacks
-            for (AfterProcessListener listener : callbacks) {
+            for (AfterProcessCallback listener : callbacks) {
                 try {
                     log.debug("[{}]Processing callback: {}", txId, listener.getClass());
                     listener.afterProcess(ctx);
@@ -112,7 +114,7 @@ public class ServiceProcessor {
     }
 
 
-    public void addCallbackListener(AfterProcessListener listener) {
+    public void addCallbackListener(AfterProcessCallback listener) {
         if (callbacks == null)
             throw new IllegalArgumentException("Callback listener must not be null");
         callbacks.add(listener);
