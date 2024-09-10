@@ -1,5 +1,6 @@
 package mb.dnm.service.ftp;
 
+import lombok.extern.slf4j.Slf4j;
 import mb.dnm.access.ftp.FTPSession;
 import mb.dnm.access.ftp.FTPSourceProvider;
 import mb.dnm.core.context.ServiceContext;
@@ -19,6 +20,7 @@ import mb.dnm.storage.InterfaceInfo;
  * @author Yuhyun O
  * @version 2024.09.09
  * */
+@Slf4j
 public class FTPLogin extends AbstractFTPService {
 
     @Override
@@ -31,6 +33,8 @@ public class FTPLogin extends AbstractFTPService {
         if (session == null) {
             session = FTPSourceProvider.access().getNewSession(srcName);
             ctx.addSession(srcName, session);
+        } else {
+            log.info("[{}]The FTPSession for '{}' is already exist.", ctx.getTxId(), srcName);
         }
     }
 
