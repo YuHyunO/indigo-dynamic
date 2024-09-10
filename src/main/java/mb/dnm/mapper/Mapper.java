@@ -3,6 +3,7 @@ package mb.dnm.mapper;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+@Deprecated
 public abstract class Mapper {
     protected String id;
     protected Map<String, Object> map;

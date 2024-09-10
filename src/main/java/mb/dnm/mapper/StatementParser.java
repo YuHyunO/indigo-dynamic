@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+@Deprecated
 @Slf4j
 public class StatementParser {
     private final String KEY_MAPPER_INDICATOR = "@key_mapper";

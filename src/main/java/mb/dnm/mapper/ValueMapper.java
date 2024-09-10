@@ -2,6 +2,7 @@ package mb.dnm.mapper;
 
 import java.util.HashMap;
 
+@Deprecated
 public class ValueMapper extends Mapper {
     private boolean createNullKey = true;
     private boolean nullToEmptyString = false;

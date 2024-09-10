@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class MappingFactory {
     private static MappingFactory instance;
     private Map<String, KeyMapper> keyMapper;
