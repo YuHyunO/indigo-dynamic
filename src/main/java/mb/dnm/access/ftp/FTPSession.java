@@ -45,4 +45,8 @@ public class FTPSession implements ClosableSession {
         return true;
     }
 
+    public FTPClient getFTPClient() {
+        return ftp;
+    }
+
 }

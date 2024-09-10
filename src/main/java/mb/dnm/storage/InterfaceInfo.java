@@ -3,6 +3,7 @@ package mb.dnm.storage;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import mb.dnm.access.file.FileInfo;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -34,7 +35,8 @@ public class InterfaceInfo {
     protected int txTimeoutSecond = -1;
 
     //Properties for File interfaces
-    protected Path sourceFileSendPath;
+    protected Map<String, FileTemplate> fileTemplateMap;
+    /*protected Path sourceFileSendPath;
     protected Path sourceFileErrorPath;
     protected Path sourceFileTempPath;
 
@@ -48,7 +50,7 @@ public class InterfaceInfo {
 
     protected String remoteTargetFileReceivePath;
     protected String remoteTargetFileErrorPath;
-    protected String remoteTargetFileTempPath;
+    protected String remoteTargetFileTempPath;*/
 
     protected Map<String, String> sourceAliasMap;
 

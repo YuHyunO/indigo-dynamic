@@ -57,6 +57,9 @@
                 <bean class="mb.dnm.service.ftp.FTPLogin">
                     <property name="sourceAlias" value="TGT"/>
                 </bean>
+                <bean class="mb.dnm.service.ftp.GetFileList">
+                    <property name="sourceAlias" value="SRC"/>
+                </bean>
             </list>
         </entry>
 
