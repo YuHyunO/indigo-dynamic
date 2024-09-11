@@ -16,4 +16,8 @@ public class ExecutorTemplate {
     private Resource configLocation;
     private Resource[] mapperLocations;
 
+    public String getName() {
+        return templateName;
+    }
+
 }

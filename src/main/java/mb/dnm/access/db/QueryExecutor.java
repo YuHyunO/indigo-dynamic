@@ -68,6 +68,7 @@ public class QueryExecutor {
     public List<Map<String, Object>> doSelects(TransactionContext txCtx, String sqlId, List<Map<String, Object>> selectParam) {
         List<Map<String, Object>> result = new ArrayList<>();
         SqlSessionTemplate executor = getDefaultExecutor();
+
         for (Map<String, Object> param : selectParam) {
             List<Map<String, Object>> subResult = executor.selectList(sqlId, param);
             result.addAll(subResult);

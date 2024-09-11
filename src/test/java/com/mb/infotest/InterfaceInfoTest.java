@@ -17,7 +17,7 @@ public class InterfaceInfoTest {
 
         InterfaceInfo interfaceInfo = new InterfaceInfo();
         interfaceInfo.setInterfaceId("IF_SRC_TGT_001");
-        interfaceInfo.setQuerySequences(querySequenceStr);
+        interfaceInfo.setQuerySequence(querySequenceStr);
         interfaceInfo.setErrorQuerySequence(errorQuerySequenceStr);
         for (String query : interfaceInfo.getQuerySequence()) {
             log.info(query);

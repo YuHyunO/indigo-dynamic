@@ -30,7 +30,6 @@ public class FTPLogin extends AbstractFTPService {
         InterfaceInfo info = ctx.getInfo();
         String srcName = getFTPSourceName(info);
 
-
         FTPSession session = (FTPSession) ctx.getSession(srcName);
         if (session == null) {
             session = FTPSourceProvider.access().getNewSession(srcName);

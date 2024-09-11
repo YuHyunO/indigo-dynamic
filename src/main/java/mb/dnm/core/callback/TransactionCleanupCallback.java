@@ -26,8 +26,9 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
         Map<String, TransactionContext> txCtxMap = ctx.getTransactionContextMap();
 
         boolean errorExist = ctx.isErrorExist();
-        for (String executorName : txCtxMap.keySet()) {
-            TransactionContext txCtx = txCtxMap.get(executorName);
+        for (Map.Entry<String, TransactionContext> entry : txCtxMap.entrySet()) {
+            String executorName = entry.getKey();
+            TransactionContext txCtx = entry.getValue();
             TransactionStatus txStatus = txCtx.getTransactionStatus();
             log.info("TxStatus: {}, Executor: {}", txStatus, executorName); //Logging for test
             if (txStatus != null) {

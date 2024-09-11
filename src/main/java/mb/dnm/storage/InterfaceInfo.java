@@ -30,22 +30,8 @@ public class InterfaceInfo {
 
     //Properties for File interfaces
     protected Map<String, FileTemplate> fileTemplateMap;
-    /*protected Path sourceFileSendPath;
-    protected Path sourceFileErrorPath;
-    protected Path sourceFileTempPath;
 
-    protected Path targetFileReceivePath;
-    protected Path targetFileErrorPath;
-    protected Path targetFileTempPath;
-
-    protected String remoteSourceFileSendPath;
-    protected String remoteSourceFileErrorPath;
-    protected String remoteSourceFileTempPath;
-
-    protected String remoteTargetFileReceivePath;
-    protected String remoteTargetFileErrorPath;
-    protected String remoteTargetFileTempPath;*/
-
+    //Property for source alias
     protected Map<String, String> sourceAliasMap;
 
     //Property for mapping
@@ -160,6 +146,23 @@ public class InterfaceInfo {
             fileTemplateMap.put(templateName, fileTemplate);
         }
     }
+
+    public FileTemplate getFileTemplate(String templateName) {
+        try {
+            return fileTemplateMap.get(templateName);
+        } catch (NullPointerException ne) {
+            throw new NullPointerException("The file template map is not initialized.");
+        }
+    }
+
+    public String[] getQuerySequence() {
+        return querySequenceArr;
+    }
+
+    public String[] getErrorQuerySequence() {
+        return errorQuerySequenceArr;
+    }
+
 
 
 }

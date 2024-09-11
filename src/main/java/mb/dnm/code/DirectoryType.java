@@ -1,0 +1,16 @@
+package mb.dnm.code;
+
+public enum DirectoryType {
+    LOCAL_SEND,
+    LOCAL_RECEIVE,
+    LOCAL_TEMP,
+    LOCAL_SUCCESS,
+    LOCAL_ERROR,
+    LOCAL_BACKUP,
+    REMOTE_SEND,
+    REMOTE_RECEIVE,
+    REMOTE_TEMP,
+    REMOTE_SUCCESS,
+    REMOTE_ERROR,
+    REMOTE_BACKUP;
+}

@@ -34,14 +34,14 @@
             <property name="fileTemplates">
                 <list>
                     <bean class="mb.dnm.storage.FileTemplate">
-                        <property name="templateName"           value="SRC"/>
+                        <property name="templateName"           value="FTP1"/>
                         <property name="remoteSendDir"          value="/ftp/files/send/@{if_id}"/>
                         <property name="remoteErrorDir"         value="/ftp/files/send/@{if_id}/@{yyyyMMdd}"/>
                         <property name="type"                   value="FILE"/>
                         <property name="fileNamePattern"        value="*.xml"/>
                     </bean>
                     <bean class="mb.dnm.storage.FileTemplate">
-                        <property name="templateName"        value="TGT"/>
+                        <property name="templateName"        value="FTP2"/>
                         <property name="remoteReceiveDir"    value="/ftp/files/recv/@{if_id}"/>
                     </bean>
                 </list>

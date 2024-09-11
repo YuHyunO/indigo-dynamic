@@ -69,8 +69,9 @@ public class ServiceContext {
 
     public String getErrorTraceMessage() {
         StringBuilder sb = new StringBuilder();
-        for (Class service : errorTrace.keySet()) {
-            Throwable throwable = errorTrace.get(service);
+        for (Map.Entry<Class<? extends Service>, Throwable> entry : errorTrace.entrySet()) {
+            Class service = entry.getKey();
+            Throwable throwable = entry.getValue();
             sb.append("Error class: ");
             sb.append(service.getName());
             sb.append("\n");
@@ -198,5 +199,6 @@ public class ServiceContext {
         }
         return false;
     }
+
 
 }

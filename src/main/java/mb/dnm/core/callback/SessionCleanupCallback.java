@@ -22,8 +22,9 @@ public class SessionCleanupCallback implements AfterProcessCallback {
     public void afterProcess(ServiceContext ctx) {
         String txId = ctx.getTxId();
         Map<String, ClosableSession> sessionMap = ctx.getSessionMap();
-        for (String sessionId : sessionMap.keySet()) {
-            ClosableSession session = sessionMap.get(sessionId);
+        for (Map.Entry<String, ClosableSession> entry : sessionMap.entrySet()) {
+            String sessionId = entry.getKey();
+            ClosableSession session = entry.getValue();
             try {
                 log.info("[{}]Closing session ({}-{})", txId, session.getClass(), sessionId);
                 session.close();

@@ -1,5 +1,6 @@
 package mb.dnm.util;
 
+@Deprecated
 public class CastUtil {
 
     public static <T>T simpleTypeCast(Class type, Object value) {
