@@ -1,22 +1,14 @@
-package mb.dnm.mapper;
+package deprecated;
 
 import java.util.HashMap;
 
 @Deprecated
-public class ValueMapper extends Mapper {
+public class KeyMapper extends Mapper {
     private boolean createNullKey = true;
-    private boolean nullToEmptyString = false;
 
-    public ValueMapper() {
+
+    public KeyMapper() {
         map = new HashMap<>();
-    }
-
-    public void setCreateNullKey(boolean createNullKey) {
-        this.createNullKey = createNullKey;
-    }
-
-    public void setNullToEmptyString(boolean nullToEmptyString) {
-        this.nullToEmptyString = nullToEmptyString;
     }
 
     @Override
@@ -29,13 +21,15 @@ public class ValueMapper extends Mapper {
         return null;
     }
 
+    public void setCreateNullKey(boolean createNullKey) {
+        this.createNullKey = createNullKey;
+    }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("ValueMapper{");
+        final StringBuilder sb = new StringBuilder("KeyMapper{");
         sb.append("id='").append(id).append('\'');
         sb.append(", create_null_key=").append(createNullKey);
-        sb.append(", null_to_empty_string=").append(nullToEmptyString);
         sb.append(", map=").append(map);
         sb.append('}');
         return sb.toString();

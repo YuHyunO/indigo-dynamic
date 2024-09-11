@@ -9,11 +9,12 @@ public class FileNamePatternFilter {
 
 
     public FileNamePatternFilter(String fileNamePattern) {
-        this.fileNamePattern = fileNamePattern != null ? fileNamePattern : "*";
-        int wildcardIdx = fileNamePattern.indexOf('*');
+        this.fileNamePattern = (fileNamePattern == null || fileNamePattern.isEmpty()) ? "*" : fileNamePattern;
+
+        int wildcardIdx = this.fileNamePattern.indexOf('*');
         if (wildcardIdx != -1) {
-            startsWith = fileNamePattern.substring(0, wildcardIdx);
-            endsWith = fileNamePattern.substring(wildcardIdx + 1);
+            startsWith = this.fileNamePattern.substring(0, wildcardIdx);
+            endsWith = this.fileNamePattern.substring(wildcardIdx + 1);
         } else {
             requireCompleteMatch = true;
         }

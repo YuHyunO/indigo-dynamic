@@ -29,7 +29,8 @@ public abstract class ParameterAssignableService extends AbstractService {
     }
 
     protected void setOutputValue(ServiceContext ctx, Object outputValue) {
-        ctx.addContextParam(output, outputValue);
+        if (output != null)
+            ctx.addContextParam(output, outputValue);
     }
 
 }

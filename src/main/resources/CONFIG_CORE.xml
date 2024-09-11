@@ -14,13 +14,14 @@
     </bean>
 
     <!-- ¡ØDB Access Component -->
-    <!--<bean class="mb.dnm.access.db.DataSourceProvider">
+    <bean class="mb.dnm.access.db.DataSourceProvider">
         <property name="queryExecutors">
             <list>
                 <bean class="mb.dnm.access.db.ExecutorTemplate">
                     <property name="templateName"       value="DB1"/>
                     <property name="dataSource"         ref="DB1"/>
                     <property name="configLocation"     value="mybatis-confiuration.xml"/>
+
                     <property name="mapperLocations"    value="SQL_*.xml"/>
                 </bean>
                 <bean class="mb.dnm.access.db.ExecutorTemplate">
@@ -31,7 +32,7 @@
                 </bean>
             </list>
         </property>
-    </bean>-->
+    </bean>
 
     <!-- ¡ØFTP Access Component -->
     <bean class="mb.dnm.access.ftp.FTPSourceProvider">

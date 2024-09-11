@@ -35,10 +35,10 @@
                 <list>
                     <bean class="mb.dnm.storage.FileTemplate">
                         <property name="templateName"           value="FTP1"/>
-                        <property name="remoteSendDir"          value="/ftp/files/send/@{if_id}"/>
+                        <property name="remoteSendDir"          value=""/>
                         <property name="remoteErrorDir"         value="/ftp/files/send/@{if_id}/@{yyyyMMdd}"/>
                         <property name="type"                   value="FILE"/>
-                        <property name="fileNamePattern"        value="*.xml"/>
+<!--                        <property name="fileNamePattern"        value="*2차*"/>-->
                     </bean>
                     <bean class="mb.dnm.storage.FileTemplate">
                         <property name="templateName"        value="FTP2"/>

@@ -1,8 +1,8 @@
 package com.mb.mapper;
 
-import mb.dnm.mapper.KeyMapper;
-import mb.dnm.mapper.Mapper;
-import mb.dnm.mapper.StatementParser;
+import deprecated.KeyMapper;
+import deprecated.Mapper;
+import deprecated.StatementParser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;

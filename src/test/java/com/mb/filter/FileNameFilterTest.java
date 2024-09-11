@@ -29,4 +29,6 @@ public class FileNameFilterTest {
         log.info("{}", new FileNamePatternFilter("asdasd").accept("asdasd.txt"));
     }
 
+
+
 }

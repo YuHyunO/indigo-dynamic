@@ -1,6 +1,7 @@
 package mb.dnm.service.ftp;
 
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.access.file.FileInfo;
 import mb.dnm.access.file.FileNamePatternFilter;
 import mb.dnm.access.ftp.FTPSession;
 import mb.dnm.access.ftp.FTPSourceProvider;
@@ -8,6 +9,7 @@ import mb.dnm.code.DirectoryType;
 import mb.dnm.code.FileType;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
+import mb.dnm.mapper.MesimPlaceHolderParam;
 import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.FileTemplate;
@@ -15,7 +17,9 @@ import mb.dnm.storage.InterfaceInfo;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -85,13 +89,38 @@ public class GetFileList extends AbstractFTPService {
         if (session == null) {
             new FTPLogin().process(ctx);
         }
+        if (targetPath.contains("@{if_id}")) {
+            targetPath = targetPath.replace("@{if_id}", ctx.getInterfaceId());
+        }
         FileNamePatternFilter filter = new FileNamePatternFilter(tmpFileNamePattern);
         FTPClient ftp = session.getFTPClient();
+
+        List<FileInfo> fileInfoList = new ArrayList<>();
         FTPFile[] files = ftp.listFiles(targetPath);
         for (FTPFile file : files) {
-            System.out.println(file.getRawListing());
+            String fileName = file.getName();
+            if (filter.accept(fileName)) {
+                if (tmpType == FileType.ALL || tmpType == FileType.DIRECTORY) {
+                    if (!file.isDirectory())
+                        continue;
+                    fileInfoList.add(createFileInfo(file, targetPath));
+                }
+                if (tmpType == FileType.ALL || tmpType == FileType.FILE) {
+                    if (!file.isDirectory())
+                        continue;
+                    fileInfoList.add(createFileInfo(file, targetPath));
+                }
+            }
         }
+
+        setOutputValue(ctx, fileInfoList);
     }
 
+    private FileInfo createFileInfo(FTPFile ftpFile, String parentDir) {
+        FileInfo fileInfo = new FileInfo();
+        
+
+        return fileInfo;
+    }
 
 }

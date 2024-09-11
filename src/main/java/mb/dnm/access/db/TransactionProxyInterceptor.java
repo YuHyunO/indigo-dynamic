@@ -74,7 +74,7 @@ public class TransactionProxyInterceptor implements MethodInterceptor {
                 txStatus = txManager.getTransaction(txDef);
                 Object rtVal = methodProxy.invoke(target, args);
                 if (!txStatus.isCompleted()) {
-                txManager.commit(txStatus);
+                    txManager.commit(txStatus);
                 }
                 return rtVal;
             }

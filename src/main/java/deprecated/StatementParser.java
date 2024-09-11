@@ -1,4 +1,4 @@
-package mb.dnm.mapper;
+package deprecated;
 
 import mb.dnm.util.CastUtil;
 import lombok.extern.slf4j.Slf4j;

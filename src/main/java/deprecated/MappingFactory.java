@@ -1,4 +1,4 @@
-package mb.dnm.mapper;
+package deprecated;
 
 import java.io.IOException;
 import java.util.HashMap;

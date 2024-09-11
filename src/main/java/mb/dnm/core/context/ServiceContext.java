@@ -20,13 +20,12 @@ public class ServiceContext {
     private Date endTime;
     @Setter
     private boolean processOn = true;
-    @Setter
-    private ProcessCode processCode = ProcessCode.NOT_STARTED;
     private List<Class<? extends Service>> serviceTrace;
     private Map<Class<? extends Service>, Throwable> errorTrace;
     private Map<String, Object> contextParams;
     private Map<String, TransactionContext> txContextMap;
     private Map<String, ClosableSession> sessionMap;
+    private StringBuilder msg;
 
     private int currentQueryOrder = 0;
     private int currentMappingOrder = 0;
@@ -37,6 +36,7 @@ public class ServiceContext {
         if (info == null) {
             throw new IllegalArgumentException("InterfaceInfo is null");
         }
+
         this.info = info;
         startTime = new Date();
         txId = TxIdGenerator.generateTxId(info.getInterfaceId(), startTime);
@@ -68,6 +68,10 @@ public class ServiceContext {
     }
 
     public String getErrorTraceMessage() {
+        return getErrorTraceMessage(-1);
+    }
+
+    public String getErrorTraceMessage(int maxlength) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Class<? extends Service>, Throwable> entry : errorTrace.entrySet()) {
             Class service = entry.getKey();
@@ -81,7 +85,14 @@ public class ServiceContext {
         }
         if (sb.length() > 0) {
             sb.setLength(sb.length() - 1);
+            if (maxlength >= 0) {
+                int sblen = sb.length();
+                if (sblen > maxlength) {
+                    sb.setLength(maxlength);
+                }
+            }
         }
+
         return sb.toString();
     }
 
@@ -198,6 +209,14 @@ public class ServiceContext {
             return true;
         }
         return false;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = new StringBuilder(msg);
+    }
+
+    public String getMsg() {
+        return msg.toString();
     }
 
 

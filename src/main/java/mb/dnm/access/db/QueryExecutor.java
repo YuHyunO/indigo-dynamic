@@ -8,6 +8,7 @@ import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,7 +92,7 @@ public class QueryExecutor {
         return getDefaultExecutor().delete(sqlId, deleteParam);
     }
 
-    
+
     public int doBatchInsert(TransactionContext txCtx, String sqlId, List<Map<String, Object>> insertRows) {
         return doBatchInsert(txCtx, sqlId, insertRows, defaultPatchSize);
     }
@@ -132,7 +133,7 @@ public class QueryExecutor {
         return doBatchUpdate(txCtx, sqlId, updateParams, defaultPatchSize);
     }
 
-    
+
     public int doBatchUpdate(TransactionContext txCtx, String sqlId, List<Map<String, Object>> updateParams, int patchSize) {
         SqlSessionTemplate session = getBatchExecutor();
         int updateCount = 0;
