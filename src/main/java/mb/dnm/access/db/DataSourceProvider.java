@@ -36,15 +36,15 @@ public class DataSourceProvider {
     }
 
 
-    public void setQueryExecutors(List<ExecutorFactory> executors) throws Exception {
+    public void setQueryExecutors(List<ExecutorTemplate> executors) throws Exception {
         if (!initilized) {
-            for (ExecutorFactory executorFactory : executors) {
+            for (ExecutorTemplate executorFactory : executors) {
                 String name = executorFactory.getName();
                 if (name == null || name.isEmpty()) {
-                    throw new IllegalArgumentException("executorFactory name is null or empty");
+                    throw new IllegalArgumentException("The executor template name is null or empty");
                 }
                 if (executorMap.containsKey(name)) {
-                    throw new IllegalArgumentException("duplicate executorFactory name: " + name);
+                    throw new IllegalArgumentException("duplicate executor template name: " + name);
                 }
 
                 DataSource dataSource = executorFactory.getDataSource();

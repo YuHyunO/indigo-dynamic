@@ -17,14 +17,14 @@
     <!--<bean class="mb.dnm.access.db.DataSourceProvider">
         <property name="queryExecutors">
             <list>
-                <bean class="mb.dnm.access.db.ExecutorFactory">
-                    <property name="name"               value="DB1"/>
+                <bean class="mb.dnm.access.db.ExecutorTemplate">
+                    <property name="templateName"       value="DB1"/>
                     <property name="dataSource"         ref="DB1"/>
                     <property name="configLocation"     value="mybatis-confiuration.xml"/>
                     <property name="mapperLocations"    value="SQL_*.xml"/>
                 </bean>
-                <bean class="mb.dnm.access.db.ExecutorFactory">
-                    <property name="name"               value="DB2"/>
+                <bean class="mb.dnm.access.db.ExecutorTemplate">
+                    <property name="templateName"       value="DB2"/>
                     <property name="dataSource"         ref="DB2"/>
                     <property name="configLocation"     value="mybatis-confiuration.xml"/>
                     <property name="mapperLocations"    value="SQL_*.xml"/>
@@ -35,7 +35,7 @@
 
     <!-- ¡ØFTP Access Component -->
     <bean class="mb.dnm.access.ftp.FTPSourceProvider">
-        <property name="ftpClientTemplates">
+        <property name="ftpClients">
             <list>
                 <bean class="mb.dnm.access.ftp.FTPClientTemplate">
                     <property name="templateName"       value="FTP1"/>

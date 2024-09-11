@@ -8,10 +8,10 @@ import javax.sql.DataSource;
 
 @Setter
 @Getter
-public class ExecutorFactory {
-    public ExecutorFactory() {}
+public class ExecutorTemplate {
+    public ExecutorTemplate() {}
 
-    private String name;
+    private String templateName;
     private DataSource dataSource;
     private Resource configLocation;
     private Resource[] mapperLocations;

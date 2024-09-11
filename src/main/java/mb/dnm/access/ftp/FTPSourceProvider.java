@@ -33,7 +33,7 @@ public class FTPSourceProvider {
         return new FTPSession(template.login());
     }
 
-    public void setFtpClientTemplates(List<FTPClientTemplate> ftpClientTemplates) {
+    public void setFtpClients(List<FTPClientTemplate> ftpClientTemplates) {
         if (!initilized) {
             for (FTPClientTemplate template : ftpClientTemplates) {
                 String name = template.getTemplateName();

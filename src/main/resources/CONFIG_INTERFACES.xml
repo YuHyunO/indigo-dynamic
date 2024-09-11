@@ -22,7 +22,7 @@
         <bean class="mb.dnm.storage.InterfaceInfo">
             <property name="interfaceId"            value="DB_IF_TEST"/>
             <property name="description"            value="DB 인터페이스 테스트"/>
-            <property name="querySequence"          value="DB1$@{if_id}.SELECT, DB2$@{if_id}.INSERT, DB1$@{if_id}.UPDATE"/>
+            <property name="querySequence"         value="DB1$@{if_id}.SELECT, DB2$@{if_id}.INSERT, DB1$@{if_id}.UPDATE"/>
             <property name="serviceId"              value="DB_WORKING_IN_GROUP_TX"/>
         </bean>
 
@@ -31,6 +31,21 @@
             <property name="description"            value="FTP 인터페이스 테스트"/>
             <property name="serviceId"              value="FTP_WORKING"/>
             <property name="sourceAliases"          value="SRC:FTP1, TGT:FTP2"/>
+            <property name="fileTemplates">
+                <list>
+                    <bean class="mb.dnm.storage.FileTemplate">
+                        <property name="templateName"           value="SRC"/>
+                        <property name="remoteSendDir"          value="/ftp/files/send/@{if_id}"/>
+                        <property name="remoteErrorDir"         value="/ftp/files/send/@{if_id}/@{yyyyMMdd}"/>
+                        <property name="type"                   value="FILE"/>
+                        <property name="fileNamePattern"        value="*.xml"/>
+                    </bean>
+                    <bean class="mb.dnm.storage.FileTemplate">
+                        <property name="templateName"        value="TGT"/>
+                        <property name="remoteReceiveDir"    value="/ftp/files/recv/@{if_id}"/>
+                    </bean>
+                </list>
+            </property>
         </bean>
 
     </util:list>

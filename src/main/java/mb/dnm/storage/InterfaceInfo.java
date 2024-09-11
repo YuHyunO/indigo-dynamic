@@ -1,15 +1,9 @@
 package mb.dnm.storage;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import mb.dnm.access.file.FileInfo;
 
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Setter
 @Getter
@@ -29,8 +23,8 @@ public class InterfaceInfo {
     protected String frontHttpMethod = "GET";
 
     //Properties for DB interfaces
-    protected String[] querySequence;
-    protected String[] errorQuerySequence;
+    protected String[] querySequenceArr;
+    protected String[] errorQuerySequenceArr;
     protected Set<String> executorNames;
     protected int txTimeoutSecond = -1;
 
@@ -59,11 +53,11 @@ public class InterfaceInfo {
 
 
     public void setQuerySequence(String querySequence) {
-        this.querySequence = parseQuerySequence(querySequence);
+        this.querySequenceArr = parseQuerySequence(querySequence);
     }
 
     public void setErrorQuerySequence(String errorQuerySequence) {
-        this.errorQuerySequence = parseQuerySequence(errorQuerySequence);
+        this.errorQuerySequenceArr = parseQuerySequence(errorQuerySequence);
     }
 
     private String[] parseQuerySequence(String querySequence) {
@@ -152,6 +146,19 @@ public class InterfaceInfo {
             return null;
         }
         return sourceAliasMap.get(alias);
+    }
+
+    public void setFileTemplates(List<FileTemplate> fileTemplates) {
+        String templateName = null;
+        if (fileTemplateMap == null) {
+            fileTemplateMap = new HashMap<>();
+        }
+        for (FileTemplate fileTemplate : fileTemplates) {
+            templateName = fileTemplate.getTemplateName();
+            if (templateName == null || templateName.trim().isEmpty())
+                throw new IllegalArgumentException("The file template name is null");
+            fileTemplateMap.put(templateName, fileTemplate);
+        }
     }
 
 

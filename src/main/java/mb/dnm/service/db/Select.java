@@ -22,7 +22,7 @@ import java.util.Map;
  * <br>
  * Input 데이터가 Null 인 경우에도 query는 수행된다.
  *
- * @see mb.dnm.storage.InterfaceInfo#setQuerySequence(String)
+ * @see mb.dnm.storage.InterfaceInfo#setQuerySequences(String)
  * @see mb.dnm.storage.InterfaceInfo#getQuerySequence()
  *
  * @author Yuhyun O

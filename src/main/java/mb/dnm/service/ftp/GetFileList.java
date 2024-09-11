@@ -31,8 +31,8 @@ import java.util.Arrays;
 @Slf4j
 public class GetFileList extends AbstractFTPService {
     private String parentDirectory;
-    private String fileNamePattern;
-    private FileType fileType = FileType.ALL;
+    private String fileNamePattern; // FileTemplate#fileNamePattern
+    private FileType fileType = FileType.ALL; // FileTemplate#type
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
