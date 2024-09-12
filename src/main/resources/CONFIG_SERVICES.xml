@@ -68,6 +68,12 @@
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"          value="file_list"/>
                 </bean>
+                <bean class="mb.dnm.service.ftp.DownloadFiles">
+                    <property name="sourceAlias"        value="TGT"/>
+                    <property name="input"              value="file_list"/>
+                    <property name="downloadType"       value="FILE"/>
+                    <property name="directoryType"      value="LOCAL_RECEIVE"/>
+                </bean>
             </list>
         </entry>
 

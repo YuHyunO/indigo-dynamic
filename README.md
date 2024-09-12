@@ -26,6 +26,6 @@
     <div>◎ DB CRUD 시 Mybatis 로 전달되는 파라미터에 if_id, tx_id, 프로세스 코드 등이 기본으로 포함되도록 설정 ▶<i>[완료여부: X]</i></div>
     <div>◎ File 명 패턴 필터를 와일드 카드 여러개인 경우에도 적용되도록 기능 수정 ▶<i>[완료여부: X]</i></div>
     <div>◎ PlaceHolderMapper 기능 추가 ▶<i>[완료여부: X]</i></div>
-    
+    <div>◎ FTP 파일 다운로드 안되는 문제(550 Failed to open file.) 해결필요 ▶<i>[완료여부: X]</i></div>
   </p>
 </div>

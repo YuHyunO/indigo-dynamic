@@ -123,17 +123,19 @@ public class ListFiles extends AbstractFTPService {
             String fileName = file.getName();
 
             if (filter.accept(fileName)) {
-                if (tmpType == FileType.ALL || tmpType == FileType.DIRECTORY) {
+                if (tmpType == FileType.DIRECTORY) {
                     if (!file.isDirectory())
                         continue;
                     filePathList.add(tmpTargetPath + file.getName());
-                }
-                if (tmpType == FileType.ALL || tmpType == FileType.FILE) {
+                } else if (tmpType == FileType.FILE) {
                     if (file.isDirectory())
                         continue;
                     filePathList.add(tmpTargetPath + file.getName());
+                } else {
+                    filePathList.add(tmpTargetPath + file.getName());
                 }
             }
+
         }
 
         setOutputValue(ctx, filePathList);
