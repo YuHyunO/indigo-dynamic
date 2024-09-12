@@ -48,7 +48,7 @@
                 <bean class="mb.dnm.service.db.Update">
                     <property name="input" value="Data"/>
                 </bean>
-                <!--<bean class="mb.dnm.service.test.ThrowException"/>-->
+                <!--<bean class="mb.dnm.service.general.ThrowException"/>-->
                 <bean class="mb.dnm.service.db.EndTransaction"/>
             </list>
         </entry>
@@ -56,13 +56,17 @@
         <entry key="FTP_WORKING">
             <list>
                 <bean class="mb.dnm.service.ftp.FTPLogin">
-                    <property name="sourceAlias" value="SRC"/>
+                    <property name="sourceAlias"    value="SRC"/>
                 </bean>
                 <bean class="mb.dnm.service.ftp.FTPLogin">
-                    <property name="sourceAlias" value="TGT"/>
+                    <property name="sourceAlias"    value="TGT"/>
                 </bean>
-                <bean class="mb.dnm.service.ftp.GetFileList">
-                    <property name="sourceAlias" value="SRC"/>
+                <bean class="mb.dnm.service.ftp.ListFiles">
+                    <property name="sourceAlias"    value="SRC"/>
+                    <property name="output"         value="file_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"          value="file_list"/>
                 </bean>
             </list>
         </entry>

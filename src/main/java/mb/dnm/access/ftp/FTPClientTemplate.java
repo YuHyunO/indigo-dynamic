@@ -59,6 +59,7 @@ public class FTPClientTemplate {
                 } catch (IOException ioe) {
                 }
             }
+            throw t;
         }
 
         return ftp;

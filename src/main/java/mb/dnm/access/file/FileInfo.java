@@ -7,8 +7,10 @@ import org.apache.commons.net.ftp.FTPFile;
 
 import java.io.File;
 
+
 @Setter
 @Getter
+@Deprecated
 public class FileInfo {
     private String parentDir;
     private String filename;
