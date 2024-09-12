@@ -27,5 +27,6 @@
     <div>◎ File 명 패턴 필터를 와일드 카드 여러개인 경우에도 적용되도록 기능 수정 ▶<i>[완료여부: X]</i></div>
     <div>◎ PlaceHolderMapper 기능 추가 ▶<i>[완료여부: X]</i></div>
     <div>◎ FTP 파일 다운로드 안되는 문제(550 Failed to open file.) 해결필요 ▶<i>[완료여부: X]</i></div>
-  </p>
+    <div>◎ FTP 파일 다운로드 시 재귀적으로 다운로드 가능하도록 기능 수정 ▶<i>[완료여부: X]</i></div>
+   </p>
 </div>
