@@ -77,6 +77,26 @@
             </list>
         </entry>
 
+        <entry key="FTP_WORKING2">
+            <list>
+                <bean class="mb.dnm.service.ftp.FTPLogin">
+                    <property name="sourceAlias"    value="SRC"/>
+                </bean>
+                <bean class="mb.dnm.service.ftp.FTPLogin">
+                    <property name="sourceAlias"    value="TGT"/>
+                </bean>
+                <bean class="mb.dnm.service.general.OutputCustomData">
+                    <property name="output"     value="fileName"/>
+                    <property name="customData" value="/2025학년도 봄학기 입학 1차 대학원 신입생 모집요강_0708.pdf"/>
+                </bean>
+                <bean class="mb.dnm.service.ftp.DownloadFiles">
+                    <property name="sourceAlias"        value="TGT"/>
+                    <property name="input"              value="fileName"/>
+                    <property name="downloadType"       value="FILE"/>
+                    <property name="directoryType"      value="LOCAL_RECEIVE"/>
+                </bean>
+            </list>
+        </entry>
 
 
     </util:map>

@@ -184,7 +184,7 @@ public class DownloadFiles extends AbstractFTPService {
                         log.debug("[{}]FTP file is downloaded. The file '{}' saved as a locale file '{}'", txId, ftpPath, localPath);
                     } else {
                         Files.deleteIfExists(localPath);
-                        log.debug("[{}]FTP file is not downloaded. The file '{}' is not exist in the server or is a directory", txId, ftpPath);
+                        log.debug("[{}]FTP file is not downloaded. The file name is '{}'", txId, ftpPath);
                     }
                 } catch (Throwable t) {
                     if (getErrorOutput() != null && ignoreErrorFile) {
@@ -243,7 +243,7 @@ public class DownloadFiles extends AbstractFTPService {
                         ++success;
                         log.debug("[{}]FTP file is downloaded. The file '{}' saved as a byte array", txId, ftpPath);
                     } else {
-                        log.debug("[{}]FTP file is not downloaded. The file '{}' is not exist in the server or is a directory", txId, ftpPath);
+                        log.debug("[{}]FTP file is not downloaded. The file name is '{}'", txId, ftpPath);
                     }
                 } catch (Throwable t) {
                     // 파일 다운로드 중 에러 발생하는 경우 무시하여 진행하는 옵션
