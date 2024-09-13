@@ -13,7 +13,9 @@ import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.FileUtil;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.eclipse.jetty.util.IO;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +58,15 @@ public class ListFiles extends AbstractFTPService {
     private String listDirectory;
     private String fileNamePattern;
     private FileType type = FileType.ALL;
-    private char fileSeparator = '/';
+    private String pathSeparator;
+    /**
+     * 기본값: true<br>
+     * 파일 목록을 탐색할 경로가 디렉터리인 경우 그 디렉터리의 하부 파일들을 재귀적으로 탐색할 지에 대한 여부를 결정한다.
+     * <code>type</code> 속성이 ALL 또는 DIRECTORY 인 경우에만 유효하다.
+     * <code>type</code> 속성이 DIRECTORY 인 경우에 이 속성을 사용하면 파일목록을 가져올 경로로 지정한 최상위 경로에서는 디렉터리만 탐색을 하고,
+     * 다시 그 디렉터리의 하위를 탐색할 때는 파일과 디렉터리 구분에 대한 필터링이 적용되지 않는다.
+     * */
+    private boolean searchRecursively = true;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
@@ -108,31 +118,45 @@ public class ListFiles extends AbstractFTPService {
 
         FileNamePatternFilter filter = new FileNamePatternFilter(tmpFileNamePattern);
         FTPClient ftp = session.getFTPClient();
+        if (pathSeparator == null) {
+            ftp.changeWorkingDirectory("");
+            pathSeparator = ftp.printWorkingDirectory();
+        }
 
         List<String> filePathList = new ArrayList<>();
-        FTPFile[] files = ftp.listFiles(targetPath);
 
-        String fileSeparator = FileUtil.supposeFileSeparator(targetPath);
-        String tmpTargetPath = targetPath;
+        if (!ftp.changeWorkingDirectory(targetPath)) {
+            log.warn("[{}]Can not change directory to '{}'. No directory exists having that name or no permission.", ctx.getTxId(), targetPath);
+        }
 
-        if (targetPath.length() != 1) {
-            tmpTargetPath = targetPath + fileSeparator;
+        FTPFile[] files = ftp.listFiles();
+        String workingDir = ftp.printWorkingDirectory();
+        if (!workingDir.endsWith(pathSeparator)) {
+            workingDir += pathSeparator;
         }
 
         for (FTPFile file : files) {
             String fileName = file.getName();
 
             if (filter.accept(fileName)) {
+                String fullPath = workingDir + file.getName();
                 if (tmpType == FileType.DIRECTORY) {
                     if (!file.isDirectory())
                         continue;
-                    filePathList.add(tmpTargetPath + file.getName());
+                    filePathList.add(fullPath);
+                    if (searchRecursively) {
+                        filePathList.addAll(searchRecursively(ftp, fullPath));
+                    }
+
                 } else if (tmpType == FileType.FILE) {
                     if (file.isDirectory())
                         continue;
-                    filePathList.add(tmpTargetPath + file.getName());
+                    filePathList.add(fullPath);
                 } else {
-                    filePathList.add(tmpTargetPath + file.getName());
+                    filePathList.add(fullPath);
+                    if (file.isDirectory() && searchRecursively) {
+                        filePathList.addAll(searchRecursively(ftp, fullPath));
+                    }
                 }
             }
 
@@ -141,5 +165,24 @@ public class ListFiles extends AbstractFTPService {
         setOutputValue(ctx, filePathList);
     }
 
+    protected List<String> searchRecursively(FTPClient ftp, String dirName) throws IOException {
+        List<String> innerFiles = new ArrayList<>();
+        FTPFile[] files = {};
+        files = ftp.listFiles(dirName);
+        if (files.length > 0) {
+            for (FTPFile file : files) {
+                String pathName = dirName
+                        + (dirName.equals(pathSeparator) ? "" : pathSeparator)
+                        + file.getName();
+                if (file.isDirectory()) {
+                    innerFiles.addAll(searchRecursively(ftp, pathName));
+                } else {
+                    innerFiles.add(pathName);
+                }
+            }
+        }
+
+        return innerFiles;
+    }
 
 }

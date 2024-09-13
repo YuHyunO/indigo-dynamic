@@ -81,6 +81,7 @@ public class DownloadFiles extends AbstractFTPService {
     private boolean deleteDownloadedFileWhenError = true;
 
 
+
     /**
      * outPutDataType 속성이 DataType.FILE 인 경우에만 이 속성이 유효하다.<br>
      * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 가져올 경로로써 사용할 지 결정된다.<br>

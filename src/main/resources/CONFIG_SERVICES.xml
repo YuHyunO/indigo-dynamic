@@ -98,6 +98,20 @@
             </list>
         </entry>
 
+        <entry key="FTP_LIST">
+            <list>
+                <bean class="mb.dnm.service.ftp.FTPLogin">
+                    <property name="sourceAlias"    value="SRC"/>
+                </bean>
+                <bean class="mb.dnm.service.ftp.ListFiles">
+                    <property name="sourceAlias"    value="SRC"/>
+                    <property name="output"         value="file_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"          value="file_list"/>
+                </bean>
+            </list>
+        </entry>
 
     </util:map>
 

@@ -19,6 +19,7 @@ public class FTPClientTemplate {
     private String user;
     private String password;
     private String controlEncoding = "UTF-8";
+    private int fileType = FTPClient.BINARY_FILE_TYPE;
 
     public FTPClient login() throws IOException {
         FTPClient ftp = new FTPClient();
@@ -50,8 +51,10 @@ public class FTPClientTemplate {
                 throw new IOException("The username or password is incorrect.");
             }
 
-            ftp.setControlEncoding(controlEncoding);
             ftp.enterLocalPassiveMode();
+            ftp.setControlEncoding(controlEncoding);
+            ftp.setFileType(fileType);
+
         } catch (Throwable t) {
             if (ftp.isConnected()) {
                 try {
@@ -67,6 +70,14 @@ public class FTPClientTemplate {
 
     public FTPClient getConnection() throws IOException {
         return login();
+    }
+
+    public void setFileType(String fileType) {
+        switch (fileType.toUpperCase()) {
+            case "ASCII_FILE_TYPE": this.fileType = FTPClient.ASCII_FILE_TYPE; break;
+            case "BINARY_FILE_TYPE": this.fileType = FTPClient.BINARY_FILE_TYPE; break;
+            default: throw new IllegalArgumentException("Not supported file type: " + fileType);
+        }
     }
 
 }
