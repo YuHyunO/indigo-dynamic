@@ -12,6 +12,7 @@ import mb.dnm.storage.FileTemplate;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.FileUtil;
 import mb.dnm.util.MessageUtil;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.*;
@@ -122,6 +123,9 @@ public class DownloadFiles extends AbstractFTPService {
         }
 
         String baseDir = null;
+        /*파일을 다운로드 할 때 FTP 서버의 디렉터리 구조 그대로 다운로드할 지 판단하는 flag이다.
+        input 데이터 타입이 FileList인 경우에만 유효하다.
+        */
         boolean saveStructureAsIs = false;
         try {
             if (inputVal instanceof FileList) {
@@ -129,6 +133,7 @@ public class DownloadFiles extends AbstractFTPService {
                 baseDir = fileList.getBaseDirectory();
                 targetFileNames = fileList.getFileList();
                 saveStructureAsIs = true;
+
             } else if (inputVal instanceof String) {
                 targetFileNames.add((String) inputVal);
 
@@ -145,7 +150,6 @@ public class DownloadFiles extends AbstractFTPService {
         } catch (ClassCastException ce) {
             throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not String or List<String>. Inputted value's type: " + inputVal.getClass().getName());
         }
-
 
         FTPSession session = (FTPSession) ctx.getSession(srcName);
         if (session == null) {
@@ -179,7 +183,8 @@ public class DownloadFiles extends AbstractFTPService {
 
             for (String ftpPath : targetFileNames) {
                 Path localPath = null;
-
+                
+                //FTP 서버의 디렉터리 구조를 그대로 하여 파일을 다운로드 하기 위해 로컬에도 동일한 디렉터리 구조를 만드는 과정
                 if (saveStructureAsIs) {
                     StringBuffer dirToMadeBf = new StringBuffer();
                     dirToMadeBf.append(savePath)
@@ -198,14 +203,15 @@ public class DownloadFiles extends AbstractFTPService {
                     localPath = Paths.get(savePath, new File(ftpPath).getName());
                 }
 
-                BufferedOutputStream bos = null;
+                OutputStream os = null;
                 try {
                     if (!Files.exists(localPath)) {
                         Files.createFile(localPath);
                     }
 
-                    bos = new BufferedOutputStream(Files.newOutputStream(localPath));
-                    if (ftp.retrieveFile(ftpPath, bos)) {
+                    os = Files.newOutputStream(localPath);
+
+                    if (ftp.retrieveFile(ftpPath, os)) {
                         localSavedPaths.add(localPath.toString());
                         ++success;
                         log.debug("[{}]FTP download success. FTP file: \"{}\", Local file: \"{}\"", txId, ftpPath, localPath);
@@ -239,9 +245,9 @@ public class DownloadFiles extends AbstractFTPService {
                         throw t;
                     }
                 } finally {
-                    if (bos != null) {
+                    if (os != null) {
                         try {
-                            bos.close();
+                            os.close();
                         } catch (IOException ie) {}
                     }
                 }
@@ -261,11 +267,11 @@ public class DownloadFiles extends AbstractFTPService {
             List<Map<String, byte[]>> resultFileData = new ArrayList<>();
 
             for (String ftpPath : targetFileNames) {
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
                 try {
-                    if (ftp.retrieveFile(ftpPath, bos)) {
+                    if (ftp.retrieveFile(ftpPath, os)) {
                         Map<String, byte[]> data = new HashMap<>();
-                        data.put(new File(ftpPath).getName(), bos.toByteArray());
+                        data.put(new File(ftpPath).getName(), os.toByteArray());
                         resultFileData.add(data);
                         ++success;
                         log.debug("[{}]FTP download success. FTP file: \"{}\" saved as a byte array", txId, ftpPath);
@@ -282,7 +288,7 @@ public class DownloadFiles extends AbstractFTPService {
                         throw t;
                     }
                 } finally {
-                    bos.close();
+                    os.close();
                 }
             }
             if (getOutput() != null) {

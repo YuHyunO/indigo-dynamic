@@ -103,9 +103,10 @@
                 <bean class="mb.dnm.service.ftp.FTPLogin">
                     <property name="sourceAlias"    value="SRC"/>
                 </bean>
-                <bean class="mb.dnm.service.ftp.ListFiles_old">
+                <bean class="mb.dnm.service.ftp.ListFiles">
                     <property name="sourceAlias"    value="SRC"/>
                     <property name="output"         value="file_list"/>
+                    <property name="searchRecursively"  value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"          value="file_list"/>
@@ -133,8 +134,46 @@
                 <bean class="mb.dnm.service.ftp.DownloadFiles">
                     <property name="sourceAlias"        value="SRC"/>
                     <property name="input"              value="file_list"/>
+                    <property name="output"             value="local_file_list"/>
                     <property name="downloadType"       value="FILE"/>
                     <property name="directoryType"      value="LOCAL_RECEIVE"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                      value="local_file_list"/>
+                    <property name="printToXmlWhenCollection"   value="true"/>
+                    <property name="indented"                   value="true"/>
+                </bean>
+            </list>
+        </entry>
+
+        <entry key="FTP_DOWNLOAD_CUSTOM">
+            <list>
+                <bean class="mb.dnm.service.ftp.FTPLogin">
+                    <property name="sourceAlias"    value="SRC"/>
+                </bean>
+                <bean class="mb.dnm.service.general.OutputCustomData">
+                    <property name="output"             value="file_list"/>
+                    <property name="customData">
+                        <list>
+                            <value>/테스트.txt</value>
+                            <!--<value>/app.js</value>
+                            <value>/brochure_0_1684730334.pdf</value>
+                            <value>/DWLX_IF_1.AN1_인터페이스목록_V.1.0.xlsx</value>
+                            <value>/테스트.txt</value>-->
+                        </list>
+                    </property>
+                </bean>
+                <bean class="mb.dnm.service.ftp.DownloadFiles">
+                    <property name="sourceAlias"        value="SRC"/>
+                    <property name="input"              value="file_list"/>
+                    <property name="output"             value="local_file_list"/>
+                    <property name="downloadType"       value="FILE"/>
+                    <property name="directoryType"      value="LOCAL_RECEIVE"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                      value="local_file_list"/>
+                    <property name="printToXmlWhenCollection"   value="true"/>
+                    <property name="indented"                   value="true"/>
                 </bean>
             </list>
         </entry>

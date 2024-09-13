@@ -178,7 +178,7 @@ public class ListFiles extends AbstractFTPService {
             }
 
         }
-        log.info("[{}]Totally {} files found in the path \"{}\".", ctx.getTxId(), searchedFileList.size(), workingDir);
+        log.info("[{}]{} files found in the path \"{}\".", ctx.getTxId(), searchedFileList.size(), workingDir);
         fileList.setFileList(searchedFileList);
         setOutputValue(ctx, fileList);
     }
