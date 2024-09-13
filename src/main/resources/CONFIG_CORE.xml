@@ -45,6 +45,7 @@
                     <property name="user"                       value="oyh"/>
                     <property name="password"                   value="oyh123"/>
                     <property name="controlEncoding"            value="UTF-8"/>
+                    <property name="serverLanguageCode"         value="ko_KR"/>
                     <property name="debugCommandAndReply"       value="false"/>
                 </bean>
                 <bean class="mb.dnm.access.ftp.FTPClientTemplate">

@@ -104,12 +104,12 @@
                     <property name="sourceAlias"    value="SRC"/>
                 </bean>
                 <bean class="mb.dnm.service.ftp.ListFiles">
-                    <property name="sourceAlias"    value="SRC"/>
-                    <property name="output"         value="file_list"/>
+                    <property name="sourceAlias"        value="SRC"/>
+                    <property name="output"             value="file_list"/>
                     <property name="searchRecursively"  value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
-                    <property name="input"          value="file_list"/>
+                    <property name="input"                      value="file_list"/>
                     <property name="printToJsonWhenCollection"  value="true"/>
                     <property name="indented"                   value="true"/>
                 </bean>
@@ -155,7 +155,7 @@
                     <property name="output"             value="file_list"/>
                     <property name="customData">
                         <list>
-                            <value>/테스트.txt</value>
+                            <value>/test/inner/새 텍스트 문서.txt</value>
                             <!--<value>/app.js</value>
                             <value>/brochure_0_1684730334.pdf</value>
                             <value>/DWLX_IF_1.AN1_인터페이스목록_V.1.0.xlsx</value>

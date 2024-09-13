@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
@@ -19,11 +20,41 @@ public class FTPClientTemplate {
     private String user;
     private String password;
     private String controlEncoding = "UTF-8";
+    private String serverLanguageCode;
+    /**
+     *
+     * UNIX<br>
+     * UNIX_LTRIM<br>
+     * VMS<br>
+     * WINDOWS<br>
+     * OS/2<br>
+     * OS/400<br>
+     * AS/400<br>
+     * MVS<br>
+     * TYPE: L8<br>
+     * NETWARE<br>
+     * MACOS PETER<br>
+     * */
+    private String serverKey = FTPClientConfig.SYST_UNIX;
     private int fileType = FTPClient.BINARY_FILE_TYPE;
     private boolean debugCommandAndReply = false;
 
     public FTPClient login() throws IOException {
         FTPClient ftp = new FTPClient();
+        FTPClientConfig config = null;
+        if (serverKey != null) {
+            config = new FTPClientConfig(serverKey.trim());
+        } else {
+            config = new FTPClientConfig();
+        }
+
+        if (serverLanguageCode != null) {
+            config.setServerLanguageCode("ko_KR");
+        }
+
+
+        ftp.configure(config);
+
         if (debugCommandAndReply) {
             ftp.addProtocolCommandListener(new ProtocolCommandListener() {
                 @Override

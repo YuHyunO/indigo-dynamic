@@ -131,6 +131,7 @@ public class ListFiles extends AbstractFTPService {
 
         if (!ftp.changeWorkingDirectory(targetPath)) {
             log.warn("[{}]Can not change directory to '{}'. No directory exists having that name or no permission.", ctx.getTxId(), targetPath);
+            throw new InvalidServiceConfigurationException(this.getClass(), "There is no directory with name '" + targetPath + "' or permission denied.");
         }
 
         FTPFile[] files = ftp.listFiles();
@@ -204,7 +205,6 @@ public class ListFiles extends AbstractFTPService {
                     fileName = fileName.substring(pathSeparator.length());
 
                 String pathAfterWorkingDir = dirName + fileName;
-
                 if (file.isDirectory()) {
                     if (!pathAfterWorkingDir.endsWith(pathSeparator))
                         pathAfterWorkingDir += pathSeparator;

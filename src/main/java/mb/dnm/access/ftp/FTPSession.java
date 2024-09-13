@@ -1,11 +1,11 @@
 package mb.dnm.access.ftp;
 
-import mb.dnm.access.ClosableSession;
+import mb.dnm.access.ClosableStreamWrapper;
 import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.IOException;
 
-public class FTPSession implements ClosableSession {
+public class FTPSession implements ClosableStreamWrapper {
     private FTPClient ftp;
 
     public FTPSession(FTPClient ftp) {

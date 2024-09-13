@@ -1,7 +1,7 @@
 package mb.dnm.core.callback;
 
 import lombok.extern.slf4j.Slf4j;
-import mb.dnm.access.ClosableSession;
+import mb.dnm.access.ClosableStreamWrapper;
 import mb.dnm.core.context.ServiceContext;
 
 import java.util.Map;
@@ -21,10 +21,10 @@ public class SessionCleanupCallback implements AfterProcessCallback {
     @Override
     public void afterProcess(ServiceContext ctx) {
         String txId = ctx.getTxId();
-        Map<String, ClosableSession> sessionMap = ctx.getSessionMap();
-        for (Map.Entry<String, ClosableSession> entry : sessionMap.entrySet()) {
+        Map<String, ClosableStreamWrapper> sessionMap = ctx.getSessionMap();
+        for (Map.Entry<String, ClosableStreamWrapper> entry : sessionMap.entrySet()) {
             String sessionId = entry.getKey();
-            ClosableSession session = entry.getValue();
+            ClosableStreamWrapper session = entry.getValue();
             try {
                 log.info("[{}]Closing session ({}-{})", txId, session.getClass(), sessionId);
                 session.close();

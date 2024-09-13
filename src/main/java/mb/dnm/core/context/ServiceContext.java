@@ -1,6 +1,6 @@
 package mb.dnm.core.context;
 
-import mb.dnm.access.ClosableSession;
+import mb.dnm.access.ClosableStreamWrapper;
 import mb.dnm.access.db.QueryMap;
 import mb.dnm.code.ProcessCode;
 import mb.dnm.core.Service;
@@ -24,7 +24,7 @@ public class ServiceContext {
     private Map<Class<? extends Service>, Throwable> errorTrace;
     private Map<String, Object> contextParams;
     private Map<String, TransactionContext> txContextMap;
-    private Map<String, ClosableSession> sessionMap;
+    private Map<String, ClosableStreamWrapper> sessionMap;
     private StringBuilder msg;
 
     private int currentQueryOrder = 0;
@@ -188,11 +188,11 @@ public class ServiceContext {
         return txContextMap;
     }
 
-    public void addSession(String sourceName, ClosableSession session) {
+    public void addSession(String sourceName, ClosableStreamWrapper session) {
         sessionMap.put(sourceName, session);
     }
 
-    public ClosableSession getSession(String sourceName) {
+    public ClosableStreamWrapper getSession(String sourceName) {
         return sessionMap.get(sourceName);
     }
 
@@ -200,7 +200,7 @@ public class ServiceContext {
         return sessionMap.containsKey(sourceName);
     }
 
-    public Map<String, ClosableSession> getSessionMap() {
+    public Map<String, ClosableStreamWrapper> getSessionMap() {
         return sessionMap;
     }
 
