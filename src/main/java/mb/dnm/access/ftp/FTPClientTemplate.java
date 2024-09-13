@@ -35,7 +35,7 @@ public class FTPClientTemplate {
      * NETWARE<br>
      * MACOS PETER<br>
      * */
-    private String serverKey = FTPClientConfig.SYST_UNIX;
+    private String serverKey;
     private int fileType = FTPClient.BINARY_FILE_TYPE;
     private boolean debugCommandAndReply = false;
 
