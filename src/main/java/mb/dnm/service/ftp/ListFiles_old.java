@@ -2,7 +2,6 @@ package mb.dnm.service.ftp;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import mb.dnm.access.file.FileList;
 import mb.dnm.access.file.FileNamePatternFilter;
 import mb.dnm.access.ftp.FTPSession;
 import mb.dnm.code.DirectoryType;
@@ -24,8 +23,7 @@ import java.util.List;
  * FTP 서버의 파일 또는 디렉터리 목록을 가져온다.
  * 어느 경로의 어떤 파일 목록을 가져올 지에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.
  *
- * @see FTPLogin
- * @see mb.dnm.access.file.FileList
+ * @see mb.dnm.service.ftp.FTPLogin
  *
  * @author Yuhyun O
  * @version 2024.09.10
@@ -33,12 +31,12 @@ import java.util.List;
  * @Input List를 가져올 Directory의 경로
  * @InputType <code>String</code>
  * @Output File 또는 Directory 경로
- * @OutputType <code>FileList</code>
+ * @OutputType <code>List&lt;String&gt;</code>
  * */
 
 @Slf4j
 @Setter
-public class ListFiles extends AbstractFTPService {
+public class ListFiles_old extends AbstractFTPService {
     /**
      * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 가져올 경로로써 사용할 지 결정된다.<br><br>
      * -기본값: <code>REMOTE_SEND</code><br>
@@ -120,14 +118,11 @@ public class ListFiles extends AbstractFTPService {
         FileNamePatternFilter filter = new FileNamePatternFilter(tmpFileNamePattern);
         FTPClient ftp = session.getFTPClient();
         if (pathSeparator == null) {
-            pathSeparator = String.valueOf(ftp.printWorkingDirectory().charAt(0));
-            if (pathSeparator == "null") {
-                pathSeparator = "/";
-            }
+            ftp.changeWorkingDirectory("");
+            pathSeparator = ftp.printWorkingDirectory();
         }
 
-        FileList fileList = new FileList();
-        List<String> searchedFileList = new ArrayList<>();
+        List<String> filePathList = new ArrayList<>();
 
         if (!ftp.changeWorkingDirectory(targetPath)) {
             log.warn("[{}]Can not change directory to '{}'. No directory exists having that name or no permission.", ctx.getTxId(), targetPath);
@@ -135,82 +130,61 @@ public class ListFiles extends AbstractFTPService {
 
         FTPFile[] files = ftp.listFiles();
         String workingDir = ftp.printWorkingDirectory();
-
         if (!workingDir.endsWith(pathSeparator)) {
             workingDir += pathSeparator;
         }
-        fileList.setBaseDirectory(workingDir);
 
         for (FTPFile file : files) {
             String fileName = file.getName();
-            if (fileName.startsWith(pathSeparator))
-                fileName = fileName.substring(pathSeparator.length());
 
             if (filter.accept(fileName)) {
-
+                String fullPath = workingDir + file.getName();
                 if (tmpType == FileType.DIRECTORY) {
                     if (!file.isDirectory())
                         continue;
-                    if (!fileName.endsWith(pathSeparator))
-                        fileName += pathSeparator;
-                    searchedFileList.add(fileName);
+                    if (!fullPath.endsWith(pathSeparator))
+                        fullPath += pathSeparator;
+                    filePathList.add(fullPath);
                     if (searchRecursively) {
-                        searchedFileList.addAll(searchRecursively(ftp, workingDir, fileName));
+                        filePathList.addAll(searchRecursively(ftp, fullPath));
                     }
 
                 } else if (tmpType == FileType.FILE) {
                     if (file.isDirectory())
                         continue;
-                    searchedFileList.add(fileName);
-
+                    filePathList.add(fullPath);
                 } else {
                     if (file.isDirectory()) {
-                        if (!fileName.endsWith(pathSeparator))
-                            fileName += pathSeparator;
-                        searchedFileList.add(fileName);
+                        if (!fullPath.endsWith(pathSeparator))
+                            fullPath += pathSeparator;
+                        filePathList.add(fullPath);
                         if (searchRecursively) {
-                            searchedFileList.addAll(searchRecursively(ftp, workingDir, fileName));
+                            filePathList.addAll(searchRecursively(ftp, fullPath));
                         }
-                    } else {
-                        searchedFileList.add(fileName);
                     }
                 }
             }
 
         }
-        log.info("[{}]Totally {} files found in the path \"{}\".", ctx.getTxId(), searchedFileList.size(), workingDir);
-        fileList.setFileList(searchedFileList);
-        setOutputValue(ctx, fileList);
+
+        setOutputValue(ctx, filePathList);
     }
 
-    private List<String> searchRecursively(FTPClient ftp, String workingDir, String dirName) throws IOException {
+    protected List<String> searchRecursively(FTPClient ftp, String dirName) throws IOException {
         List<String> innerFiles = new ArrayList<>();
         FTPFile[] files = {};
-
-        if (dirName.equals(pathSeparator)) {
-            dirName = "";
-        }
-        if (dirName.startsWith(pathSeparator)) {
-            dirName = dirName.substring(pathSeparator.length());
-        }
-
-        String searchPath = workingDir + dirName;
-
-        files = ftp.listFiles(searchPath);
+        files = ftp.listFiles(dirName);
         if (files.length > 0) {
             for (FTPFile file : files) {
-                String fileName = file.getName();
-                if (fileName.startsWith(pathSeparator))
-                    fileName = fileName.substring(pathSeparator.length());
-
-                String pathAfterWorkingDir = dirName + fileName;
-
+                String fullPath = dirName
+                        + (dirName.equals(pathSeparator) ? "" : pathSeparator)
+                        + file.getName();
                 if (file.isDirectory()) {
-                    if (!pathAfterWorkingDir.endsWith(pathSeparator))
-                        pathAfterWorkingDir += pathSeparator;
-                    innerFiles.addAll(searchRecursively(ftp, workingDir, pathAfterWorkingDir));
+                    if (!fullPath.endsWith(pathSeparator))
+                        fullPath += pathSeparator;
+                    innerFiles.addAll(searchRecursively(ftp, fullPath));
                 } else {
-                    innerFiles.add(pathAfterWorkingDir);
+                    innerFiles.add(fullPath);
                 }
             }
         }

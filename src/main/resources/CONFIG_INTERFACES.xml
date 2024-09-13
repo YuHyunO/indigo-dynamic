@@ -29,13 +29,13 @@
         <bean class="mb.dnm.storage.InterfaceInfo">
             <property name="interfaceId"            value="FTP_IF_TEST"/>
             <property name="description"            value="FTP 인터페이스 테스트"/>
-            <property name="serviceId"              value="FTP_LIST"/>
+            <property name="serviceId"              value="FTP_DOWNLOAD"/>
             <property name="sourceAliases"          value="SRC:FTP1, TGT:FTP2"/>
             <property name="fileTemplates">
                 <list>
                     <bean class="mb.dnm.storage.FileTemplate">
                         <property name="templateName"           value="FTP1"/>
-                        <property name="remoteSendDir"          value=""/>
+                        <property name="remoteSendDir"          value="/"/>
                         <property name="remoteErrorDir"         value="/ftp/files/send/@{if_id}/@{yyyyMMdd}"/>
                         <property name="localReceiveDir"        value="C:\FTPdownload\@{if_id}"/>
                         <property name="type"                   value="ALL"/>

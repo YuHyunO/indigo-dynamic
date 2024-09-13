@@ -2,7 +2,6 @@ package mb.dnm.service.ftp;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import mb.dnm.access.file.FileList;
 import mb.dnm.access.ftp.FTPSession;
 import mb.dnm.code.DataType;
 import mb.dnm.code.DirectoryType;
@@ -10,11 +9,13 @@ import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.storage.FileTemplate;
 import mb.dnm.storage.InterfaceInfo;
-import mb.dnm.util.FileUtil;
 import mb.dnm.util.MessageUtil;
 import org.apache.commons.net.ftp.FTPClient;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,14 +47,13 @@ import java.util.Map;
  *
  * 보통 <code>mb.dnm.service.ftp.ListFiles</code> 서비스와 연계해서 사용한다.
  *
- * @see ListFiles
- * @see mb.dnm.access.file.FileList
+ * @see ListFiles_old
  *
  * @author Yuhyun O
  * @version 2024.09.12
  *
  * @Input 다운로드 받을 파일의 FTP서버 경로
- * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code>(여러건) 또는 <code>FileList</code>
+ * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code>(여러건)
  * @Output downloadType 속성이 FILE인 경우, 지정된 경로로 파일이 저장되며 다운로드 받은 File이 저장된 경로가 리스트로 output 된다.<br> outPutDataType 속성이 BYTE_ARRAY 인 경우,
  * 파일명과 파일의 데이터가 <code>Map&lt;String, byte[]&gt;</code> 형태로 담긴 리스트가 output 된다.
  * @OutputType dataType(FILE): <code>List&lt;String&gt;</code>, dataType(BYTE_ARRAY): <code>List&lt;Map&lt;String, byte[]&gt;&gt;</code>
@@ -62,7 +62,7 @@ import java.util.Map;
  * */
 @Slf4j
 @Setter
-public class DownloadFiles extends AbstractFTPService {
+public class DownloadFiles_old extends AbstractFTPService {
 
     /**
      * outPutDataType 속성에 따라 파일의 데이터가 어떤 식으로 저장될 지 결정된다.<br>
@@ -121,17 +121,9 @@ public class DownloadFiles extends AbstractFTPService {
             return;
         }
 
-        String baseDir = null;
-        boolean saveStructureAsIs = false;
         try {
-            if (inputVal instanceof FileList) {
-                FileList fileList = (FileList) inputVal;
-                baseDir = fileList.getBaseDirectory();
-                targetFileNames = fileList.getFileList();
-                saveStructureAsIs = true;
-            } else if (inputVal instanceof String) {
+            if (inputVal instanceof String) {
                 targetFileNames.add((String) inputVal);
-
             } else if (inputVal instanceof List) {
                 List<String> tmpList = (List<String>) inputVal;
                 if (tmpList.isEmpty()) {
@@ -178,26 +170,7 @@ public class DownloadFiles extends AbstractFTPService {
             List<String> localSavedPaths = new ArrayList<>();
 
             for (String ftpPath : targetFileNames) {
-                Path localPath = null;
-
-                if (saveStructureAsIs) {
-                    StringBuffer dirToMadeBf = new StringBuffer();
-                    dirToMadeBf.append(savePath)
-                            .append(savePath.endsWith(File.separator) ? "" : File.separator);
-                    dirToMadeBf.append(FileUtil.replaceToOSFileSeparator(ftpPath));
-
-                    Path dirToMade = Paths.get(dirToMadeBf.toString());
-                    if (dirToMadeBf.charAt(dirToMadeBf.length() - 1) != File.separatorChar) {
-                        dirToMade = dirToMade.getParent();
-                    }
-                    if (!Files.exists(dirToMade)) {
-                        Files.createDirectories(dirToMade);
-                    }
-                    localPath = dirToMade.resolve(new File(ftpPath).getName());
-                } else {
-                    localPath = Paths.get(savePath, new File(ftpPath).getName());
-                }
-
+                Path localPath = Paths.get(savePath, new File(ftpPath).getName());
                 BufferedOutputStream bos = null;
                 try {
                     if (!Files.exists(localPath)) {

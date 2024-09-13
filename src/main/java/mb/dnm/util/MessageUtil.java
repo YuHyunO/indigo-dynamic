@@ -9,6 +9,9 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class MessageUtil {
@@ -48,12 +51,30 @@ public class MessageUtil {
     }
 
     public static String mapToXml (Map map, boolean prettyFormat) throws JsonProcessingException {
+        return mapToXml(map, null, prettyFormat);
+    }
+
+    public static String mapToXml (Map map, String rootName, boolean prettyFormat) throws JsonProcessingException {
         XmlMapper xmlMapper = XmlMapper.builder().build();
+        xmlMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         if (prettyFormat) {
             xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
         }
-        //modifying to not set class name for root node name
-        String xmlString = xmlMapper.writeValueAsString(map);
-        return xmlString;
+
+        if (rootName == null || rootName.isEmpty()) {
+            List<Object> keyList = new ArrayList<>(map.keySet());
+            String root = "data";
+            if (keyList.size() == 1) {
+                Object key = keyList.get(0);
+                Object value = map.get(key);
+                if (key instanceof String) {
+                    root = String.valueOf(key);
+                }
+                return xmlMapper.writer().withRootName(root).writeValueAsString(value);
+            }
+            return xmlMapper.writer().withRootName(root).writeValueAsString(map);
+        } else {
+            return xmlMapper.writer().withRootName(rootName).writeValueAsString(map);
+        }
     }
 }

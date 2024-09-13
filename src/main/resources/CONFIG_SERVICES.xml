@@ -61,7 +61,7 @@
                 <bean class="mb.dnm.service.ftp.FTPLogin">
                     <property name="sourceAlias"    value="TGT"/>
                 </bean>
-                <bean class="mb.dnm.service.ftp.ListFiles">
+                <bean class="mb.dnm.service.ftp.ListFiles_old">
                     <property name="sourceAlias"    value="SRC"/>
                     <property name="output"         value="file_list"/>
                 </bean>
@@ -103,12 +103,38 @@
                 <bean class="mb.dnm.service.ftp.FTPLogin">
                     <property name="sourceAlias"    value="SRC"/>
                 </bean>
-                <bean class="mb.dnm.service.ftp.ListFiles">
+                <bean class="mb.dnm.service.ftp.ListFiles_old">
                     <property name="sourceAlias"    value="SRC"/>
                     <property name="output"         value="file_list"/>
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"          value="file_list"/>
+                    <property name="printToJsonWhenCollection"  value="true"/>
+                    <property name="indented"                   value="true"/>
+                </bean>
+            </list>
+        </entry>
+
+        <entry key="FTP_DOWNLOAD">
+            <list>
+                <bean class="mb.dnm.service.ftp.FTPLogin">
+                    <property name="sourceAlias"    value="SRC"/>
+                </bean>
+                <bean class="mb.dnm.service.ftp.ListFiles">
+                    <property name="sourceAlias"        value="SRC"/>
+                    <property name="output"             value="file_list"/>
+                    <property name="searchRecursively"  value="true"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                      value="file_list"/>
+                    <property name="printToXmlWhenCollection"   value="true"/>
+                    <property name="indented"                   value="true"/>
+                </bean>
+                <bean class="mb.dnm.service.ftp.DownloadFiles">
+                    <property name="sourceAlias"        value="SRC"/>
+                    <property name="input"              value="file_list"/>
+                    <property name="downloadType"       value="FILE"/>
+                    <property name="directoryType"      value="LOCAL_RECEIVE"/>
                 </bean>
             </list>
         </entry>

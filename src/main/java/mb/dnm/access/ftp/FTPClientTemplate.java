@@ -20,22 +20,25 @@ public class FTPClientTemplate {
     private String password;
     private String controlEncoding = "UTF-8";
     private int fileType = FTPClient.BINARY_FILE_TYPE;
+    private boolean debugCommandAndReply = false;
 
     public FTPClient login() throws IOException {
         FTPClient ftp = new FTPClient();
-        ftp.addProtocolCommandListener(new ProtocolCommandListener() {
-            @Override
-            public void protocolCommandSent(ProtocolCommandEvent protocolCommandEvent) {
-                log.debug("[FTP Command Log]host(port): {}({}), Command sent: [{}]-{}"
-                        , host, port, protocolCommandEvent.getCommand(), protocolCommandEvent.getMessage().replace("\n", ""));
-            }
+        if (debugCommandAndReply) {
+            ftp.addProtocolCommandListener(new ProtocolCommandListener() {
+                @Override
+                public void protocolCommandSent(ProtocolCommandEvent protocolCommandEvent) {
+                    log.debug("[FTP Command Log]host(port): {}({}), Command sent: [{}]-{}"
+                            , host, port, protocolCommandEvent.getCommand(), protocolCommandEvent.getMessage().trim());
+                }
 
-            @Override
-            public void protocolReplyReceived(ProtocolCommandEvent protocolCommandEvent) {
-                log.debug("[FTP Command Log]host(port): {}({}), Reply received: {}"
-                        , host, port, protocolCommandEvent.getMessage().replace("\n", ""));
-            }
-        });
+                @Override
+                public void protocolReplyReceived(ProtocolCommandEvent protocolCommandEvent) {
+                    log.debug("[FTP Command Log]host(port): {}({}), Reply received: {}"
+                            , host, port, protocolCommandEvent.getMessage().trim());
+                }
+            });
+        }
 
         try {
             ftp.connect(host, port);

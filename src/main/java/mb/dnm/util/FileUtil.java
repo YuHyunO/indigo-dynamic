@@ -1,5 +1,7 @@
 package mb.dnm.util;
 
+import java.io.File;
+
 public class FileUtil {
 
     public static String removeLastPathSeparator(String path) {
@@ -32,5 +34,15 @@ public class FileUtil {
         }else {
             return "\\";
         }
+    }
+
+    public static String replaceToOSFileSeparator(String path) {
+        char sep = File.separatorChar;
+        if (sep == '\\') {
+            path = path.replace('/', sep);
+        } else {
+            path = path.replace('\\', sep);
+        }
+        return path;
     }
 }

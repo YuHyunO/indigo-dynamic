@@ -34,6 +34,7 @@ public class FTPLogin extends AbstractFTPService {
         if (session == null) {
             session = FTPSourceProvider.access().getNewSession(srcName);
             ctx.addSession(srcName, session);
+            log.info("[{}]Login success. The FTPSession for '{}' is gained.", ctx.getTxId(), srcName);
         } else {
             log.info("[{}]The FTPSession for '{}' is already exist.", ctx.getTxId(), srcName);
         }

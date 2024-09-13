@@ -90,6 +90,7 @@ public class ServiceProcessor {
 
             //Processing service chaining
             ctx.setProcessStatus(ProcessCode.IN_PROCESS);
+            log.info("[{}]Unfold the service strategy '{}'", txId, serviceId);
             for (Service service : services) {
                 Class serviceClass = service.getClass();
                 ctx.addServiceTrace(serviceClass);
