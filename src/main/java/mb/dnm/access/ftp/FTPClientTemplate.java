@@ -49,7 +49,7 @@ public class FTPClientTemplate {
         }
 
         if (serverLanguageCode != null) {
-            config.setServerLanguageCode("ko_KR");
+            config.setServerLanguageCode(serverLanguageCode);
         }
 
 
@@ -72,6 +72,7 @@ public class FTPClientTemplate {
         }
 
         try {
+            ftp.setControlEncoding(controlEncoding); //This has to be set before the connection is established.
             ftp.connect(host, port);
 
             int reply = ftp.getReplyCode();
@@ -86,7 +87,6 @@ public class FTPClientTemplate {
             }
 
             ftp.enterLocalPassiveMode();
-            ftp.setControlEncoding(controlEncoding);
             ftp.setFileType(fileType);
 
         } catch (Throwable t) {

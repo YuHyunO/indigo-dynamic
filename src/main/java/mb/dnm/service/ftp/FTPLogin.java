@@ -25,6 +25,12 @@ import org.apache.commons.net.ftp.FTPClient;
 @Slf4j
 public class FTPLogin extends AbstractFTPService {
 
+    public FTPLogin(){}
+
+    public FTPLogin(String sourceAlias) {
+        this.sourceAlias = sourceAlias;
+    }
+
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         InterfaceInfo info = ctx.getInfo();

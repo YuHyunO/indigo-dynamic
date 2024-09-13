@@ -61,7 +61,7 @@
                 <bean class="mb.dnm.service.ftp.FTPLogin">
                     <property name="sourceAlias"    value="TGT"/>
                 </bean>
-                <bean class="mb.dnm.service.ftp.ListFiles_old">
+                <bean class="mb.dnm.service.ftp.ListFiles">
                     <property name="sourceAlias"    value="SRC"/>
                     <property name="output"         value="file_list"/>
                 </bean>
@@ -118,9 +118,9 @@
 
         <entry key="FTP_DOWNLOAD">
             <list>
-                <bean class="mb.dnm.service.ftp.FTPLogin">
+                <!--<bean class="mb.dnm.service.ftp.FTPLogin">
                     <property name="sourceAlias"    value="SRC"/>
-                </bean>
+                </bean>-->
                 <bean class="mb.dnm.service.ftp.ListFiles">
                     <property name="sourceAlias"        value="SRC"/>
                     <property name="output"             value="file_list"/>
@@ -135,12 +135,12 @@
                     <property name="sourceAlias"        value="SRC"/>
                     <property name="input"              value="file_list"/>
                     <property name="output"             value="local_file_list"/>
-                    <property name="downloadType"       value="FILE"/>
+                    <property name="downloadType"       value="BYTE_ARRAY"/>
                     <property name="directoryType"      value="LOCAL_RECEIVE"/>
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                      value="local_file_list"/>
-                    <property name="printToXmlWhenCollection"   value="true"/>
+                    <property name="printToXmlWhenCollection"   value="false"/>
                     <property name="indented"                   value="true"/>
                 </bean>
             </list>

@@ -26,7 +26,7 @@ public class EndTransaction extends ParameterAssignableService {
 
         Map<String, TransactionContext> txContextMap = ctx.getTxContextMap();
 
-        boolean errorOccurred = false;
+        boolean errorOccurred = ctx.isErrorExist();
         Throwable error = null;
         for (String executorName : executorNames) {
             TransactionContext txContext = txContextMap.get(executorName);

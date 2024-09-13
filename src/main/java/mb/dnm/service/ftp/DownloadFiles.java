@@ -151,15 +151,15 @@ public class DownloadFiles extends AbstractFTPService {
             throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not String or List<String>. Inputted value's type: " + inputVal.getClass().getName());
         }
 
-        FTPSession session = (FTPSession) ctx.getSession(srcName);
-        if (session == null) {
-            new FTPLogin().process(ctx);
-        }
+        FTPSession session = getFTPSession(ctx, srcName);
         FTPClient ftp = session.getFTPClient();
 
         // 파일 다운로드 중 에러가 나는 경우 그 파일의 FTP 경로를 저장할 리스트를 생성
         List<String> errorFilePaths = new ArrayList<>();
-        int success = 0;
+        int inputListSize = targetFileNames.size();
+        int dirCount = 0;
+        int successCount = 0;
+
 
         if (downloadType == DataType.FILE) {
             // outPutDataType 이 dataTypeDataType.FILE 인 경우 InterfaceInfo에서 FileTemplate을 가져와 directoryType 과 일치하는 경로에 파일을 저장함
@@ -184,7 +184,7 @@ public class DownloadFiles extends AbstractFTPService {
             for (String ftpPath : targetFileNames) {
                 Path localPath = null;
                 
-                //FTP 서버의 디렉터리 구조를 그대로 하여 파일을 다운로드 하기 위해 로컬에도 동일한 디렉터리 구조를 만드는 과정
+                //FTP 서버의 디렉터리 구조를 그대로 하여 파일을 다운로드 하기 위해 로컬에도 동일한 디렉터리 구조를 만드는 과정이다.
                 if (saveStructureAsIs) {
                     StringBuffer dirToMadeBf = new StringBuffer();
                     dirToMadeBf.append(savePath)
@@ -205,20 +205,27 @@ public class DownloadFiles extends AbstractFTPService {
 
                 OutputStream os = null;
                 try {
+                    //위에서 saveStructureAsIs 가 true 인 경우 필요한 디렉터리들을 만들었다면 이 부분은 파일을 생성하는 과정이다.
                     if (!Files.exists(localPath)) {
                         Files.createFile(localPath);
                     }
 
                     os = Files.newOutputStream(localPath);
 
-                    if (ftp.retrieveFile(ftpPath, os)) {
-                        localSavedPaths.add(localPath.toString());
-                        ++success;
-                        log.debug("[{}]FTP download success. FTP file: \"{}\", Local file: \"{}\"", txId, ftpPath, localPath);
+                    //파일경로가 디렉터리 구조인 경우에는 다운로드 시도 안함.
+                    if (!(ftpPath.endsWith("/") || ftpPath.endsWith("\\"))) {
+                        if (ftp.retrieveFile(ftpPath, os)) {
+                            localSavedPaths.add(localPath.toString());
+                            ++successCount;
+                            log.debug("[{}]FTP download success. FTP file: \"{}\", Local file: \"{}\"", txId, ftpPath, localPath);
+                        } else {
+                            Files.deleteIfExists(localPath);
+                            log.warn("[{}]FTP download failed. File: \"{}\", Reply: {} ", txId, ftpPath, ftp.getReplyString().trim());
+                        }
                     } else {
-                        Files.deleteIfExists(localPath);
-                        log.warn("[{}]FTP download failed. File: \"{}\", Reply: {} ", txId, ftpPath, ftp.getReplyString().trim());
+                        ++dirCount;
                     }
+
                 } catch (Throwable t) {
                     if (getErrorOutput() != null && ignoreErrorFile) {
                         // 2. 다운로드에 실패한 파일은 건너뛰고 계속 다운로드를 진행한 후, 실패한 파일의 FTP 서버 경로를 error output 으로 output 한다.<br>
@@ -269,14 +276,19 @@ public class DownloadFiles extends AbstractFTPService {
             for (String ftpPath : targetFileNames) {
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 try {
-                    if (ftp.retrieveFile(ftpPath, os)) {
-                        Map<String, byte[]> data = new HashMap<>();
-                        data.put(new File(ftpPath).getName(), os.toByteArray());
-                        resultFileData.add(data);
-                        ++success;
-                        log.debug("[{}]FTP download success. FTP file: \"{}\" saved as a byte array", txId, ftpPath);
+                    //파일경로가 디렉터리 구조인 경우에는 다운로드 시도 안함.
+                    if (!(ftpPath.endsWith("/") || ftpPath.endsWith("\\"))) {
+                        if (ftp.retrieveFile(ftpPath, os)) {
+                            Map<String, byte[]> data = new HashMap<>();
+                            data.put(new File(ftpPath).getName(), os.toByteArray());
+                            resultFileData.add(data);
+                            ++successCount;
+                            log.debug("[{}]FTP download success. FTP file: \"{}\" saved as a byte array", txId, ftpPath);
+                        } else {
+                            log.warn("[{}]FTP download failed. File: \"{}\", Reply: {} ", txId, ftpPath, ftp.getReplyString().trim());
+                        }
                     } else {
-                        log.warn("[{}]FTP download failed. File: \"{}\", Reply: {} ", txId, ftpPath, ftp.getReplyString().trim());
+                        ++dirCount;
                     }
                 } catch (Throwable t) {
                     // 파일 다운로드 중 에러 발생하는 경우 무시하여 진행하는 옵션
@@ -301,8 +313,8 @@ public class DownloadFiles extends AbstractFTPService {
             }
         }
 
-        log.info("[{}]FTP file download result(inputted count: {}, downloaded count: {}, download type: {}, error count: {}) "
-                , txId, targetFileNames.size(), success, downloadType, errorFilePaths.size());
+        log.info("[{}]FTP file download result: inputFileList[file={} / directory={}], download_success={}, error_count={}, file_type={}"
+                , txId, inputListSize - dirCount, dirCount, successCount, errorFilePaths.size(), downloadType);
 
     }
 

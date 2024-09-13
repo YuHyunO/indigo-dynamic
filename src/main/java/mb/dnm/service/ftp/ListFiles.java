@@ -87,6 +87,7 @@ public class ListFiles extends AbstractFTPService {
         * */
         if (listDirectory != null) {
             targetPath = listDirectory;
+
         } else if (getInput() != null) {
             Object temp = getInputValue(ctx);
             if (temp == null)
@@ -96,6 +97,7 @@ public class ListFiles extends AbstractFTPService {
             } catch (ClassCastException ce) {
                 throw new InvalidServiceConfigurationException(this.getClass(), "The input parameter's value of this service must be String.class. But the value given is '" + temp.getClass() + "'");
             }
+
         } else {
             //FileTemplate을 InterfaceInfo에서 가져올 때 FTPClientTemplate의 templateName과 일치하는 것을 가져옴
             FileTemplate template = info.getFileTemplate(srcName);
@@ -108,10 +110,12 @@ public class ListFiles extends AbstractFTPService {
             tmpType = template.getType();
         }
 
-        FTPSession session = (FTPSession) ctx.getSession(srcName);
+        FTPSession session = getFTPSession(ctx, srcName);
         if (session == null) {
-            new FTPLogin().process(ctx);
+            new FTPLogin(getSourceAlias()).process(ctx);
+            session = (FTPSession) ctx.getSession(srcName);
         }
+
         if (targetPath.contains("@{if_id}")) {
             targetPath = targetPath.replace("@{if_id}", ctx.getInterfaceId());
         }
@@ -128,10 +132,11 @@ public class ListFiles extends AbstractFTPService {
 
         FileList fileList = new FileList();
         List<String> searchedFileList = new ArrayList<>();
-
+        
         if (!ftp.changeWorkingDirectory(targetPath)) {
-            log.warn("[{}]Can not change directory to '{}'. No directory exists having that name or no permission.", ctx.getTxId(), targetPath);
-            throw new InvalidServiceConfigurationException(this.getClass(), "There is no directory with name '" + targetPath + "' or permission denied.");
+            String reply = ftp.getReplyString().trim();
+            log.warn("[{}]Can not change directory to '{}'. Reply: {}", ctx.getTxId(), targetPath, reply);
+            throw new InvalidServiceConfigurationException(this.getClass(), ftp.getReplyString().trim());
         }
 
         FTPFile[] files = ftp.listFiles();
@@ -184,6 +189,14 @@ public class ListFiles extends AbstractFTPService {
         setOutputValue(ctx, fileList);
     }
 
+    /**
+     * 디렉터리를 재귀적으로 탐색하여 모든 파일 목록을 가져오는 메소드
+     *
+     * @param ftp Connection이 맺어져 있는 FTPClient 객체
+     * @param workingDir 파일 목록을 탐색하려는 최상위 경로 즉, 파일 목록을 가져오기로 설정된 경로.
+     * @param dirName 재귀적으로 탐색하고자 하는 디렉터리 경로
+     *                  
+     * */
     private List<String> searchRecursively(FTPClient ftp, String workingDir, String dirName) throws IOException {
         List<String> innerFiles = new ArrayList<>();
         FTPFile[] files = {};
@@ -204,8 +217,16 @@ public class ListFiles extends AbstractFTPService {
                 if (fileName.startsWith(pathSeparator))
                     fileName = fileName.substring(pathSeparator.length());
 
+                /*pathAfterWorkingDir -> workingDir 이후에 탐색된 디렉터리 또는 파일의 경로를 의미한다.
+                 현재 반복문을 통해 리스트에서 추출되는 FTPFile 객체가 디렉터리인 경우 pathAfterWorkingDir 을
+                 searchRecursively(FTPClient ftp, String workingDir, String dirName) 메소드의 dirName 파라미터로 전달하여 재귀호출한다.
+                 */
                 String pathAfterWorkingDir = dirName + fileName;
                 if (file.isDirectory()) {
+                    /*이 메소드를 통해 리턴되는 파일경로 리스트의 값들은 FileList 객체에 담기게 된다.
+                    FileList 객체를 통해 파일목록을 가져와 작업을 하는 경우 각 원소가 디렉터리인지 파일인지 구분할 수 없으므로
+                    디렉터리는 경로명 끝에 파일 구분자를 더하고 파일은 구분자 없이 목록에 추가한다.
+                    */
                     if (!pathAfterWorkingDir.endsWith(pathSeparator))
                         pathAfterWorkingDir += pathSeparator;
                     innerFiles.addAll(searchRecursively(ftp, workingDir, pathAfterWorkingDir));

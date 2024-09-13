@@ -1,5 +1,7 @@
 package mb.dnm.service.ftp;
 
+import mb.dnm.access.ftp.FTPSession;
+import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
@@ -22,6 +24,14 @@ import mb.dnm.storage.InterfaceInfo;
  * */
 public abstract class AbstractFTPService extends SourceAccessService {
 
+    protected FTPSession getFTPSession(ServiceContext ctx, String srcName) throws Throwable {
+        FTPSession session = (FTPSession) ctx.getSession(srcName);
+        if (session == null) {
+            new FTPLogin(getSourceAlias()).process(ctx);
+            session = (FTPSession) ctx.getSession(srcName);
+        }
+        return session;
+    }
 
     protected String getFTPSourceName(InterfaceInfo info) {
         if (sourceName != null) {

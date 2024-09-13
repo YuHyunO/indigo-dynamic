@@ -38,8 +38,8 @@
                         <property name="remoteSendDir"          value="/"/>
                         <property name="remoteErrorDir"         value="/ftp/files/send/@{if_id}/@{yyyyMMdd}"/>
                         <property name="localReceiveDir"        value="C:\FTPdownload\@{if_id}"/>
-                        <property name="type"                   value="ALL"/>
-<!--                        <property name="fileNamePattern"        value="*2차*"/>-->
+                        <property name="type"                   value="FILE"/>
+                        <property name="fileNamePattern"        value="*.xml"/>
                     </bean>
                     <bean class="mb.dnm.storage.FileTemplate">
                         <property name="templateName"        value="FTP2"/>
