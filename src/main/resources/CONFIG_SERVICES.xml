@@ -181,8 +181,10 @@
         <entry key="FILE_LIST">
             <list>
                 <bean class="mb.dnm.service.file.ListFiles">
-                    <property name="sourceAlias"    value="SRC"/>
-                    <property name="output"         value="local_file_list"/>
+                    <property name="sourceAlias"                    value="SRC"/>
+                    <property name="output"                         value="local_file_list"/>
+                    <property name="createDirectoriesWhenNotExist"  value="true"/>
+                    <property name="searchRecursively"  value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                      value="local_file_list"/>

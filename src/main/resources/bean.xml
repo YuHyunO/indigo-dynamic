@@ -12,7 +12,8 @@
         <property name="timeList">
             <list>
                 <!--<value>[cronExpression=0/5 * * * * ?,args=DB_IF_TEST,concurrent=false,targetMethod=dispatch]</value>-->
-                <value>[cronExpression=0/5 * * * * ?,args=FTP_IF_TEST,concurrent=false,targetMethod=dispatch]</value>
+                <!--<value>[cronExpression=0/5 * * * * ?,args=FTP_IF_TEST,concurrent=false,targetMethod=dispatch]</value>-->
+                <value>[cronExpression=0/5 * * * * ?,args=FILE_IF_TEST,concurrent=false,targetMethod=dispatch]</value>
             </list>
         </property>
     </bean>

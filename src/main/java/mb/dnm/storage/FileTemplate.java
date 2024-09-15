@@ -23,7 +23,7 @@ public class FileTemplate {
     private String remoteErrorDir;
     private String remoteBackupDir;
 
-    private String fileNamePattern;
+    private String fileNamePattern = "*";
     private FileType type = FileType.ALL;
 
     public String getFilePath(DirectoryType dirType) {
@@ -44,4 +44,26 @@ public class FileTemplate {
         }
     }
 
+    public void setFilePath(DirectoryType dirType, String dir) {
+        switch (dirType) {
+            case LOCAL_SEND: this.localSendDir = dir; break;
+            case LOCAL_RECEIVE: this.localReceiveDir = dir; break;
+            case LOCAL_TEMP: this.localTempDir = dir; break;
+            case LOCAL_SUCCESS:this.localSuccessDir = dir; break;
+            case LOCAL_ERROR: this.localErrorDir = dir; break;
+            case LOCAL_BACKUP: this.localBackupDir = dir; break;
+            case REMOTE_SEND: this.remoteSendDir = dir; break;
+            case REMOTE_RECEIVE: this.remoteReceiveDir = dir; break;
+            case REMOTE_TEMP: this.remoteTempDir = dir; break;
+            case REMOTE_SUCCESS: this.remoteSuccessDir = dir; break;
+            case REMOTE_ERROR: this.remoteErrorDir = dir; break;
+            case REMOTE_BACKUP: this.remoteBackupDir = dir; break;
+        }
+    }
+
+    public void setFileNamePattern(String fileNamePattern) {
+        if (fileNamePattern == null) {
+            throw new NullPointerException("fileNamePattern is null");
+        }
+    }
 }

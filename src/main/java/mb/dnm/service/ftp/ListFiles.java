@@ -57,7 +57,7 @@ public class ListFiles extends AbstractFTPService {
      * */
     private DirectoryType directoryType = DirectoryType.REMOTE_SEND;
     private String listDirectory;
-    private String fileNamePattern = "";
+    private String fileNamePattern = "*";
     private FileType type = FileType.ALL;
     private String pathSeparator;
     /**
@@ -184,7 +184,7 @@ public class ListFiles extends AbstractFTPService {
             }
 
         }
-        log.info("[{}]{} files found in the path \"{}\".", ctx.getTxId(), searchedFileList.size(), workingDir);
+        log.info("[{}] {} files found in the path \"{}\".", ctx.getTxId(), searchedFileList.size(), workingDir);
         fileList.setFileList(searchedFileList);
         setOutputValue(ctx, fileList);
     }
@@ -199,7 +199,6 @@ public class ListFiles extends AbstractFTPService {
      * */
     private List<String> searchRecursively(FTPClient ftp, String workingDir, String dirName) throws IOException {
         List<String> innerFiles = new ArrayList<>();
-        FTPFile[] files = {};
 
         if (dirName.equals(pathSeparator)) {
             dirName = "";
@@ -210,8 +209,8 @@ public class ListFiles extends AbstractFTPService {
 
         String searchPath = workingDir + dirName;
 
-        files = ftp.listFiles(searchPath);
-        if (files.length > 0) {
+        FTPFile[] files = ftp.listFiles(searchPath);
+        if (files != null) {
             for (FTPFile file : files) {
                 String fileName = file.getName();
                 if (fileName.startsWith(pathSeparator))
@@ -229,6 +228,7 @@ public class ListFiles extends AbstractFTPService {
                     */
                     if (!pathAfterWorkingDir.endsWith(pathSeparator))
                         pathAfterWorkingDir += pathSeparator;
+                    innerFiles.add(pathAfterWorkingDir);
                     innerFiles.addAll(searchRecursively(ftp, workingDir, pathAfterWorkingDir));
                 } else {
                     innerFiles.add(pathAfterWorkingDir);

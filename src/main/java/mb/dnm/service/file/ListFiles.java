@@ -2,6 +2,7 @@ package mb.dnm.service.file;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.access.file.FileList;
 import mb.dnm.code.DirectoryType;
 import mb.dnm.code.FileType;
 import mb.dnm.core.context.ServiceContext;
@@ -12,12 +13,16 @@ import mb.dnm.storage.FileTemplate;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.FileUtil;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 접근 가능한 디스크의 파일 또는 디렉터리 목록을 가져온다.
@@ -58,7 +63,6 @@ public class ListFiles extends SourceAccessService {
     private String listDirectory;
     private String fileNamePattern;
     private FileType type = FileType.ALL;
-    private String pathSeparator;
     /**
      * 기본값: false<br>
      * 파일 목록을 탐색할 경로가 디렉터리인 경우 그 디렉터리의 하부 파일들을 재귀적으로 탐색할 지에 대한 여부를 결정한다.
@@ -76,9 +80,8 @@ public class ListFiles extends SourceAccessService {
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         InterfaceInfo info = ctx.getInfo();
-        String txId = ctx.getTxId();
         String srcName = info.getSourceNameByAlias(getSourceAlias());
-        String tmpFileNamePattern = fileNamePattern;
+        String tmpFileNamePattern = fileNamePattern = "*";
         FileType tmpType = type;
 
         String targetPath = null;
@@ -118,23 +121,113 @@ public class ListFiles extends SourceAccessService {
         if (targetPath.contains("@{if_id}")) {
             targetPath = targetPath.replace("@{if_id}", ctx.getInterfaceId());
         }
-        targetPath = FileUtil.removeLastPathSeparator(targetPath);
 
+        if (!targetPath.endsWith(File.separator)) {
+            targetPath = targetPath + File.separator;
+        }
         Path path = Paths.get(targetPath);
+
 
         //파일목록을 탐색하려는 경로가 존재하지 않는 경우 처리
         if (!Files.exists(path)) {
             if (createDirectoriesWhenNotExist) {
-                Files.createDirectories(path);
-                log.debug("[{}]The directory '{}' is created just now and so no files exist", txId, targetPath);
+                Path baseDir = Files.createDirectories(path);
+                log.debug("[{}]The directory '{}' is created just now and so no files exist", ctx.getTxId(), baseDir.toFile());
             } else {
-                log.info("[{}]The directory '{}' is not exist.", txId, targetPath);
+                log.info("[{}]The directory '{}' is not exist.", ctx.getTxId(), targetPath);
             }
             return;
         }
 
-        File[] files = path.toFile().listFiles((FileFilter) new WildcardFileFilter(fileNamePattern));
+        FileList fileList = new FileList();
+        List<String> searchedFileList = new ArrayList<>();
+        fileList.setBaseDirectory(targetPath);
 
+        File[] files = path.toFile().listFiles((FileFilter) new WildcardFileFilter(tmpFileNamePattern));
+        int baseDirIdx = 0;
+        for (File file : files) {
+            if (baseDirIdx == 0) {
+                baseDirIdx = file.toString().indexOf(targetPath) + targetPath.length();
+            }
+            String filePathAfterBaseDir = file.toString().substring(baseDirIdx);
 
+            //아래에 FileType이 DIRECTORY 이냐 FILE 이냐 또는 ALL 이냐에 따라 반복되는 코드는 굳이 정리하지 않았음
+            if (tmpType == FileType.DIRECTORY) {
+                if (file.isDirectory()) {
+                    if (!filePathAfterBaseDir.endsWith(File.separator)) {
+                        filePathAfterBaseDir += File.separator;
+                    }
+                    searchedFileList.add(filePathAfterBaseDir);
+                    if (searchRecursively) {
+                        searchedFileList.addAll(searchRecursively(targetPath, file));
+                    }
+                }
+            } else if (tmpType == FileType.FILE) {
+                if (file.isFile()) {
+                    if (filePathAfterBaseDir.startsWith(File.separator)) {
+                        filePathAfterBaseDir = filePathAfterBaseDir.substring(1);
+                    }
+                    searchedFileList.add(filePathAfterBaseDir);
+                }
+            } else {
+                if (file.isDirectory()) {
+                    if (!filePathAfterBaseDir.endsWith(File.separator)) {
+                        filePathAfterBaseDir += File.separator;
+                    }
+                    searchedFileList.add(filePathAfterBaseDir);
+                    if (searchRecursively) {
+                        searchedFileList.addAll(searchRecursively(targetPath, file));
+                    }
+                } else {
+                    if (filePathAfterBaseDir.startsWith(File.separator)) {
+                        filePathAfterBaseDir = filePathAfterBaseDir.substring(1);
+                    }
+                    searchedFileList.add(filePathAfterBaseDir);
+                }
+            }
+        }
+        log.info("[{}] {} files found in the path \"{}\".", ctx.getTxId(), searchedFileList.size(), targetPath);
+        fileList.setFileList(searchedFileList);
+        setOutputValue(ctx, fileList);
+    }
+
+    /**
+     * 디렉터리를 재귀적으로 탐색하여 모든 파일 목록을 가져오는 메소드
+     *
+     * @param baseDir 파일 목록을 탐색하려는 최상위 경로 즉, 파일 목록을 가져오기로 설정된 경로.
+     * @param subDir 재귀적으로 탐색하고자 하는 디렉터리 경로
+     *
+     * */
+    private List<String> searchRecursively(String baseDir, File subDir) throws IOException {
+        List<String> innerFiles = new ArrayList<>();
+
+        File[] files = subDir.listFiles();
+        int baseDirIdx = 0;
+        if (files != null) {
+            for (File file : files) {
+                if (baseDirIdx == 0) {
+                    baseDirIdx = file.toString().indexOf(baseDir) + baseDir.length();
+                }
+                /*filePathAfterBaseDir -> baseDir 이후에 탐색된 디렉터리 또는 파일의 경로를 의미한다.
+                 현재 반복문을 통해 리스트에서 추출되는 File 객체가 디렉터리인 경우 filePathAfterBaseDir 을
+                 searchRecursively(String baseDir, File subDir) 메소드의 subDir 파라미터로 전달하여 재귀호출한다.
+                */
+                String filePathAfterBaseDir = file.toString().substring(baseDirIdx);
+                if (file.isDirectory()) {
+                    /*이 메소드를 통해 리턴되는 파일경로 리스트의 값들은 FileList 객체에 담기게 된다.
+                     FileList 객체를 통해 파일목록을 가져와 작업을 하는 경우 각 원소가 디렉터리인지 파일인지 구분할 수 없으므로
+                     디렉터리는 경로명 끝에 파일 구분자를 더하고 파일은 구분자 없이 목록에 추가한다.
+                    */
+                    if (!filePathAfterBaseDir.endsWith(File.separator))
+                        filePathAfterBaseDir += File.separator;
+                    innerFiles.add(filePathAfterBaseDir);
+                    innerFiles.addAll(searchRecursively(baseDir, file));
+                } else {
+                    innerFiles.add(filePathAfterBaseDir);
+                }
+            }
+        }
+
+        return innerFiles;
     }
 }

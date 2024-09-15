@@ -63,8 +63,8 @@
                         <property name="localTempDir"           value="C:\FileStorage\temp\@{if_id}"/>
                         <property name="localSuccessDir"        value="C:\FileStorage\success\@{if_id}"/>
                         <property name="localErrorDir"          value="C:\FileStorage\error\@{if_id}"/>
-                        <property name="type"                   value="FILE"/>
-                        <property name="fileNamePattern"        value="*.xml"/>
+                        <property name="type"                   value="ALL"/>
+                        <!--<property name="fileNamePattern"        value="*.p*"/>-->
                     </bean>
                     <bean class="mb.dnm.storage.FileTemplate">
                         <property name="templateName"           value="FTP1"/>

@@ -29,15 +29,21 @@ public class FileList {
         StringBuilder sb = new StringBuilder();
         sb.append("{").append("\n")
                 .append("\t\"baseDirectory\": \"").append(baseDirectory).append("\",\n");
-        sb.append("\t\"fileList\": [\n");
-        for (String file : fileList) {
-            sb.append("\t\t\"").append(baseDirectory).append(file).append("\",\n");
+        sb.append("\t\"fileList\": [");
+        if (fileList != null) {
+            sb.append("\n");
+            for (String file : fileList) {
+                sb.append("\t\t\"").append(baseDirectory).append(file).append("\",\n");
+            }
+            if (fileList.size() > 0) {
+                sb.setLength(sb.length() - ",\n".length());
+            }
+            sb.append("\n\t]\n");
+        } else {
+            sb.append("]\n");
         }
-        if (fileList.size() > 0) {
-            sb.setLength(sb.length() - ",\n".length());
-        }
-        sb.append("\n\t]\n");
         sb.append("}");
+
 
         return sb.toString();
     }
