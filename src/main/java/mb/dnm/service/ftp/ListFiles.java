@@ -3,7 +3,6 @@ package mb.dnm.service.ftp;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.access.file.FileList;
-import mb.dnm.access.file.FileNamePatternFilter;
 import mb.dnm.access.ftp.FTPSession;
 import mb.dnm.code.DirectoryType;
 import mb.dnm.code.FileType;
@@ -12,6 +11,7 @@ import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.storage.FileTemplate;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.FileUtil;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -57,7 +57,7 @@ public class ListFiles extends AbstractFTPService {
      * */
     private DirectoryType directoryType = DirectoryType.REMOTE_SEND;
     private String listDirectory;
-    private String fileNamePattern;
+    private String fileNamePattern = "";
     private FileType type = FileType.ALL;
     private String pathSeparator;
     /**
@@ -81,7 +81,7 @@ public class ListFiles extends AbstractFTPService {
         
         /*
         * 파일 목록을 가져올 때 어느 경로에서 가져올 지에 대한 우선순위
-        * 1. GetFileList 서비스에 등록된 listDirectory를 사용
+        * 1. ListFiles 서비스에 등록된 listDirectory를 사용
         * 2. 1번이 없는 경우 GetFileList 서비스에 지정된 Input 파라미터의 값을 사용
         * 3. 1, 2번 모두 해당사항이 없는 경우 InterfaceInfo를 통해 가져온 FileTemplate의 정보를 사용
         * */
@@ -121,7 +121,7 @@ public class ListFiles extends AbstractFTPService {
         }
         targetPath = FileUtil.removeLastPathSeparator(targetPath);
 
-        FileNamePatternFilter filter = new FileNamePatternFilter(tmpFileNamePattern);
+        WildcardFileFilter filter = new WildcardFileFilter(tmpFileNamePattern);
         FTPClient ftp = session.getFTPClient();
         if (pathSeparator == null) {
             pathSeparator = String.valueOf(ftp.printWorkingDirectory().charAt(0));
@@ -152,7 +152,7 @@ public class ListFiles extends AbstractFTPService {
             if (fileName.startsWith(pathSeparator))
                 fileName = fileName.substring(pathSeparator.length());
 
-            if (filter.accept(fileName)) {
+            if (filter.accept(null, fileName)) {
 
                 if (tmpType == FileType.DIRECTORY) {
                     if (!file.isDirectory())

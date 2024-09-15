@@ -39,12 +39,36 @@
                         <property name="remoteErrorDir"         value="/ftp/files/send/@{if_id}/@{yyyyMMdd}"/>
                         <property name="localReceiveDir"        value="C:\FTPdownload\@{if_id}"/>
                         <property name="type"                   value="FILE"/>
-                        <property name="fileNamePattern"        value="*.xml"/>
+                        <property name="fileNamePattern"        value="*.x*"/>
                     </bean>
                     <bean class="mb.dnm.storage.FileTemplate">
                         <property name="templateName"        value="FTP2"/>
                         <property name="remoteReceiveDir"    value="/ftp/files/recv/@{if_id}"/>
                         <property name="localReceiveDir"        value="C:\FTPdownload\@{if_id}"/>
+                    </bean>
+                </list>
+            </property>
+        </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="FILE_IF_TEST"/>
+            <property name="description"            value="FILE 인터페이스 테스트"/>
+            <property name="serviceId"              value="FILE_LIST"/>
+            <property name="sourceAliases"          value="SRC:LOCAL_DISK, TGT:FTP1"/>
+            <property name="fileTemplates">
+                <list>
+                    <bean class="mb.dnm.storage.FileTemplate">
+                        <property name="templateName"           value="LOCAL_DISK"/>
+                        <property name="localSendDir"           value="C:\FileStorage\send\@{if_id}"/>
+                        <property name="localTempDir"           value="C:\FileStorage\temp\@{if_id}"/>
+                        <property name="localSuccessDir"        value="C:\FileStorage\success\@{if_id}"/>
+                        <property name="localErrorDir"          value="C:\FileStorage\error\@{if_id}"/>
+                        <property name="type"                   value="FILE"/>
+                        <property name="fileNamePattern"        value="*.xml"/>
+                    </bean>
+                    <bean class="mb.dnm.storage.FileTemplate">
+                        <property name="templateName"           value="FTP1"/>
+                        <property name="remoteReceiveDir"       value="/ftp/files/receive/@{if_id}"/>
                     </bean>
                 </list>
             </property>

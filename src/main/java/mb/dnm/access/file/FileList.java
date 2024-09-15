@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  *
- * <code>FileList</code> 탐색을 시작한 최상위 디렉터리 경로(baseDirectory)와 탐색한 파일, 디렉터리 경로에 대한 결과를 담고있는 객체이다.<br>
+ * <code>FileList</code> 탐색을 시작한 최상위 디렉터리 경로(baseDirectory)와 탐색한 파일/디렉터리 경로에 대한 결과를 담고있는 객체이다.<br>
  * 탐색을 시작한 최상위 디렉터리는 <code>setBaseDirectory(String)</code> 메소드와 <code>getBaseDirectory()</code> 메소드를 통해 값 지정과 값에 대한 접근이 가능하다.
  * <code>filiList</code> 는 탐색을 시작한 최상위 경로인 <code>baseDirectory</code> 를 제외한 파일 및 디렉터리의 경로를 담고있는 변수이다.
  * <code>baseDirectory</code>는 경로의 끝이 파일 구분자로 마무리되어야 하며, <code>filiList</code> 의 원소들 즉, <code>baseDirectory</code> 하부의 파일 또는 디렉터리의 경로들은 경로의 시작에 파일구분자가 있으면 안된다.

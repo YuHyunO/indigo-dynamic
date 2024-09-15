@@ -178,9 +178,17 @@
             </list>
         </entry>
 
-        <entry key="FILE_UPLOAD">
+        <entry key="FILE_LIST">
             <list>
-                <bean class="mb.dnm.service.file.ListFiles"/>
+                <bean class="mb.dnm.service.file.ListFiles">
+                    <property name="sourceAlias"    value="SRC"/>
+                    <property name="output"         value="local_file_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                      value="local_file_list"/>
+                    <property name="printToXmlWhenCollection"   value="true"/>
+                    <property name="indented"                   value="true"/>
+                </bean>
             </list>
         </entry>
 
