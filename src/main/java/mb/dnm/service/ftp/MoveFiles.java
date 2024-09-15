@@ -5,8 +5,10 @@ import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.service.SourceAccessService;
 
 public class MoveFiles extends AbstractFTPService {
+
     @Override
     public void process(ServiceContext ctx) throws Throwable {
 
     }
+
 }

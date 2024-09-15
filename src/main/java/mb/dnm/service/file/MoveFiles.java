@@ -9,19 +9,14 @@ import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.FileTemplate;
 import mb.dnm.storage.InterfaceInfo;
-import mb.dnm.util.FileUtil;
 import mb.dnm.util.MessageUtil;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.*;
 import java.util.*;
 
 /**
- *
+ * 접근가능한 디스크의 파일을 이동한다.
  * 어느 경로로 파일을 이동할 지에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.
  *
  * @see mb.dnm.service.file.ListFiles
@@ -30,7 +25,7 @@ import java.util.*;
  * @author Yuhyun O
  * @version 2024.09.15
  *
- * @Input 이동할 받을 파일의 경로
+ * @Input 이동할 파일의 경로
  * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code>
  * @Output 이동한 파일의 이동 후 경로 리스트
  * @OutputType <code>List&lt;String&gt;</code>
@@ -182,7 +177,7 @@ public class MoveFiles extends SourceAccessService {
                 if (!Files.exists(pathToMv)) {
                     Files.createFile(pathToMv);
                 }
-
+                
                 if (!dirFlag) {
                     if (Files.exists(oldPath)) {
                         Path moved = Files.move(oldPath, pathToMv, StandardCopyOption.REPLACE_EXISTING);
