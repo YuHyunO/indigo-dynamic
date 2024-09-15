@@ -184,18 +184,31 @@
                     <property name="sourceAlias"                    value="SRC"/>
                     <property name="output"                         value="local_file_list"/>
                     <property name="createDirectoriesWhenNotExist"  value="true"/>
-                    <property name="searchRecursively"  value="true"/>
+                    <property name="searchRecursively"              value="true"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PauseProcess">
+                    <property name="millisecond"        value="10000"/>
+                </bean>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="input"                          value="local_file_list"/>
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
-                    <property name="input"                      value="local_file_list"/>
-                    <property name="printToXmlWhenCollection"   value="true"/>
-                    <property name="indented"                   value="true"/>
+                    <property name="input"                          value="local_file_list"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.file.MoveFiles">
-                    <property name="sourceAlias"                value="SRC"/>
-                    <property name="input"                      value="local_file_list"/>
-                    <property name="directoryType"              value="LOCAL_SUCCESS"/>
+                    <property name="sourceAlias"                    value="SRC"/>
+                    <property name="input"                          value="local_file_list"/>
+                    <property name="directoryType"                  value="LOCAL_SUCCESS"/>
+                    <property name="debuggingWhenMoved"             value="false"/>
+                    <property name="output"                         value="moved_files"/>
                 </bean>
+                <!--<bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="moved_files"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>-->
             </list>
         </entry>
 

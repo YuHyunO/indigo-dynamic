@@ -2,7 +2,10 @@ package mb.dnm.access.file;
 
 import lombok.Getter;
 import lombok.Setter;
+import mb.dnm.access.EmptyCheckable;
 
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,9 +23,22 @@ import java.util.List;
  *
  * */
 @Setter @Getter
-public class FileList {
+public class FileList implements EmptyCheckable {
     private String baseDirectory;
     private List<String> fileList;
+
+    public List<String> getFullFileList() {
+        if (fileList == null) {
+            return fileList;
+        }
+        List<String> result = new ArrayList<>();
+
+        for (String file : fileList) {
+            result.add(Paths.get(baseDirectory, file).toString());
+        }
+
+        return result;
+    }
 
     @Override
     public String toString() {
@@ -30,7 +46,7 @@ public class FileList {
         sb.append("{").append("\n")
                 .append("\t\"baseDirectory\": \"").append(baseDirectory).append("\",\n");
         sb.append("\t\"fileList\": [");
-        if (fileList != null) {
+        if (fileList != null && !fileList.isEmpty()) {
             sb.append("\n");
             for (String file : fileList) {
                 sb.append("\t\t\"").append(baseDirectory).append(file).append("\",\n");
@@ -48,4 +64,8 @@ public class FileList {
         return sb.toString();
     }
 
+    @Override
+    public boolean isEmpty() {
+        return fileList == null || fileList.isEmpty();
+    }
 }

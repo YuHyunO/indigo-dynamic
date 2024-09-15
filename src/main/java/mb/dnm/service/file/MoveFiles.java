@@ -9,12 +9,16 @@ import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.FileTemplate;
 import mb.dnm.storage.InterfaceInfo;
+import mb.dnm.util.FileUtil;
+import mb.dnm.util.MessageUtil;
+import org.apache.commons.io.FileUtils;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.*;
+import java.util.*;
 
 /**
  *
@@ -27,7 +31,7 @@ import java.util.List;
  * @version 2024.09.15
  *
  * @Input 이동할 받을 파일의 경로
- * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code>(여러건) 또는 <code>FileList</code>
+ * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code>
  * @Output 이동한 파일의 이동 후 경로 리스트
  * @OutputType <code>List&lt;String&gt;</code>
  * @ErrorOutput 파일을 다운로드 하는 중 에러가 발생하여 다운로드에 실패하는 경우 에러가 발생한 파일의 경로
@@ -53,6 +57,11 @@ public class MoveFiles extends SourceAccessService {
      * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 을 파일목록을 가져올 경로로 사용함<br>
      * */
     private DirectoryType directoryType = DirectoryType.LOCAL_BACKUP;
+    /**
+     * 기본값: false
+     * */
+    private boolean ignoreErrorFile = false;
+    private boolean debuggingWhenMoved = true;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
@@ -76,33 +85,44 @@ public class MoveFiles extends SourceAccessService {
         input 데이터 타입이 FileList인 경우에만 적용된다.
         */
         boolean saveStructureAsIs = false;
+        String baseDir = null;
         try {
             if (inputVal instanceof FileList) {
                 FileList fileList = (FileList) inputVal;
                 targetFilePaths = fileList.getFileList();
                 saveStructureAsIs = true;
+                baseDir = fileList.getBaseDirectory();
 
             } else if (inputVal instanceof String) {
                 targetFilePaths.add((String) inputVal);
 
             } else if (inputVal instanceof List) {
-                List<String> tmpList = (List<String>) inputVal;
-                if (tmpList.isEmpty()) {
-                    log.debug("The value of input '{}' is not found. No list of file path to download found in context data.", getInput());
+                Set<String> tmpSet = new HashSet<>((List<String>) inputVal);
+                if (tmpSet.isEmpty()) {
+                    log.debug("The value of input '{}' is not found. No list of file path to move found in context data.", getInput());
                     return;
                 }
-                targetFilePaths.addAll(tmpList);
+                targetFilePaths.addAll(tmpSet);
+            } else if (inputVal instanceof Set) {
+                Set<String> tmpSet = new HashSet<>((Set<String>) inputVal);
+                if (tmpSet.isEmpty()) {
+                    log.debug("The value of input '{}' is not found. No list of file path to move found in context data.", getInput());
+                    return;
+                }
+                targetFilePaths.addAll(tmpSet);
             } else {
                 throw new ClassCastException();
             }
         } catch (ClassCastException ce) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not String or List<String>. Inputted value's type: " + inputVal.getClass().getName());
+            throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not String or List<String> or Set<String> or FileList. Inputted value's type: " + inputVal.getClass().getName());
         }
 
+        List<String> movedFileList = new ArrayList<>();
         List<String> errorFilePaths = new ArrayList<>();
         int inputListSize = targetFilePaths.size();
         int dirCount = 0;
         int successCount = 0;
+        int notExistInSource = 0;
 
         // outPutDataType 이 dataTypeDataType.FILE 인 경우 InterfaceInfo에서 FileTemplate을 가져와 directoryType 과 일치하는 경로에 파일을 저장함
         FileTemplate template = info.getFileTemplate(srcName);
@@ -122,9 +142,123 @@ public class MoveFiles extends SourceAccessService {
             Files.createDirectories(path);
         }
 
+        //이동할 파일이 디렉터리인 경우 디렉터리 하부 내용을 먼저 옮긴 뒤 디렉터리를 가장 마지막에 이동시키기 위해 따로 저장한다.
+        Map<Path, Path> pathsToMovedLast = new HashMap<>();
+        log.info("[{}]Moving files ...", txId);
+        for (String oldFilePathStr : targetFilePaths) {
+            Path oldPath = null;
+            Path pathToMv = null;
+            boolean dirFlag = false;
 
-        log.info("[{}]FTP file download result: inputFileList[file={} / directory={}], move_success={}, error_count={}"
-                , txId, inputListSize - dirCount, dirCount, successCount, errorFilePaths.size());
+            //saveStructureAsIs가 true인 경우 즉, input 객체로 FileList가 전달된 경우 본래의 디렉터리 구조를 그대로 하여 파일을 다운로드 하기 위해 이동할 파일 경로에도 동일한 디렉터리 구조를 만드는 과정이다.
+            if (saveStructureAsIs) {
+                StringBuffer dirToMadeBf = new StringBuffer();
+                dirToMadeBf.append(savePath)
+                        .append(savePath.endsWith(File.separator) ? "" : File.separator);
+                dirToMadeBf.append(oldFilePathStr);
+
+                Path dirToMade = Paths.get(dirToMadeBf.toString());
+                if (dirToMadeBf.charAt(dirToMadeBf.length() - 1) != File.separatorChar) {//파일인 경우 dirToMade에 그 상위 디렉터리를 지정한다.
+                    dirToMade = dirToMade.getParent();
+                    pathToMv = Paths.get(dirToMade.toString(), new File(oldFilePathStr).getName());
+                } else {
+                    dirFlag = true;
+                    pathToMv = dirToMade;
+                }
+
+                if (!Files.exists(dirToMade)) {
+                    Files.createDirectories(dirToMade);
+                }
+                oldPath = Paths.get(baseDir, oldFilePathStr);
+
+            } else {
+                dirFlag = oldFilePathStr.endsWith(File.separator);
+                oldPath = Paths.get(oldFilePathStr);
+                pathToMv = Paths.get(savePath, new File(oldFilePathStr).getName());
+            }
+
+            try {
+                //위에서 saveStructureAsIs가 true 인 경우 필요한 디렉터리들을 만들었다면 이 부분은 빈 파일을 생성하는 과정이다.
+                if (!Files.exists(pathToMv)) {
+                    Files.createFile(pathToMv);
+                }
+
+                if (!dirFlag) {
+                    if (Files.exists(oldPath)) {
+                        Path moved = Files.move(oldPath, pathToMv, StandardCopyOption.REPLACE_EXISTING);
+                        movedFileList.add(moved.toString());
+                        ++successCount;
+                    } else {
+                        ++notExistInSource;
+                    }
+                } else {
+                    pathsToMovedLast.put(oldPath, pathToMv);
+                    ++dirCount;
+                }
+                if (debuggingWhenMoved) {
+                    log.debug("[{}]File move success. Old path: \"{}\", Moved path: \"{}\"", txId, oldPath, pathToMv);
+                }
+
+            } catch (Throwable t) {
+                if (ignoreErrorFile) {
+                    errorFilePaths.add(oldPath.toString());
+                    log.warn("[{}]Exception occurred when moving file but ignored. Cause: {}", txId, MessageUtil.toString(t));
+                } else {
+                    throw t;
+                }
+            }
+        }
+
+        if (!pathsToMovedLast.isEmpty()) {
+
+            //디렉터리를 하위 디렉터리부터 이동한 뒤 삭제할 수 있도록 정렬한다.
+            List<Path> sortingList = new ArrayList<>(pathsToMovedLast.keySet());
+            Collections.sort(sortingList, new Comparator<Path>() {
+                @Override
+                public int compare(Path o1, Path o2) {
+                    return Integer.compare(o2.toString().length(), o1.toString().length());
+                }
+            });
+
+            for (Path oldPath : sortingList) {
+                Path pathToMv = pathsToMovedLast.get(oldPath);
+                try {
+                    try {
+                        if (!Files.exists(pathToMv)) {
+                            Files.move(oldPath, pathToMv, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                        if ((oldPath.toFile()).list().length == 0) {
+                            Files.deleteIfExists(oldPath);
+                        }
+                        ++successCount;
+                        if (debuggingWhenMoved) {
+                            log.debug("[{}]Directory move success. Old path: \"{}\", Moved path: \"{}\"", txId, oldPath, pathToMv);
+                        }
+                    } catch (DirectoryNotEmptyException de) {
+                        de.printStackTrace();
+                    }
+                } catch (Throwable t) {
+                    if (ignoreErrorFile) {
+                        errorFilePaths.add(oldPath.toString());
+                        log.warn("[{}]Exception occurred when moving file but ignored. Cause: {}", txId, MessageUtil.toString(t));
+                    } else {
+                        throw t;
+                    }
+                }
+            }
+        }
+
+
+        if (getOutput() != null) {
+            setOutputValue(ctx, movedFileList);
+        }
+        if (getErrorOutput() != null) {
+            if (!errorFilePaths.isEmpty()) {
+                setErrorOutputValue(ctx, errorFilePaths);
+            }
+        }
+        log.info("[{}]File movement result: inputFileList[file={} / directory={}], move_success={}, not_exist_in_source={}, error_count={}"
+                , txId, inputListSize - dirCount, dirCount, successCount, notExistInSource, errorFilePaths.size());
 
     }
 

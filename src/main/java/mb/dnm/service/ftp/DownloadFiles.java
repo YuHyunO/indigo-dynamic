@@ -21,10 +21,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Input으로 전달받은 파일 경로로부터 파일의 데이터를 다운로드한다.<br>
@@ -56,7 +53,7 @@ import java.util.Map;
  * @version 2024.09.12
  *
  * @Input 다운로드 받을 파일의 FTP서버 경로
- * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code>(여러건) 또는 <code>FileList</code>
+ * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code>
  * @Output downloadType 속성이 FILE인 경우, 지정된 경로로 파일이 저장되며 다운로드 받은 File이 저장된 경로가 리스트로 output 된다.<br> outPutDataType 속성이 BYTE_ARRAY 인 경우,
  * 파일명과 파일의 데이터가 <code>Map&lt;String, byte[]&gt;</code> 형태로 담긴 리스트가 output 된다.
  * @OutputType dataType(FILE): <code>List&lt;String&gt;</code>, dataType(BYTE_ARRAY): <code>List&lt;Map&lt;String, byte[]&gt;&gt;</code>
@@ -138,17 +135,24 @@ public class DownloadFiles extends AbstractFTPService {
                 targetFileNames.add((String) inputVal);
 
             } else if (inputVal instanceof List) {
-                List<String> tmpList = (List<String>) inputVal;
-                if (tmpList.isEmpty()) {
+                Set<String> tmpSet = new HashSet<>((List<String>) inputVal);
+                if (tmpSet.isEmpty()) {
                     log.debug("The value of input '{}' is not found. No list of file path to download found in context data.", getInput());
                     return;
                 }
-                targetFileNames.addAll(tmpList);
+                targetFileNames.addAll(tmpSet);
+            } else if (inputVal instanceof Set) {
+                Set<String> tmpSet = new HashSet<>((Set<String>) inputVal);
+                if (tmpSet.isEmpty()) {
+                    log.debug("The value of input '{}' is not found. No list of file path to download found in context data.", getInput());
+                    return;
+                }
+                targetFileNames.addAll(tmpSet);
             } else {
                 throw new ClassCastException();
             }
         } catch (ClassCastException ce) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not String or List<String>. Inputted value's type: " + inputVal.getClass().getName());
+            throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not String or List<String> or Set<String> or FileList. Inputted value's type: " + inputVal.getClass().getName());
         }
 
         FTPSession session = getFTPSession(ctx, srcName);
@@ -185,7 +189,7 @@ public class DownloadFiles extends AbstractFTPService {
             for (String ftpPath : targetFileNames) {
                 Path localPath = null;
                 
-                //FTP 서버의 디렉터리 구조를 그대로 하여 파일을 다운로드 하기 위해 로컬에도 동일한 디렉터리 구조를 만드는 과정이다.
+                //saveStructureAsIs가 true인 경우 즉, input 객체로 FileList가 전달된 경우 FTP 서버의 디렉터리 구조를 그대로 하여 파일을 다운로드 하기 위해 로컬에도 동일한 디렉터리 구조를 만드는 과정이다.
                 if (saveStructureAsIs) {
                     StringBuffer dirToMadeBf = new StringBuffer();
                     dirToMadeBf.append(savePath)
@@ -206,7 +210,7 @@ public class DownloadFiles extends AbstractFTPService {
 
                 OutputStream os = null;
                 try {
-                    //위에서 saveStructureAsIs 가 true 인 경우 필요한 디렉터리들을 만들었다면 이 부분은 파일을 생성하는 과정이다.
+                    //위에서 saveStructureAsIs가 true 인 경우 필요한 디렉터리들을 만들었다면 이 부분은 빈 파일을 생성하는 과정이다.
                     if (!Files.exists(localPath)) {
                         Files.createFile(localPath);
                     }
