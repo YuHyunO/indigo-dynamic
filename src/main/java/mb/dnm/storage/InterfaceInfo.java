@@ -2,6 +2,7 @@ package mb.dnm.storage;
 
 import lombok.Getter;
 import lombok.Setter;
+import mb.dnm.access.file.FileTemplate;
 
 import java.util.*;
 

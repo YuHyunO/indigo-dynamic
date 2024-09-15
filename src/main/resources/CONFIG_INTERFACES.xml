@@ -33,7 +33,7 @@
             <property name="sourceAliases"          value="SRC:FTP1, TGT:FTP2"/>
             <property name="fileTemplates">
                 <list>
-                    <bean class="mb.dnm.storage.FileTemplate">
+                    <bean class="mb.dnm.access.file.FileTemplate">
                         <property name="templateName"           value="FTP1"/>
                         <property name="remoteSendDir"          value="/"/>
                         <property name="remoteErrorDir"         value="/ftp/files/send/@{if_id}/@{yyyyMMdd}"/>
@@ -41,7 +41,7 @@
                         <property name="type"                   value="FILE"/>
                         <property name="fileNamePattern"        value="*.x*"/>
                     </bean>
-                    <bean class="mb.dnm.storage.FileTemplate">
+                    <bean class="mb.dnm.access.file.FileTemplate">
                         <property name="templateName"        value="FTP2"/>
                         <property name="remoteReceiveDir"    value="/ftp/files/recv/@{if_id}"/>
                         <property name="localReceiveDir"        value="C:\FTPdownload\@{if_id}"/>
@@ -57,7 +57,7 @@
             <property name="sourceAliases"          value="SRC:LOCAL_DISK, TGT:FTP1"/>
             <property name="fileTemplates">
                 <list>
-                    <bean class="mb.dnm.storage.FileTemplate">
+                    <bean class="mb.dnm.access.file.FileTemplate">
                         <property name="templateName"           value="LOCAL_DISK"/>
                         <property name="localSendDir"           value="C:\FileStorage\send\@{if_id}"/>
                         <property name="localTempDir"           value="C:\FileStorage\temp\@{if_id}"/>
@@ -67,7 +67,7 @@
                         <property name="type"                   value="ALL"/>
                         <!--<property name="fileNamePattern"        value="*.p*"/>-->
                     </bean>
-                    <bean class="mb.dnm.storage.FileTemplate">
+                    <bean class="mb.dnm.access.file.FileTemplate">
                         <property name="templateName"           value="FTP1"/>
                         <property name="remoteReceiveDir"       value="/ftp/files/receive/@{if_id}"/>
                     </bean>
@@ -75,6 +75,27 @@
             </property>
         </bean>
 
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="FILE_COPY_IF_TEST"/>
+            <property name="description"            value="FILE 인터페이스 테스트"/>
+            <property name="serviceId"              value="FILE_COPY"/>
+            <property name="sourceAliases"          value="SRC:LOCAL_DISK, TGT:FTP1"/>
+            <property name="fileTemplates">
+                <list>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"           value="LOCAL_DISK"/>
+                        <property name="localSendDir"           value="C:\FileStorage\send\@{if_id}"/>
+                        <property name="localCopyDir"           value="C:\FileStorage\copied\@{if_id}"/>
+                        <property name="type"                   value="ALL"/>
+                        <!--<property name="fileNamePattern"        value="*.p*"/>-->
+                    </bean>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"           value="FTP1"/>
+                        <property name="remoteReceiveDir"       value="/ftp/files/receive/@{if_id}"/>
+                    </bean>
+                </list>
+            </property>
+        </bean>
 
     </util:list>
 

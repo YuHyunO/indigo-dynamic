@@ -16,71 +16,71 @@ import java.nio.file.*;
 import java.util.*;
 
 /**
- * 파일 Storage 의 파일을 이동한다.
- * 어느 경로로 파일을 이동할 지에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.
+ * 파일 Storage 의 파일을 복사한다.
+ * 어느 경로로 파일을 복사할 지에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.
  *
- * @see mb.dnm.service.file.ListFiles
- * @see mb.dnm.access.file.FileList
+ * @see ListFiles
+ * @see FileList
  *
  * @author Yuhyun O
- * @version 2024.09.15
+ * @version 2024.09.16
  *
- * @Input 이동할 파일의 경로
+ * @Input 복사할 파일의 경로
  * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code>
- * @Output 이동할 파일의 이동 후 경로 리스트
+ * @Output 복사한 파일의 복사 후 경로 리스트
  * @OutputType <code>List&lt;String&gt;</code>
- * @ErrorOutput 파일을 이동하는 중 에러가 발생하여 이동에 실패하는 경우 에러가 발생한 파일의 경로
+ * @ErrorOutput 파일을 복사 하는 중 에러가 발생하여 복사에 실패하는 경우 에러가 발생한 파일의 경로
  * @ErrorOutputType <code>List&lt;String&gt;</code>
  * */
 @Slf4j
 @Setter
-public class MoveFiles extends SourceAccessService {
+public class CopyFiles extends SourceAccessService {
     /**
-     * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 이동할 경로로써 사용할 지 결정된다.<br><br>
-     * -기본값: <code>LOCAL_MOVE</code><br>
-     * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_RECEIVE → <code>FileTemplate#remoteReceiveDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_TEMP → <code>FileTemplate#remoteTempDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_SUCCESS → <code>FileTemplate#remoteSuccessDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_ERROR → <code>FileTemplate#remoteErrorDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_SUCCESS → <code>FileTemplate#localSuccessDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_ERROR → <code>FileTemplate#localErrorDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 을 파일목록을 이동할 경로로 사용함<br>
+     * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 복사할 경로로써 사용할 지 결정된다.<br><br>
+     * -기본값: <code>LOCAL_COPY</code><br>
+     * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -REMOTE_RECEIVE → <code>FileTemplate#remoteReceiveDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -REMOTE_TEMP → <code>FileTemplate#remoteTempDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -REMOTE_SUCCESS → <code>FileTemplate#remoteSuccessDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -REMOTE_ERROR → <code>FileTemplate#remoteErrorDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -LOCAL_SUCCESS → <code>FileTemplate#localSuccessDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -LOCAL_ERROR → <code>FileTemplate#localErrorDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 을 파일목록을 복사할 경로로 사용함<br>
+     * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 을 파일목록을 복사할 경로로 사용함<br>
      * */
-    private DirectoryType directoryType = DirectoryType.LOCAL_MOVE;
+    private DirectoryType directoryType = DirectoryType.LOCAL_COPY;
     /**
      * 기본값: false
      * */
     private boolean ignoreErrorFile = false;
-    private boolean debuggingWhenMoved = true;
+    private boolean debuggingWhenCopied = true;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         if (getInput() == null) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "MoveFiles service must have the input parameter in which contain the files to move");
+            throw new InvalidServiceConfigurationException(this.getClass(), "CopyFiles service must have the input parameter in which contain the files to copy");
         }
 
         InterfaceInfo info = ctx.getInfo();
         String srcName = info.getSourceNameByAlias(getSourceAlias());
         String txId = ctx.getTxId();
 
-        //input으로 전달된 이동 대상 파일에 대한 정보의 타입을 검증하고 이 서비스에서 사용되는 공통된 형식으로 맞춰주는 과정
+        //input으로 전달된 복사 대상 파일에 대한 정보의 타입을 검증하고 이 서비스에서 사용되는 공통된 형식으로 맞춰주는 과정
         Object inputVal = getInputValue(ctx);
         List<String> targetFilePaths = new ArrayList<>();
         if (inputVal == null) {
-            log.debug("The value of input '{}' is not found. No file paths to move found in context data.", getInput());
+            log.debug("The value of input '{}' is not found. No file paths to copy found in context data.", getInput());
             return;
         }
 
-        /*파일을 이동 할 때 FTP 서버의 디렉터리 구조 그대로 이동 할 지 판단하는 flag이다.
+        /*파일을 복사 할 때 FTP 서버의 디렉터리 구조 그대로 복사 할 지 판단하는 flag이다.
         input 데이터 타입이 FileList인 경우에만 적용된다.
         */
         boolean saveStructureAsIs = false;
@@ -98,14 +98,14 @@ public class MoveFiles extends SourceAccessService {
             } else if (inputVal instanceof List) {
                 Set<String> tmpSet = new HashSet<>((List<String>) inputVal);
                 if (tmpSet.isEmpty()) {
-                    log.debug("The value of input '{}' is not found. No list of file path to move found in context data.", getInput());
+                    log.debug("The value of input '{}' is not found. No list of file path to copy found in context data.", getInput());
                     return;
                 }
                 targetFilePaths.addAll(tmpSet);
             } else if (inputVal instanceof Set) {
                 Set<String> tmpSet = new HashSet<>((Set<String>) inputVal);
                 if (tmpSet.isEmpty()) {
-                    log.debug("The value of input '{}' is not found. No list of file path to move found in context data.", getInput());
+                    log.debug("The value of input '{}' is not found. No list of file path to copy found in context data.", getInput());
                     return;
                 }
                 targetFilePaths.addAll(tmpSet);
@@ -141,15 +141,15 @@ public class MoveFiles extends SourceAccessService {
             Files.createDirectories(path);
         }
 
-        //이동할 파일이 디렉터리인 경우 디렉터리 하부 내용을 먼저 옮긴 뒤 디렉터리를 가장 마지막에 이동시키기 위해 따로 저장한다.
-        Map<Path, Path> pathsToMovedLast = new HashMap<>();
-        log.info("[{}]Moving files ...", txId);
+        //복사할 파일이 디렉터리인 경우 디렉터리 하부 내용을 먼저 옮긴 뒤 디렉터리를 가장 마지막에 복사하기 위해 따로 저장한다.
+        Map<Path, Path> pathsToCopiedLast = new HashMap<>();
+        log.info("[{}]Copying files ...", txId);
         for (String oldFilePathStr : targetFilePaths) {
             Path oldPath = null;
             Path pathToMv = null;
             boolean dirFlag = false;
 
-            //saveStructureAsIs가 true인 경우 즉, input 객체로 FileList가 전달된 경우 본래의 디렉터리 구조를 그대로 하여 파일을 이동 하기 위해 이동할 파일 경로에도 동일한 디렉터리 구조를 만드는 과정이다.
+            //saveStructureAsIs가 true인 경우 즉, input 객체로 FileList가 전달된 경우 본래의 디렉터리 구조를 그대로 하여 파일을 복사 하기 위해 복사할 파일 경로에도 동일한 디렉터리 구조를 만드는 과정이다.
             if (saveStructureAsIs) {
                 StringBuffer dirToMadeBf = new StringBuffer();
                 dirToMadeBf.append(savePath)
@@ -181,21 +181,21 @@ public class MoveFiles extends SourceAccessService {
                 if (!Files.exists(pathToMv)) {
                     Files.createFile(pathToMv);
                 }
-
+                
                 if (!dirFlag) {
                     if (Files.exists(oldPath)) {
-                        Path moved = Files.move(oldPath, pathToMv, StandardCopyOption.REPLACE_EXISTING);
-                        movedFileList.add(moved.toString());
+                        Path copied = Files.copy(oldPath, pathToMv, StandardCopyOption.REPLACE_EXISTING);
+                        movedFileList.add(copied.toString());
                         ++successCount;
                     } else {
                         ++notExistInSource;
                     }
                 } else {
-                    pathsToMovedLast.put(oldPath, pathToMv);
+                    pathsToCopiedLast.put(oldPath, pathToMv);
                     ++dirCount;
                 }
-                if (debuggingWhenMoved) {
-                    log.debug("[{}]File move success. Old path: \"{}\", Moved path: \"{}\"", txId, oldPath, pathToMv);
+                if (debuggingWhenCopied) {
+                    log.debug("[{}]File copy success. Old path: \"{}\", copied path: \"{}\"", txId, oldPath, pathToMv);
                 }
 
             } catch (Throwable t) {
@@ -208,10 +208,10 @@ public class MoveFiles extends SourceAccessService {
             }
         }
 
-        if (!pathsToMovedLast.isEmpty()) {
+        if (!pathsToCopiedLast.isEmpty()) {
 
-            //디렉터리를 하위 디렉터리부터 이동한 뒤 삭제할 수 있도록 정렬한다.
-            List<Path> sortingList = new ArrayList<>(pathsToMovedLast.keySet());
+            //디렉터리를 하위 디렉터리부터 복사할 수 있도록 정렬한다.
+            List<Path> sortingList = new ArrayList<>(pathsToCopiedLast.keySet());
             Collections.sort(sortingList, new Comparator<Path>() {
                 @Override
                 public int compare(Path o1, Path o2) {
@@ -220,18 +220,15 @@ public class MoveFiles extends SourceAccessService {
             });
 
             for (Path oldPath : sortingList) {
-                Path pathToMv = pathsToMovedLast.get(oldPath);
+                Path pathToMv = pathsToCopiedLast.get(oldPath);
                 try {
                     try {
                         if (!Files.exists(pathToMv)) {
-                            Files.move(oldPath, pathToMv, StandardCopyOption.REPLACE_EXISTING);
-                        }
-                        if ((oldPath.toFile()).list().length == 0) {
-                            Files.deleteIfExists(oldPath);
+                            Files.copy(oldPath, pathToMv, StandardCopyOption.REPLACE_EXISTING);
                         }
                         ++successCount;
-                        if (debuggingWhenMoved) {
-                            log.debug("[{}]Directory move success. Old path: \"{}\", Moved path: \"{}\"", txId, oldPath, pathToMv);
+                        if (debuggingWhenCopied) {
+                            log.debug("[{}]Directory copy success. Old path: \"{}\", copied path: \"{}\"", txId, oldPath, pathToMv);
                         }
                     } catch (DirectoryNotEmptyException de) {}
                 } catch (Throwable t) {
@@ -254,7 +251,7 @@ public class MoveFiles extends SourceAccessService {
                 setErrorOutputValue(ctx, errorFilePaths);
             }
         }
-        log.info("[{}]File movement result: inputFileList[file={} / directory={}], move_success={}, not_exist_in_source={}, error_count={}"
+        log.info("[{}]File copy result: inputFileList[file={} / directory={}], copy_success={}, not_exist_in_source={}, error_count={}"
                 , txId, inputListSize - dirCount, dirCount, successCount, notExistInSource, errorFilePaths.size());
 
     }

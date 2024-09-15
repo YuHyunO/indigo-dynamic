@@ -1,4 +1,4 @@
-package mb.dnm.storage;
+package mb.dnm.access.file;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +15,8 @@ public class FileTemplate {
     private String localSuccessDir;
     private String localErrorDir;
     private String localBackupDir;
+    private String localMoveDir;
+    private String localCopyDir;
 
     private String remoteSendDir;
     private String remoteReceiveDir;
@@ -22,6 +24,8 @@ public class FileTemplate {
     private String remoteSuccessDir;
     private String remoteErrorDir;
     private String remoteBackupDir;
+    private String remoteMoveDir;
+    private String remoteCopyDir;
 
     private String fileNamePattern = "*";
     private FileType type = FileType.ALL;
@@ -34,12 +38,16 @@ public class FileTemplate {
             case LOCAL_SUCCESS: return localSuccessDir;
             case LOCAL_ERROR: return localErrorDir;
             case LOCAL_BACKUP: return localBackupDir;
+            case LOCAL_MOVE: return localMoveDir;
+            case LOCAL_COPY: return localCopyDir;
             case REMOTE_SEND: return remoteSendDir;
             case REMOTE_RECEIVE: return remoteReceiveDir;
             case REMOTE_TEMP: return remoteTempDir;
             case REMOTE_SUCCESS: return remoteSuccessDir;
             case REMOTE_ERROR: return remoteErrorDir;
             case REMOTE_BACKUP: return remoteBackupDir;
+            case REMOTE_MOVE: return remoteMoveDir;
+            case REMOTE_COPY: return remoteCopyDir;
             default: return null;
         }
     }
@@ -52,12 +60,16 @@ public class FileTemplate {
             case LOCAL_SUCCESS:this.localSuccessDir = dir; break;
             case LOCAL_ERROR: this.localErrorDir = dir; break;
             case LOCAL_BACKUP: this.localBackupDir = dir; break;
+            case LOCAL_MOVE: this.localMoveDir = dir; break;
+            case LOCAL_COPY: this.localCopyDir = dir; break;
             case REMOTE_SEND: this.remoteSendDir = dir; break;
             case REMOTE_RECEIVE: this.remoteReceiveDir = dir; break;
             case REMOTE_TEMP: this.remoteTempDir = dir; break;
             case REMOTE_SUCCESS: this.remoteSuccessDir = dir; break;
             case REMOTE_ERROR: this.remoteErrorDir = dir; break;
             case REMOTE_BACKUP: this.remoteBackupDir = dir; break;
+            case REMOTE_MOVE: this.remoteMoveDir = dir; break;
+            case REMOTE_COPY: this.remoteCopyDir = dir; break;
         }
     }
 

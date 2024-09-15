@@ -216,6 +216,38 @@
             </list>
         </entry>
 
+        <entry key="FILE_COPY">
+            <list>
+                <bean class="mb.dnm.service.file.ListFiles">
+                    <property name="sourceAlias"                    value="SRC"/>
+                    <property name="directoryType"                  value="LOCAL_SEND"/>
+                    <property name="createDirectoriesWhenNotExist"  value="true"/>
+                    <property name="searchRecursively"              value="true"/>
+                    <property name="output"                         value="file_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="input"                          value="file_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="file_list"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+                <bean class="mb.dnm.service.file.CopyFiles">
+                    <property name="sourceAlias"                    value="SRC"/>
+                    <property name="input"                          value="file_list"/>
+                    <property name="directoryType"                  value="LOCAL_COPY"/>
+                    <property name="output"                         value="copied_list"/>
+                    <property name="errorOutput"                    value="error_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="copied_list"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+            </list>
+        </entry>
+
     </util:map>
 
 

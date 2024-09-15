@@ -8,7 +8,7 @@ import mb.dnm.code.DirectoryType;
 import mb.dnm.code.FileType;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
-import mb.dnm.storage.FileTemplate;
+import mb.dnm.access.file.FileTemplate;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.FileUtil;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
