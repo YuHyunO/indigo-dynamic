@@ -178,6 +178,12 @@
             </list>
         </entry>
 
+        <entry key="FILE_UPLOAD">
+            <list>
+                <bean class="mb.dnm.service.file.ListFiles"/>
+            </list>
+        </entry>
+
     </util:map>
 
 
