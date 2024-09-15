@@ -63,6 +63,7 @@
                         <property name="localTempDir"           value="C:\FileStorage\temp\@{if_id}"/>
                         <property name="localSuccessDir"        value="C:\FileStorage\success\@{if_id}"/>
                         <property name="localErrorDir"          value="C:\FileStorage\error\@{if_id}"/>
+                        <property name="localBackupDir"         value="C:\FileStorage\backup\@{if_id}"/>
                         <property name="type"                   value="ALL"/>
                         <!--<property name="fileNamePattern"        value="*.p*"/>-->
                     </bean>
@@ -73,6 +74,7 @@
                 </list>
             </property>
         </bean>
+
 
     </util:list>
 

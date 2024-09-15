@@ -12,10 +12,12 @@ import mb.dnm.storage.FileTemplate;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.FileUtil;
 import mb.dnm.util.MessageUtil;
-import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,7 +49,7 @@ import java.util.Map;
  *
  * 보통 <code>mb.dnm.service.ftp.ListFiles</code> 서비스와 연계해서 사용한다.
  *
- * @see ListFiles
+ * @see mb.dnm.service.ftp.ListFiles
  * @see mb.dnm.access.file.FileList
  *
  * @author Yuhyun O
@@ -107,7 +109,7 @@ public class DownloadFiles extends AbstractFTPService {
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         if (getInput() == null) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "DownloadFiles service must have the input parameter in which contain");
+            throw new InvalidServiceConfigurationException(this.getClass(), "DownloadFiles service must have the input parameter in which contain the files to download");
         }
 
         InterfaceInfo info = ctx.getInfo();
@@ -122,15 +124,13 @@ public class DownloadFiles extends AbstractFTPService {
             return;
         }
 
-        String baseDir = null;
-        /*파일을 다운로드 할 때 FTP 서버의 디렉터리 구조 그대로 다운로드할 지 판단하는 flag이다.
-        input 데이터 타입이 FileList인 경우에만 유효하다.
+        /*파일을 다운로드 할 때 FTP 서버의 디렉터리 구조 그대로 다운로드 할 지 판단하는 flag이다.
+        input 데이터 타입이 FileList인 경우에만 적용된다.
         */
         boolean saveStructureAsIs = false;
         try {
             if (inputVal instanceof FileList) {
                 FileList fileList = (FileList) inputVal;
-                baseDir = fileList.getBaseDirectory();
                 targetFileNames = fileList.getFileList();
                 saveStructureAsIs = true;
 
@@ -154,7 +154,7 @@ public class DownloadFiles extends AbstractFTPService {
         FTPSession session = getFTPSession(ctx, srcName);
         FTPClient ftp = session.getFTPClient();
 
-        // 파일 다운로드 중 에러가 나는 경우 그 파일의 FTP 경로를 저장할 리스트를 생성
+        // 파일 다운로드 중 에러가 나는 경우 그 파일의 FTP 경로가 담길 리스트를 생성
         List<String> errorFilePaths = new ArrayList<>();
         int inputListSize = targetFileNames.size();
         int dirCount = 0;
@@ -173,6 +173,7 @@ public class DownloadFiles extends AbstractFTPService {
             if (savePath.contains("@{if_id}")) {
                 savePath = savePath.replace("@{if_id}", ctx.getInterfaceId());
             }
+            //PlaceHolder mapping 을 적용할 것
 
             Path path = Paths.get(savePath);
             if (!Files.exists(path)) {

@@ -8,12 +8,9 @@ import mb.dnm.code.FileType;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.SourceAccessService;
-import mb.dnm.service.ftp.FTPLogin;
 import mb.dnm.storage.FileTemplate;
 import mb.dnm.storage.InterfaceInfo;
-import mb.dnm.util.FileUtil;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -28,11 +25,10 @@ import java.util.List;
  * 접근 가능한 디스크의 파일 또는 디렉터리 목록을 가져온다.
  * 어느 경로의 어떤 파일 목록을 가져올 지에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.
  *
- * @see FTPLogin
  * @see mb.dnm.access.file.FileList
  *
  * @author Yuhyun O
- * @version 2024.09.10
+ * @version 2024.09.15
  *
  * @Input List를 가져올 Directory의 경로
  * @InputType <code>String</code>
@@ -45,7 +41,7 @@ import java.util.List;
 public class ListFiles extends SourceAccessService {
     /**
      * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 가져올 경로로써 사용할 지 결정된다.<br><br>
-     * -기본값: <code>REMOTE_SEND</code><br>
+     * -기본값: <code>LOCAL_SEND</code><br>
      * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 파일목록을 가져올 경로로 사용함<br>
      * -REMOTE_RECEIVE → <code>FileTemplate#remoteReceiveDir</code> 을 파일목록을 가져올 경로로 사용함<br>
      * -REMOTE_TEMP → <code>FileTemplate#remoteTempDir</code> 을 파일목록을 가져올 경로로 사용함<br>
@@ -61,7 +57,7 @@ public class ListFiles extends SourceAccessService {
      * */
     private DirectoryType directoryType = DirectoryType.LOCAL_SEND;
     private String listDirectory;
-    private String fileNamePattern;
+    private String fileNamePattern = "*";
     private FileType type = FileType.ALL;
     /**
      * 기본값: false<br>
@@ -81,7 +77,7 @@ public class ListFiles extends SourceAccessService {
     public void process(ServiceContext ctx) throws Throwable {
         InterfaceInfo info = ctx.getInfo();
         String srcName = info.getSourceNameByAlias(getSourceAlias());
-        String tmpFileNamePattern = fileNamePattern = "*";
+        String tmpFileNamePattern = fileNamePattern;
         FileType tmpType = type;
 
         String targetPath = null;

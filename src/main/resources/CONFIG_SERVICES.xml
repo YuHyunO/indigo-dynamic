@@ -191,6 +191,11 @@
                     <property name="printToXmlWhenCollection"   value="true"/>
                     <property name="indented"                   value="true"/>
                 </bean>
+                <bean class="mb.dnm.service.file.MoveFiles">
+                    <property name="sourceAlias"                value="SRC"/>
+                    <property name="input"                      value="local_file_list"/>
+                    <property name="directoryType"              value="LOCAL_SUCCESS"/>
+                </bean>
             </list>
         </entry>
 
