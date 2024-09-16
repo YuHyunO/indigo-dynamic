@@ -81,7 +81,7 @@ public class CopyFiles extends SourceAccessService {
             return;
         }
 
-        /*파일을 복사 할 때 FTP 서버의 디렉터리 구조 그대로 복사 할 지 판단하는 flag이다.
+        /*파일을 복사 할 때 원본 디렉터리 구조 그대로 복사 할 지 판단하는 flag이다.
         input 데이터 타입이 FileList인 경우에만 적용된다.
         */
         boolean saveStructureAsIs = false;
