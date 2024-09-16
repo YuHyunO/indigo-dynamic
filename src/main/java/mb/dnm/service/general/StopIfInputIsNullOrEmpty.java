@@ -22,7 +22,7 @@ public class StopIfInputIsNullOrEmpty extends ParameterAssignableService {
         if (inputVal instanceof Collection) {
             if (((Collection) inputVal).isEmpty()) {
                 ctx.setProcessOn(false);
-                log.info("[{}]Input value is empty. set process off", ctx.getTxId());
+                log.info("[{}]Input value is empty. The service process will be stop", ctx.getTxId());
                 return;
             }
         }
@@ -30,7 +30,7 @@ public class StopIfInputIsNullOrEmpty extends ParameterAssignableService {
         if (inputVal instanceof EmptyCheckable) {
             if (((EmptyCheckable) inputVal).isEmpty()) {
                 ctx.setProcessOn(false);
-                log.info("[{}]Input value is empty. set process off", ctx.getTxId());
+                log.info("[{}]Input value is empty. The service process will be stop", ctx.getTxId());
                 return;
             }
         }
