@@ -15,6 +15,7 @@ public class ExecutorTemplate {
     private DataSource dataSource;
     private Resource configLocation;
     private Resource[] mapperLocations;
+    private int defaultPatchSize = 65535;
 
     public String getName() {
         return templateName;
