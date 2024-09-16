@@ -30,7 +30,7 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
             String executorName = entry.getKey();
             TransactionContext txCtx = entry.getValue();
             TransactionStatus txStatus = txCtx.getTransactionStatus();
-            log.info("TxStatus: {}, Executor: {}", txStatus, executorName); //Logging for test
+            //log.info("TxStatus: {}, Executor: {}", txStatus, executorName); //Logging for test
             if (txStatus != null) {
                 if (!txStatus.isCompleted()) {
                     DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
