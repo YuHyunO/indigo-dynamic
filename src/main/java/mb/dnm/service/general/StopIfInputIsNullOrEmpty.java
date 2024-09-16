@@ -15,7 +15,7 @@ public class StopIfInputIsNullOrEmpty extends ParameterAssignableService {
         Object inputVal = getInputValue(ctx);
         if (inputVal == null) {
             ctx.setProcessOn(false);
-            log.info("[{}]Input value is null. set process off", ctx.getTxId());
+            log.info("[{}]Input value is null. The service process will be stop", ctx.getTxId());
             return;
         }
 
