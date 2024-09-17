@@ -340,6 +340,42 @@
                 </bean>
             </list>
         </entry>
+
+        <entry key="FTP_UPLOAD">
+            <list>
+                <bean class="mb.dnm.service.file.ListFiles">
+                    <property name="sourceAlias"                    value="SRC"/>
+                    <property name="searchRecursively"              value="true"/>
+                    <property name="directoryType"                  value="LOCAL_BACKUP"/>
+                    <property name="createDirectoriesWhenNotExist"  value="true"/>
+                    <property name="output"                         value="file_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="input"                          value="file_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="file_list"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+                <bean class="mb.dnm.service.ftp.UploadFiles">
+                    <property name="sourceAlias"                    value="TGT"/>
+                    <property name="input"                          value="file_list"/>
+                    <property name="output"                         value="uploaded_list"/>
+                    <property name="directoryType"                  value="REMOTE_RECEIVE"/>
+                </bean>
+                <bean class="mb.dnm.service.file.MoveFiles">
+                    <property name="sourceAlias"                    value="SRC"/>
+                    <property name="input"                          value="uploaded_list"/>
+                    <property name="directoryType"                  value="LOCAL_SUCCESS"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="uploaded_list"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+            </list>
+        </entry>
     </util:map>
 
 

@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class TxIdGenerator {
+    private TxIdGenerator() {}
+
     public static String generateTxId(String interfaceId, Date startTime) {
         StringBuilder sb = new StringBuilder();
         sb.append(interfaceId);

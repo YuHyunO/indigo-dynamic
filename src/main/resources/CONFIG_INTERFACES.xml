@@ -142,6 +142,26 @@
                 </list>
             </property>
         </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="FTP_UPLOAD_IF_TEST"/>
+            <property name="description"            value="FTP 인터페이스 테스트"/>
+            <property name="serviceId"              value="FTP_UPLOAD"/>
+            <property name="sourceAliases"          value="SRC:LOCAL_DISK, TGT:FTP2"/>
+            <property name="fileTemplates">
+                <list>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"           value="LOCAL_DISK"/>
+                        <property name="localBackupDir"         value="C:\FileStorage\backup\@{if_id}"/>
+                        <property name="localSuccessDir"        value="C:\FileStorage\success\@{if_id}"/>
+                    </bean>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"           value="FTP2"/>
+                        <property name="remoteReceiveDir"       value="/@{if_id}/receive"/>
+                    </bean>
+                </list>
+            </property>
+        </bean>
     </util:list>
 
 

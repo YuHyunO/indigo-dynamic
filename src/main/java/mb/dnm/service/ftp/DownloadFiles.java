@@ -157,6 +157,10 @@ public class DownloadFiles extends AbstractFTPService {
 
         FTPSession session = getFTPSession(ctx, srcName);
         FTPClient ftp = session.getFTPClient();
+        String pathSeparator = String.valueOf(ftp.printWorkingDirectory().charAt(0)).trim();
+        if (pathSeparator.equals("null") || pathSeparator.isEmpty()) {
+            pathSeparator = "/";
+        }
 
         // 파일 다운로드 중 에러가 나는 경우 그 파일의 FTP 경로가 담길 리스트를 생성
         List<String> errorFilePaths = new ArrayList<>();
@@ -218,7 +222,7 @@ public class DownloadFiles extends AbstractFTPService {
                     os = Files.newOutputStream(localPath);
 
                     //파일경로가 디렉터리 구조인 경우에는 다운로드 시도 안함.
-                    if (!(ftpPath.endsWith("/") || ftpPath.endsWith("\\"))) {
+                    if (!(ftpPath.endsWith(pathSeparator))) {
                         if (ftp.retrieveFile(ftpPath, os)) {
                             localSavedPaths.add(localPath.toString());
                             ++successCount;

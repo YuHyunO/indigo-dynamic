@@ -60,7 +60,6 @@ public class ListFiles extends AbstractFTPService {
     private String listDirectory;
     private String fileNamePattern = "*";
     private FileType type = FileType.ALL;
-    private String pathSeparator;
     /**
      * 목록을 탐색하려는 경로로 지정된 디렉터리가 존재하지 않는 경우 새로 생성하는 옵션 (기본값: false)
      * */
@@ -128,11 +127,9 @@ public class ListFiles extends AbstractFTPService {
 
         WildcardFileFilter filter = new WildcardFileFilter(tmpFileNamePattern);
         FTPClient ftp = session.getFTPClient();
-        if (pathSeparator == null) {
-            pathSeparator = String.valueOf(ftp.printWorkingDirectory().charAt(0));
-            if (pathSeparator == "null") {
-                pathSeparator = "/";
-            }
+        String pathSeparator = String.valueOf(ftp.printWorkingDirectory().charAt(0));
+        if (pathSeparator.equals("null")) {
+            pathSeparator = "/";
         }
 
         FileList fileList = new FileList();
@@ -180,7 +177,7 @@ public class ListFiles extends AbstractFTPService {
                         fileName += pathSeparator;
                     searchedFileList.add(fileName);
                     if (searchRecursively) {
-                        searchedFileList.addAll(searchRecursively(ftp, workingDir, fileName));
+                        searchedFileList.addAll(searchRecursively(ftp, workingDir, fileName, pathSeparator));
                     }
 
                 } else if (tmpType == FileType.FILE) {
@@ -194,7 +191,7 @@ public class ListFiles extends AbstractFTPService {
                             fileName += pathSeparator;
                         searchedFileList.add(fileName);
                         if (searchRecursively) {
-                            searchedFileList.addAll(searchRecursively(ftp, workingDir, fileName));
+                            searchedFileList.addAll(searchRecursively(ftp, workingDir, fileName, pathSeparator));
                         }
                     } else {
                         searchedFileList.add(fileName);
@@ -216,7 +213,7 @@ public class ListFiles extends AbstractFTPService {
      * @param dirName 재귀적으로 탐색하고자 하는 디렉터리 경로
      *                  
      * */
-    private List<String> searchRecursively(FTPClient ftp, String workingDir, String dirName) throws IOException {
+    private List<String> searchRecursively(FTPClient ftp, String workingDir, String dirName, String pathSeparator) throws IOException {
         List<String> innerFiles = new ArrayList<>();
 
         if (dirName.equals(pathSeparator)) {
@@ -248,7 +245,7 @@ public class ListFiles extends AbstractFTPService {
                     if (!pathAfterWorkingDir.endsWith(pathSeparator))
                         pathAfterWorkingDir += pathSeparator;
                     innerFiles.add(pathAfterWorkingDir);
-                    innerFiles.addAll(searchRecursively(ftp, workingDir, pathAfterWorkingDir));
+                    innerFiles.addAll(searchRecursively(ftp, workingDir, pathAfterWorkingDir, pathSeparator));
                 } else {
                     innerFiles.add(pathAfterWorkingDir);
                 }

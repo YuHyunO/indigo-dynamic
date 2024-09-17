@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MessageUtil {
+    private MessageUtil() {}
 
     public static StringBuffer toStringBuf(Throwable throwable) {
         if (throwable == null)

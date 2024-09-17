@@ -11,6 +11,7 @@ import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
+import mb.dnm.util.FTPUtil;
 import mb.dnm.util.FileUtil;
 import mb.dnm.util.MessageUtil;
 import org.apache.commons.net.ftp.FTPClient;
@@ -81,7 +82,6 @@ public class MoveFiles extends AbstractFTPService {
         String srcName = getFTPSourceName(info);
         String txId = ctx.getTxId();
 
-        //input으로 전달된 다운로드 대상 파일에 대한 정보의 타입을 검증하고 이 서비스에서 사용되는 공통된 형식으로 맞춰주는 과정
         Object inputVal = getInputValue(ctx);
         List<String> targetFileNames = new ArrayList<>();
         if (inputVal == null) {
@@ -89,9 +89,6 @@ public class MoveFiles extends AbstractFTPService {
             return;
         }
 
-        /*파일을 다운로드 할 때 FTP 서버의 디렉터리 구조 그대로 다운로드 할 지 판단하는 flag이다.
-        input 데이터 타입이 FileList인 경우에만 적용된다.
-        */
         String baseDir = null;
         try {
             if (inputVal instanceof FileList) {
@@ -125,6 +122,10 @@ public class MoveFiles extends AbstractFTPService {
 
         FTPSession session = getFTPSession(ctx, srcName);
         FTPClient ftp = session.getFTPClient();
+        String pathSeparator = String.valueOf(ftp.printWorkingDirectory().charAt(0)).trim();
+        if (pathSeparator.equals("null") || pathSeparator.isEmpty()) {
+            pathSeparator = "/";
+        }
 
         List<String> movedFileList = new ArrayList<>();
         // 파일 이동 중 에러가 나는 경우 그 파일의 FTP 경로가 담길 리스트를 생성
@@ -144,8 +145,12 @@ public class MoveFiles extends AbstractFTPService {
         }
         //PlaceHolder mapping 을 적용할 것
 
-        if (!savePath.endsWith("/")) {
-            savePath = savePath + "/";
+        if (!savePath.endsWith(pathSeparator)) {
+            savePath = savePath + pathSeparator;
+        }
+
+        if (!FTPUtil.isDirectoryExists(ftp, savePath)) {
+            ftp.makeDirectory(savePath);
         }
 
         Collections.sort(targetFileNames, new Comparator<String>() {
@@ -163,9 +168,9 @@ public class MoveFiles extends AbstractFTPService {
                 newPath = savePath + targetFile;
             } else {
                 String tmpTargetFile = null;
-                if (targetFile.endsWith("/")) {
+                if (targetFile.endsWith(pathSeparator)) {
                     tmpTargetFile = targetFile.substring(0, targetFile.length() - 1);
-                    tmpTargetFile = tmpTargetFile.substring(tmpTargetFile.lastIndexOf("/") + 1);
+                    tmpTargetFile = tmpTargetFile.substring(tmpTargetFile.lastIndexOf(pathSeparator) + 1);
                 }
                 oldPath = targetFile;
                 newPath = savePath + tmpTargetFile;

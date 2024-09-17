@@ -17,6 +17,8 @@ public class TimeUtil {
     public static final String JDBC_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:sss.SSSSSSSSS";
     public static final String JDBC_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
+    private TimeUtil(){}
+
     public static String getFormattedTime(Date date, String format) {
         SimpleDateFormat formatter = new SimpleDateFormat(format);
         return formatter.format(date);

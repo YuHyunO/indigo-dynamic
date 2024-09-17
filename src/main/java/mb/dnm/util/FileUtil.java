@@ -3,6 +3,7 @@ package mb.dnm.util;
 import java.io.File;
 
 public class FileUtil {
+    private FileUtil(){}
 
     public static String removeLastPathSeparator(String path) {
         StringBuilder sb = new StringBuilder(path.trim());
@@ -34,6 +35,17 @@ public class FileUtil {
         }else {
             return "\\";
         }
+    }
+
+    public static String replaceSeparator(String path, String separator) {
+        if (separator == null || separator.isEmpty() || !(separator.equals("/") || separator.equals("\\"))) {
+            throw new IllegalArgumentException("Invalid separator: " + separator);
+        }
+        String oldSep = supposeFileSeparator(path);
+        if (!separator.equals(oldSep)) {
+            return path.replace(oldSep, separator);
+        }
+        return path;
     }
 
     public static String replaceToOSFileSeparator(String path) {

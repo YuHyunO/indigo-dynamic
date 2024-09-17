@@ -15,6 +15,7 @@ public class FilePathTest {
     public void path_test() {
         Path local = Paths.get("C:\\FTPdownload\\");
         Path parentDir = Paths.get(FileUtil.replaceToOSFileSeparator("inner/test/sasd.txt/")).getParent();
+        log.info("{}", "\\".length());
         log.info("Filename: {}", local);
         log.info("Parent: {}", parentDir);
         log.info("Local Path: {}", Paths.get(local.toString(), parentDir.toString()));
