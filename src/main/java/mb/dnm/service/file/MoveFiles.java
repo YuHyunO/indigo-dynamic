@@ -216,7 +216,7 @@ public class MoveFiles extends SourceAccessService {
             Collections.sort(sortingList, new Comparator<Path>() {
                 @Override
                 public int compare(Path o1, Path o2) {
-                    return Integer.compare(o2.toString().length(), o1.toString().length());
+                    return (o2.toString()).compareToIgnoreCase(o1.toString());
                 }
             });
 

@@ -147,7 +147,7 @@ public class CopyFiles extends SourceAccessService {
         log.info("[{}]Copying files ...", txId);
         for (String oldFilePathStr : targetFilePaths) {
             Path oldPath = null;
-            Path pathToMv = null;
+            Path pathToCp = null;
             boolean dirFlag = false;
 
             //saveStructureAsIs가 true인 경우 즉, input 객체로 FileList가 전달된 경우 본래의 디렉터리 구조를 그대로 하여 파일을 복사 하기 위해 복사할 파일 경로에도 동일한 디렉터리 구조를 만드는 과정이다.
@@ -160,10 +160,10 @@ public class CopyFiles extends SourceAccessService {
                 Path dirToMade = Paths.get(dirToMadeBf.toString());
                 if (dirToMadeBf.charAt(dirToMadeBf.length() - 1) != File.separatorChar) {//파일인 경우 dirToMade에 그 상위 디렉터리를 지정한다.
                     dirToMade = dirToMade.getParent();
-                    pathToMv = Paths.get(dirToMade.toString(), new File(oldFilePathStr).getName());
+                    pathToCp = Paths.get(dirToMade.toString(), new File(oldFilePathStr).getName());
                 } else {
                     dirFlag = true;
-                    pathToMv = dirToMade;
+                    pathToCp = dirToMade;
                 }
 
                 if (!Files.exists(dirToMade)) {
@@ -174,29 +174,29 @@ public class CopyFiles extends SourceAccessService {
             } else {
                 dirFlag = oldFilePathStr.endsWith(File.separator);
                 oldPath = Paths.get(oldFilePathStr);
-                pathToMv = Paths.get(savePath, new File(oldFilePathStr).getName());
+                pathToCp = Paths.get(savePath, new File(oldFilePathStr).getName());
             }
 
             try {
                 //위에서 saveStructureAsIs가 true 인 경우 필요한 디렉터리들을 만들었다면 이 부분은 빈 파일을 생성하는 과정이다.
-                if (!Files.exists(pathToMv)) {
-                    Files.createFile(pathToMv);
+                if (!Files.exists(pathToCp)) {
+                    Files.createFile(pathToCp);
                 }
                 
                 if (!dirFlag) {
                     if (Files.exists(oldPath)) {
-                        Path copied = Files.copy(oldPath, pathToMv, StandardCopyOption.REPLACE_EXISTING);
+                        Path copied = Files.copy(oldPath, pathToCp, StandardCopyOption.REPLACE_EXISTING);
                         movedFileList.add(copied.toString());
                         ++successCount;
                     } else {
                         ++notExistInSource;
                     }
                 } else {
-                    pathsToCopiedLast.put(oldPath, pathToMv);
+                    pathsToCopiedLast.put(oldPath, pathToCp);
                     ++dirCount;
                 }
                 if (debuggingWhenCopied) {
-                    log.debug("[{}]File copy success. Old path: \"{}\", copied path: \"{}\"", txId, oldPath, pathToMv);
+                    log.debug("[{}]File copy success. Old path: \"{}\", copied path: \"{}\"", txId, oldPath, pathToCp);
                 }
 
             } catch (Throwable t) {
@@ -216,20 +216,20 @@ public class CopyFiles extends SourceAccessService {
             Collections.sort(sortingList, new Comparator<Path>() {
                 @Override
                 public int compare(Path o1, Path o2) {
-                    return Integer.compare(o2.toString().length(), o1.toString().length());
+                    return (o2.toString()).compareToIgnoreCase(o1.toString());
                 }
             });
 
             for (Path oldPath : sortingList) {
-                Path pathToMv = pathsToCopiedLast.get(oldPath);
+                Path pathToCp = pathsToCopiedLast.get(oldPath);
                 try {
                     try {
-                        if (!Files.exists(pathToMv)) {
-                            Files.copy(oldPath, pathToMv, StandardCopyOption.REPLACE_EXISTING);
+                        if (!Files.exists(pathToCp)) {
+                            Files.copy(oldPath, pathToCp, StandardCopyOption.REPLACE_EXISTING);
                         }
                         ++successCount;
                         if (debuggingWhenCopied) {
-                            log.debug("[{}]Directory copy success. Old path: \"{}\", copied path: \"{}\"", txId, oldPath, pathToMv);
+                            log.debug("[{}]Directory copy success. Old path: \"{}\", copied path: \"{}\"", txId, oldPath, pathToCp);
                         }
                     } catch (DirectoryNotEmptyException de) {}
                 } catch (Throwable t) {

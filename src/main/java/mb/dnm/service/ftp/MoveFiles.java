@@ -74,7 +74,7 @@ public class MoveFiles extends AbstractFTPService {
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         if (getInput() == null) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "DownloadFiles service must have the input parameter in which contain the files to download");
+            throw new InvalidServiceConfigurationException(this.getClass(), "MoveFiles service must have the input parameter in which contain the files to move");
         }
 
         InterfaceInfo info = ctx.getInfo();
@@ -85,7 +85,7 @@ public class MoveFiles extends AbstractFTPService {
         Object inputVal = getInputValue(ctx);
         List<String> targetFileNames = new ArrayList<>();
         if (inputVal == null) {
-            log.debug("The value of input '{}' is not found. No list of file path to download found in context data.", getInput());
+            log.debug("The value of input '{}' is not found. No list of file path to move found in context data.", getInput());
             return;
         }
 
@@ -105,14 +105,14 @@ public class MoveFiles extends AbstractFTPService {
             } else if (inputVal instanceof List) {
                 Set<String> tmpSet = new HashSet<>((List<String>) inputVal);
                 if (tmpSet.isEmpty()) {
-                    log.debug("The value of input '{}' is not found. No list of file path to download found in context data.", getInput());
+                    log.debug("The value of input '{}' is not found. No list of file path to move found in context data.", getInput());
                     return;
                 }
                 targetFileNames.addAll(tmpSet);
             } else if (inputVal instanceof Set) {
                 Set<String> tmpSet = new HashSet<>((Set<String>) inputVal);
                 if (tmpSet.isEmpty()) {
-                    log.debug("The value of input '{}' is not found. No list of file path to download found in context data.", getInput());
+                    log.debug("The value of input '{}' is not found. No list of file path to move found in context data.", getInput());
                     return;
                 }
                 targetFileNames.addAll(tmpSet);
@@ -132,7 +132,6 @@ public class MoveFiles extends AbstractFTPService {
         int inputListSize = targetFileNames.size();
         int successCount = 0;
 
-        // outPutDataType 이 dataTypeDataType.FILE 인 경우 InterfaceInfo에서 FileTemplate을 가져와 directoryType 과 일치하는 경로에 파일을 저장함
         FileTemplate template = info.getFileTemplate(srcName);
         String savePath = null;
         if (template == null)
