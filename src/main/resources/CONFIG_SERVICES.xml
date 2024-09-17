@@ -248,6 +248,46 @@
             </list>
         </entry>
 
+        <entry key="FTP_MOVE">
+            <list>
+                <!--<bean class="mb.dnm.service.ftp.ListFiles">
+                    <property name="sourceAlias"        value="SRC"/>
+                    <property name="directoryType"      value="REMOTE_SEND"/>
+                    <property name="output"             value="old_paths"/>
+                </bean>-->
+                <bean class="mb.dnm.service.general.OutputCustomData">
+                    <property name="customData">
+                        <set>
+                            <value>/send/초급영문법/</value>
+                        </set>
+                    </property>
+                    <property name="output"                         value="old_paths"/>
+                </bean>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="input"                          value="old_paths"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PauseProcess">
+                    <property name="millisecond"                    value="5000"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="old_paths"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+                <bean class="mb.dnm.service.ftp.MoveFiles">
+                    <property name="sourceAlias"                    value="SRC"/>
+                    <property name="input"                          value="old_paths"/>
+                    <property name="debuggingWhenMoved"             value="true"/>
+                    <property name="output"                         value="moved_path"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="moved_path"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+            </list>
+        </entry>
+
     </util:map>
 
 

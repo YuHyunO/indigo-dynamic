@@ -97,6 +97,22 @@
             </property>
         </bean>
 
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="FTP_MOVE_IF_TEST"/>
+            <property name="description"            value="FTP 인터페이스 테스트"/>
+            <property name="serviceId"              value="FTP_MOVE"/>
+            <property name="sourceAliases"          value="SRC:FTP2, TGT:FTP1"/>
+            <property name="fileTemplates">
+                <list>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"           value="FTP2"/>
+                        <property name="remoteSendDir"          value="/send"/>
+                        <property name="remoteMoveDir"          value="/receive"/>
+                    </bean>
+                </list>
+            </property>
+        </bean>
+
     </util:list>
 
 
