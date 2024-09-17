@@ -150,8 +150,8 @@ public class MoveFiles extends AbstractFTPService {
 
         Collections.sort(targetFileNames, new Comparator<String>() {
             @Override
-            public int compare(String p1, String p2) {
-                return Integer.compare(p2.length(), p1.length());
+            public int compare(String o1, String o2) {
+                return o2.compareToIgnoreCase(o1);
             }
         });
 

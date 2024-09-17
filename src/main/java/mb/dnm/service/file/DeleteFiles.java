@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import mb.dnm.access.file.FileList;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
-import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,7 +26,7 @@ import java.util.*;
  * @Input 삭제할 파일의 경로
  * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code><br>
  * input이 List로 전달되는 경우 중복된 경로가 존재하더라도 내부적으로 Set 객체에 다시 담기게 되므로 중복값이 제거된다.
- * @Output 삭제할 파일의 삭제 후 경로 리스트
+ * @Output 삭제된 파일의 삭제 전 경로
  * @OutputType <code>List&lt;String&gt;</code>
  * @ErrorOutput 파일을 삭제하는 중 에러가 발생하여 삭제에 실패하는 경우 에러가 발생한 파일의 경로
  * @ErrorOutputType <code>List&lt;String&gt;</code>
@@ -88,13 +88,13 @@ public class DeleteFiles extends SourceAccessService {
             throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not String or List<String> or Set<String> or FileList. Inputted value's type: " + inputVal.getClass().getName());
         }
 
-        List<String> movedFileList = new ArrayList<>();
+        List<String> deletedFileList = new ArrayList<>();
         List<String> errorFilePaths = new ArrayList<>();
         int inputListSize = targetFilePaths.size();
         int successCount = 0;
         int notExistInSource = 0;
 
-        //최상위 파일부터 삭제할 수 있도록 정렬한다.
+        //DirectoryNotEmptyException을 방지하기 위해 최하위 파일부터 삭제할 수 있도록 정렬한다.
         List<String> sortingList = new ArrayList<>(targetFilePaths);
         Collections.sort(sortingList, new Comparator<String>() {
             @Override
@@ -109,6 +109,7 @@ public class DeleteFiles extends SourceAccessService {
             if (Files.exists(path)) {
                 try {
                     Files.delete(path);
+                    deletedFileList.add(targetFilePath);
                     ++successCount;
                     if (debuggingWhenDeleted) {
                         log.debug("[{}]The file '{}' is deleted.", txId, targetFilePath);
@@ -128,7 +129,7 @@ public class DeleteFiles extends SourceAccessService {
         }
 
         if (getOutput() != null) {
-            setOutputValue(ctx, movedFileList);
+            setOutputValue(ctx, deletedFileList);
         }
         if (getErrorOutput() != null) {
             if (!errorFilePaths.isEmpty()) {

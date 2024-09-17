@@ -16,6 +16,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +61,10 @@ public class ListFiles extends AbstractFTPService {
     private String fileNamePattern = "*";
     private FileType type = FileType.ALL;
     private String pathSeparator;
+    /**
+     * 목록을 탐색하려는 경로로 지정된 디렉터리가 존재하지 않는 경우 새로 생성하는 옵션 (기본값: false)
+     * */
+    private boolean createDirectoriesWhenNotExist = false;
     /**
      * 기본값: false<br>
      * 파일 목록을 탐색할 경로가 디렉터리인 경우 그 디렉터리의 하부 파일들을 재귀적으로 탐색할 지에 대한 여부를 결정한다.
@@ -134,9 +139,23 @@ public class ListFiles extends AbstractFTPService {
         List<String> searchedFileList = new ArrayList<>();
         
         if (!ftp.changeWorkingDirectory(targetPath)) {
-            String reply = ftp.getReplyString().trim();
-            log.warn("[{}]Can not change directory to '{}'. Reply: {}", ctx.getTxId(), targetPath, reply);
-            throw new InvalidServiceConfigurationException(this.getClass(), ftp.getReplyString().trim());
+            String reply1 = ftp.getReplyString();
+            boolean success = false;
+            if (createDirectoriesWhenNotExist) {
+                log.debug("[{}]Can not change directory to '{}'. Trying create the directory. Reply: {}", ctx.getTxId(), targetPath, reply1);
+                log.info("[{}]Creating the directory '{}' ...", ctx.getTxId(), targetPath);
+                if (ftp.makeDirectory(targetPath)) {
+                    if (ftp.changeWorkingDirectory(targetPath)) {
+                        success = true;
+                    }
+                }
+            }
+
+            if (!success) {
+                String reply2 = ftp.getReplyString().trim();
+                log.warn("[{}]Can not create and change directory '{}'. Reply: {}", ctx.getTxId(), targetPath, reply2);
+                throw new InvalidServiceConfigurationException(this.getClass(), ftp.getReplyString().trim());
+            }
         }
 
         FTPFile[] files = ftp.listFiles();

@@ -211,7 +211,7 @@ public class MoveFiles extends SourceAccessService {
 
         if (!pathsToMovedLast.isEmpty()) {
 
-            //디렉터리를 하위 디렉터리부터 이동한 뒤 삭제할 수 있도록 정렬한다.
+            //DirectoryNotEmptyException을 방지하기 위해 최하위 파일부터 이동할 수 있도록 정렬한다.
             List<Path> sortingList = new ArrayList<>(pathsToMovedLast.keySet());
             Collections.sort(sortingList, new Comparator<Path>() {
                 @Override

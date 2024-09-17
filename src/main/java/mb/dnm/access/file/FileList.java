@@ -34,7 +34,7 @@ public class FileList implements EmptyCheckable {
         List<String> result = new ArrayList<>();
 
         for (String file : fileList) {
-            result.add(Paths.get(baseDirectory, file).toString());
+            result.add(baseDirectory + file);
         }
 
         return result;

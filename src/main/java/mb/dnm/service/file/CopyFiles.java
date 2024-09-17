@@ -211,7 +211,7 @@ public class CopyFiles extends SourceAccessService {
 
         if (!pathsToCopiedLast.isEmpty()) {
 
-            //디렉터리를 하위 디렉터리부터 복사할 수 있도록 정렬한다.
+            //DirectoryNotEmptyException을 방지하기 위해 최하위 파일부터 복사할 수 있도록 정렬한다.
             List<Path> sortingList = new ArrayList<>(pathsToCopiedLast.keySet());
             Collections.sort(sortingList, new Comparator<Path>() {
                 @Override

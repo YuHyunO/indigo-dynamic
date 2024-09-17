@@ -109,7 +109,7 @@ public class ListFiles extends SourceAccessService {
                 throw new InvalidServiceConfigurationException(this.getClass(), "The File template with name '" + srcName + "' of the interface '" + info.getInterfaceId() + "' is null.");
             targetPath = template.getFilePath(directoryType);
             if (targetPath == null)
-                throw new InvalidServiceConfigurationException(this.getClass(), "The value of " + directoryType + " of the template with name '" + srcName + "' is null");
+                throw new InvalidServiceConfigurationException(this.getClass(), "The file path of " + directoryType + " of the template with name '" + srcName + "' is null");
             tmpFileNamePattern = template.getFileNamePattern();
             tmpType = template.getType();
         }
