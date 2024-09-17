@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import mb.dnm.access.ftp.FTPSession;
 import mb.dnm.access.ftp.FTPSourceProvider;
 import mb.dnm.core.context.ServiceContext;
-import mb.dnm.service.ParameterAssignableService;
-import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
 
 @Slf4j
