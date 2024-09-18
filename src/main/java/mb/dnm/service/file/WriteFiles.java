@@ -19,13 +19,10 @@ import mb.dnm.service.SourceAccessService;
  * @author Yuhyun O
  * @version 2024.09.18
  *
- * @Input 이동할 파일의 경로
- * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code><br>
- * input이 List로 전달되는 경우 중복된 경로가 존재하더라도 내부적으로 Set 객체에 다시 담기게 되므로 중복값이 제거된다.
+ * @Input
+ * @InputType
  * @Output 생성한 파일의 저장 경로
- * @OutputType <code>List&lt;String&gt;</code>
- * @ErrorOutput 파일을 이동하는 중 에러가 발생하여 이동에 실패하는 경우 에러가 발생한 파일의 경로
- * @ErrorOutputType <code>List&lt;String&gt;</code>
+ * @OutputType
  * */
 @Slf4j
 @Setter
