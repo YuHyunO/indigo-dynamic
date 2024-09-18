@@ -3,7 +3,11 @@ package mb.dnm.access.file;
 import lombok.Getter;
 import lombok.Setter;
 import mb.dnm.code.DirectoryType;
+import mb.dnm.code.FileContentType;
 import mb.dnm.code.FileType;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 @Setter @Getter
 public class FileTemplate {
@@ -29,6 +33,13 @@ public class FileTemplate {
 
     private String fileNamePattern = "*";
     private FileType type = FileType.ALL;
+
+    private FileContentType contentType = FileContentType.BYTE_ARRAY;
+    private Charset charset = StandardCharsets.UTF_8;
+
+    public void setCharset(String charset) {
+        this.charset = Charset.forName(charset);
+    }
 
     public String getFilePath(DirectoryType dirType) {
         switch (dirType) {

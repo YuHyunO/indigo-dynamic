@@ -47,24 +47,24 @@ import java.util.*;
 @Setter
 public class UploadFiles extends AbstractFTPService {
     /**
-     * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 이동할 경로로써 사용할 지 결정된다.<br><br>
+     * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 파일을 업로드할 경로로써 사용할 지 결정된다.<br><br>
      * -기본값: <code>LOCAL_SEND</code><br>
-     * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_RECEIVE → <code>FileTemplate#remoteReceiveDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_TEMP → <code>FileTemplate#remoteTempDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_SUCCESS → <code>FileTemplate#remoteSuccessDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_ERROR → <code>FileTemplate#remoteErrorDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_SUCCESS → <code>FileTemplate#localSuccessDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_ERROR → <code>FileTemplate#localErrorDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 을 파일목록을 이동할 경로로 사용함<br>
-     * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 을 파일목록을 이동할 경로로 사용함<br>
+     * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -REMOTE_RECEIVE → <code>FileTemplate#remoteReceiveDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -REMOTE_TEMP → <code>FileTemplate#remoteTempDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -REMOTE_SUCCESS → <code>FileTemplate#remoteSuccessDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -REMOTE_ERROR → <code>FileTemplate#remoteErrorDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -LOCAL_SUCCESS → <code>FileTemplate#localSuccessDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -LOCAL_ERROR → <code>FileTemplate#localErrorDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 을 파일을 업로드할 경로로 사용함<br>
      * */
     private DirectoryType directoryType = DirectoryType.LOCAL_SEND;
     /**
@@ -134,7 +134,7 @@ public class UploadFiles extends AbstractFTPService {
         }
 
         List<String> uploadedFileList = new ArrayList<>();
-        // 파일 이동 중 에러가 나는 경우 그 파일의 FTP 경로가 담길 리스트를 생성
+        // 파일 업로드 중 에러가 나는 경우 그 파일의 FTP 경로가 담길 리스트를 생성
         List<String> errorFilePaths = new ArrayList<>();
         int inputListSize = targetFileNames.size();
         int successCount = 0;
