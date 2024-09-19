@@ -16,10 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 지정된 경로에 파일을 생성한다.
@@ -217,8 +214,8 @@ public class WriteFile extends SourceAccessService {
 
         // outPutDataType 이 dataTypeDataType.FILE 인 경우 InterfaceInfo에서 FileTemplate을 가져와 directoryType 과 일치하는 경로에 파일을 저장함
         FileTemplate template = info.getFileTemplate(srcName);
-        String fileName = template.getFileName(ctx);
-        FileContentType fileType = template.getContentType();
+        String filename = template.getFileName(ctx);
+        FileContentType contentType = template.getContentType();
         Charset charset = template.getCharset();
 
 
@@ -239,25 +236,65 @@ public class WriteFile extends SourceAccessService {
         }
 
 
-        String contentStr = null; //allowCreateEmptyFile 은 이미 검증되었음
+        String contentStr = null;
+        byte[] contentBytes = null;
+        List<Map<String, Object>> contentListMap = null;
         try {
             if (inputVal != null) {
-                if (inputVal instanceof byte[] || inputVal instanceof String) {
+                if (inputVal instanceof byte[]) {
+                    contentBytes = (byte[]) inputVal;
 
+                } else if (inputVal instanceof String) {
+                    contentStr = new String(inputVal.toString().getBytes(charset), charset);
 
-                } else if (inputVal instanceof Map || inputVal instanceof List) {
+                } else if (inputVal instanceof Map) {
+                    contentListMap = new ArrayList<>();
+                    contentListMap.add((Map<String, Object>) inputVal);
 
+                } else if (inputVal instanceof List) {
+                    contentListMap = (List<Map<String, Object>>) inputVal;
 
                 } else {
                     throw new ClassCastException();
                 }
             } else {
-                contentStr = "";
+                contentBytes = new byte[0];
             }
         } catch (ClassCastException ce) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not String or List<String> or Set<String> or FileList. Inputted value's type: " + inputVal.getClass().getName());
+            throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not contained in [String, byte[], Map<String, Object>, List<Map<String, Object>>]. Inputted value's type: " + inputVal.getClass().getName());
         }
 
+        String successFilePath = null;
+        if (contentListMap != null) {
+            successFilePath = writeFileAsFormattedData(filename, savePath, charset, contentListMap, contentType);
+        } else if (contentStr != null) {
+            successFilePath = writeFileAsText(filename, savePath, charset, contentStr, contentType);
+        } else {
+            successFilePath = writeFileAsBytes(filename, savePath, charset, contentBytes, contentType);
+        }
+
+        if (getOutput() != null) {
+            setOutputValue(ctx, successFilePath);
+        }
+        
+    }
+
+    public String writeFileAsFormattedData(String filename, String savePath, Charset charset, List<Map<String, Object>> content, FileContentType contentType) throws Throwable {
+
+
+        return null;
+    }
+
+    public String writeFileAsText(String filename, String savePath, Charset charset, String content, FileContentType contentType) throws Throwable {
+
+
+        return null;
+    }
+
+    public String writeFileAsBytes(String filename, String savePath, Charset charset, byte[] content, FileContentType contentType) throws Throwable {
+
+
+        return null;
     }
 
 
