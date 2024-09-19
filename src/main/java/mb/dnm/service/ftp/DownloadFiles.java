@@ -94,12 +94,18 @@ public class DownloadFiles extends AbstractFTPService {
      * -REMOTE_SUCCESS → <code>FileTemplate#remoteSuccessDir</code> 에 파일이 저장됨<br>
      * -REMOTE_ERROR → <code>FileTemplate#remoteErrorDir</code> 에 파일이 저장됨<br>
      * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 에 파일이 저장됨<br>
+     * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 에 파일이 저장됨<br>
+     * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 에 파일이 저장됨<br>
+     * -REMOTE_WRITE → <code>FileTemplate#remoteWriteDir</code> 에 파일이 저장됨<br>
      * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 에 파일이 저장됨<br>
      * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 에 파일이 저장됨<br>
      * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 에 파일이 저장됨<br>
      * -LOCAL_SUCCESS → <code>FileTemplate#localSuccessDir</code> 에 파일이 저장됨<br>
      * -LOCAL_ERROR → <code>FileTemplate#localErrorDir</code> 에 파일이 저장됨<br>
      * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 에 파일이 저장됨<br>
+     * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 에 파일이 저장됨<br>
+     * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 에 파일이 저장됨<br>
+     * -LOCAL_WRITE → <code>FileTemplate#localWriteDir</code> 에 파일이 저장됨<br>
      * */
     private DirectoryType directoryType = DirectoryType.LOCAL_RECEIVE;
 

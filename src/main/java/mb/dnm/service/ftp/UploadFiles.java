@@ -57,6 +57,7 @@ public class UploadFiles extends AbstractFTPService {
      * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 을 파일을 업로드할 경로로 사용함<br>
      * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 을 파일을 업로드할 경로로 사용함<br>
      * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -REMOTE_WRITE → <code>FileTemplate#remoteWriteDir</code> 을 파일을 업로드할 경로로 사용함<br>
      * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 을 파일을 업로드할 경로로 사용함<br>
      * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 을 파일을 업로드할 경로로 사용함<br>
      * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 을 파일을 업로드할 경로로 사용함<br>
@@ -65,6 +66,7 @@ public class UploadFiles extends AbstractFTPService {
      * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 을 파일을 업로드할 경로로 사용함<br>
      * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 을 파일을 업로드할 경로로 사용함<br>
      * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 을 파일을 업로드할 경로로 사용함<br>
+     * -LOCAL_WRITE → <code>FileTemplate#localWriteDir</code> 을 파일을 업로드할 경로로 사용함<br>
      * */
     private DirectoryType directoryType = DirectoryType.LOCAL_SEND;
     /**

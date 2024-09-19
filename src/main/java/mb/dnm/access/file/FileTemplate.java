@@ -5,6 +5,8 @@ import lombok.Setter;
 import mb.dnm.code.DirectoryType;
 import mb.dnm.code.FileContentType;
 import mb.dnm.code.FileType;
+import mb.dnm.core.context.ServiceContext;
+import mb.dnm.storage.InterfaceInfo;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -21,6 +23,7 @@ public class FileTemplate {
     private String localBackupDir;
     private String localMoveDir;
     private String localCopyDir;
+    private String localWriteDir;
 
     private String remoteSendDir;
     private String remoteReceiveDir;
@@ -30,12 +33,24 @@ public class FileTemplate {
     private String remoteBackupDir;
     private String remoteMoveDir;
     private String remoteCopyDir;
+    private String remoteWriteDir;
 
     private String fileNamePattern = "*";
     private FileType type = FileType.ALL;
 
+    private String fileName;
     private FileContentType contentType = FileContentType.BYTE_ARRAY;
+    /**
+     * 파일의 charset 설정은 FileContentType 이 TEXT인 경우에만 적용된다.
+     * */
     private Charset charset = StandardCharsets.UTF_8;
+
+    public String getFileName(ServiceContext ctx) {
+        String tmpFileName = fileName.replace("@{if_id}", ctx.getInterfaceId());
+        //PlaceHolderMapper를 적용
+
+        return fileName;
+    }
 
     public void setCharset(String charset) {
         this.charset = Charset.forName(charset);
@@ -51,6 +66,7 @@ public class FileTemplate {
             case LOCAL_BACKUP: return localBackupDir;
             case LOCAL_MOVE: return localMoveDir;
             case LOCAL_COPY: return localCopyDir;
+            case LOCAL_WRITE: return localWriteDir;
             case REMOTE_SEND: return remoteSendDir;
             case REMOTE_RECEIVE: return remoteReceiveDir;
             case REMOTE_TEMP: return remoteTempDir;
@@ -59,6 +75,7 @@ public class FileTemplate {
             case REMOTE_BACKUP: return remoteBackupDir;
             case REMOTE_MOVE: return remoteMoveDir;
             case REMOTE_COPY: return remoteCopyDir;
+            case REMOTE_WRITE: return remoteWriteDir;
             default: return null;
         }
     }
@@ -73,6 +90,7 @@ public class FileTemplate {
             case LOCAL_BACKUP: this.localBackupDir = dir; break;
             case LOCAL_MOVE: this.localMoveDir = dir; break;
             case LOCAL_COPY: this.localCopyDir = dir; break;
+            case LOCAL_WRITE: this.localWriteDir = dir; break;
             case REMOTE_SEND: this.remoteSendDir = dir; break;
             case REMOTE_RECEIVE: this.remoteReceiveDir = dir; break;
             case REMOTE_TEMP: this.remoteTempDir = dir; break;
@@ -81,6 +99,7 @@ public class FileTemplate {
             case REMOTE_BACKUP: this.remoteBackupDir = dir; break;
             case REMOTE_MOVE: this.remoteMoveDir = dir; break;
             case REMOTE_COPY: this.remoteCopyDir = dir; break;
+            case REMOTE_WRITE: this.remoteWriteDir = dir; break;
         }
     }
 

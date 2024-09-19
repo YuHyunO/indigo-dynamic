@@ -3,6 +3,15 @@ package mb.dnm.service;
 import mb.dnm.core.Service;
 public abstract class AbstractService implements Service {
     protected boolean ignoreError = false;
+    protected String description;
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 
     @Override
     public void setIgnoreError(boolean ignoreError) {

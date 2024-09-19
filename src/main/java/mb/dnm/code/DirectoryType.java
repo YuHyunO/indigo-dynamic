@@ -9,6 +9,7 @@ public enum DirectoryType {
     LOCAL_BACKUP,
     LOCAL_MOVE,
     LOCAL_COPY,
+    LOCAL_WRITE,
     REMOTE_SEND,
     REMOTE_RECEIVE,
     REMOTE_TEMP,
@@ -16,5 +17,6 @@ public enum DirectoryType {
     REMOTE_ERROR,
     REMOTE_BACKUP,
     REMOTE_MOVE,
-    REMOTE_COPY;
+    REMOTE_COPY,
+    REMOTE_WRITE;
 }
