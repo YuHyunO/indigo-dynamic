@@ -276,7 +276,7 @@ public class WriteFile extends SourceAccessService {
         if (getOutput() != null) {
             setOutputValue(ctx, successFilePath);
         }
-        
+
     }
 
     public String writeFileAsFormattedData(String filename, String savePath, Charset charset, List<Map<String, Object>> content, FileContentType contentType) throws Throwable {
