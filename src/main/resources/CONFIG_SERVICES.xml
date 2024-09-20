@@ -387,6 +387,13 @@
                     <property name="input"          value="Data"/>
                     <property name="directoryType"  value="LOCAL_RECEIVE"/>
                     <property name="addMetadata"    value="true"/>
+                    <property name="output"         value="written_file"/>
+                </bean>
+                <bean class="mb.dnm.service.ftp.UploadFiles">
+                    <property name="sourceAlias"                    value="TGT2"/>
+                    <property name="input"                          value="written_file"/>
+                    <property name="output"                         value="uploaded_list"/>
+                    <property name="directoryType"                  value="REMOTE_RECEIVE"/>
                 </bean>
             </list>
         </entry>

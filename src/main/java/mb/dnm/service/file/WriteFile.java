@@ -2,10 +2,8 @@ package mb.dnm.service.file;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import mb.dnm.access.file.FileList;
 import mb.dnm.access.file.FileTemplate;
 import mb.dnm.code.DirectoryType;
-import mb.dnm.code.FileContentType;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.SourceAccessService;
@@ -13,7 +11,6 @@ import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 import mb.dnm.util.SortingUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -25,8 +22,6 @@ import java.util.*;
 
 /**
  * 지정된 경로에 파일을 생성한다.
- * <br>
- * 생성할
  * <br>
  * 파일의 저장 경로, 이름, 인코딩에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.
  * input 데이터의 타입에 따라 파일내용을 텍스트로 쓸 것인지 바이트배열로 쓸 것인지 또는 특정한 포맷으로 작성할 것인지 결정된다.
@@ -50,6 +45,7 @@ import java.util.*;
  * </pre>
  *
  * @see FileTemplate
+ * @see ReadFile
  *
  * @author Yuhyun O
  * @version 2024.09.19
@@ -175,6 +171,23 @@ public class WriteFile extends SourceAccessService {
     private boolean addMetadata = false;
 
     /**
+     * 파일명 앞에 붙일 접두사에 대한 설정<br>
+     * <i>
+     *     filenamePrefix + 파일명.확장자
+     * </i>
+     *
+     * */
+    private String filenamePrefix = null;
+    /**
+     * 파일명 끝에 붙일 접미사에 대한 설정<br>
+     * <i>
+     *     파일명 + filenameSuffix
+     * </i>
+     *
+     * */
+    private String filenameSuffix = null;
+
+    /**
      * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 생성한 파일의 저장 경로로써 사용할 지 결정된다.<br><br>
      * -기본값: <code>LOCAL_WRITE</code><br>
      * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
@@ -201,7 +214,7 @@ public class WriteFile extends SourceAccessService {
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         if (getInput() == null) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "WriteFiles service must have the input parameter in which contain the files to move");
+            throw new InvalidServiceConfigurationException(this.getClass(), "WriteFile service must have the input parameter in which contain the file data to write");
         }
 
         InterfaceInfo info = ctx.getInfo();
@@ -219,6 +232,12 @@ public class WriteFile extends SourceAccessService {
         // outPutDataType 이 dataTypeDataType.FILE 인 경우 InterfaceInfo에서 FileTemplate을 가져와 directoryType 과 일치하는 경로에 파일을 저장함
         FileTemplate template = info.getFileTemplate(srcName);
         String filename = template.getFileName(ctx);
+        if (filenamePrefix != null && !filenamePrefix.isEmpty()) {
+            filename = filenamePrefix + filename;
+        }
+        if (filenameSuffix != null && !filenameSuffix.isEmpty()) {
+            filename += filenameSuffix;
+        }
         Charset charset = template.getCharset();
 
 
