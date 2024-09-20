@@ -2,6 +2,7 @@ package mb.dnm.access.file;
 
 import lombok.Getter;
 import lombok.Setter;
+import mb.dnm.code.DataType;
 import mb.dnm.code.DirectoryType;
 import mb.dnm.code.FileContentType;
 import mb.dnm.code.FileType;
@@ -13,6 +14,14 @@ import java.nio.charset.StandardCharsets;
 
 @Setter @Getter
 public class FileTemplate {
+    /**
+     * <code>FileTemplate</code> 의 이름이다.<br>
+     * <code>FTPSourceProvider</code> 나 <code>InterfaceInfo</code> 에 등록되어 사용될 때는 이름이 고유한 값으로 지정되어야 한다.
+     * FTP 관련 서비스에서 참조하는 객체로 사용될 때는 <code>FTPClientTemplate</code>의 templateName 과 동일해야한다.
+     * @see InterfaceInfo
+     * @see mb.dnm.access.ftp.FTPSourceProvider
+     * @see mb.dnm.access.ftp.FTPClientTemplate
+     * */
     private String templateName; // FTP관련 서비스에서 사용하는 경우에는 FTPClientTemplate의 templateName 과 동일하게 작성
 
     private String localSendDir;
@@ -38,11 +47,19 @@ public class FileTemplate {
     private String fileNamePattern = "*";
     private FileType type = FileType.ALL;
 
+    /**
+     * 파일을 생성할 때 파일명으로 사용되는 속성이다
+     * @see mb.dnm.service.file.WriteFile
+     * */
     private String fileName;
     /**
+     * 파일을 생성할 때의 인코딩으로 사용되는 속성이다.
      * 파일의 charset 설정은 FileContentType 이 TEXT인 경우에만 적용된다.
+     * @see mb.dnm.service.file.WriteFile
      * */
     private Charset charset = StandardCharsets.UTF_8;
+
+    private DataType dataType = DataType.BYTE_ARRAY;
 
     public String getFileName(ServiceContext ctx) {
         String tmpFileName = fileName.replace("@{if_id}", ctx.getInterfaceId());

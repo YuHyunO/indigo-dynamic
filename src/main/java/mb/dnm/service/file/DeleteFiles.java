@@ -55,7 +55,7 @@ public class DeleteFiles extends SourceAccessService {
         Object inputVal = getInputValue(ctx);
         List<String> targetFilePaths = new ArrayList<>();
         if (inputVal == null) {
-            log.debug("The value of input '{}' is not found. No file paths to move found in context data.", getInput());
+            log.debug("[{}]The value of input '{}' is not found. No file paths to delete found in context data.", txId, getInput());
             return;
         }
 

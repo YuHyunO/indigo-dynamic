@@ -74,49 +74,49 @@ public class WriteFile extends SourceAccessService {
     private boolean allowOverwriteFile = true;
     /**
      * 기본값: \n (Line Feed)<br>
-     * 파일 내용으로 쓰일 데이터의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우
+     * 파일 내용으로 쓰일 Input value의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우
      * 각각의 레코드를 구분할 문자에 대한 설정이다.
      * */
     private String recordSeparator = "\n";
     /**
      * 기본값: | (Pipe, Vertical bar)<br>
      * 각각의 컬럼명과 컬럼의 데이터를 구분할 문자를 의미한다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
     private String delimiter = "|";
     /**
      * 기본값: "" (빈값, empty string)<br>
      * 각각의 컬럼명과 데이터의 의미 단위를 제한해 줄 문자를 의미한다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
     private String qualifier = "";
     /**
      * 기본값: (빈값, empty string)
      * 데이터가 null인 경우 파일에 어떤 문자로 대체하여 기입할 지에 대한 설정이다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
     private String replacementOfNullValue = "";
     /**
      * 기본값: (빈값, empty string)
      * 데이터가 빈 문자열인 경우 파일에 어떤 문자로 대체하여 기입할 지에 대한 설정이다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
     private String replacementOfEmptyValue = "";
     /**
      * 기본값: &cr;<br>
      * 파일의 데이터에 Line Feed (\n) 가 존재하는 경우 대체할 문자에 대한 설정이다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
     private String replacementOfLineFeed = "&cr;";
     /**
      * 기본값: &lf;<br>
      * 파일의 데이터에 Carriage return (\r) 이 존재하는 경우 대체할 문자에 대한 설정이다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
     private String replacementOfCarriageReturn = "&lf;";
@@ -134,7 +134,7 @@ public class WriteFile extends SourceAccessService {
      * Value|Value|Value|...
      *
      * </pre><br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
     private boolean addHeader = true;
@@ -169,6 +169,22 @@ public class WriteFile extends SourceAccessService {
      * </pre>
      * */
     private boolean addMetadata = false;
+
+    /**
+     * 기본값: false<br>
+     * 파일 내용으로 쓰일 Input value의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 이고
+     * <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code>의 데이터 타입이 바이트 배열(<code>byte[]</code>)인 경우 해당 데이터를 문자열로 변환하여 파일에 쓸지 결정하는 옵션이다.<br>
+     * handleBinaryToString 속성이 true인 경우 문자열의 인코딩은 <code>InterfaceInfo</code>가 참조하는 <code>FileTemplate</code> 의 charset 또는 이 서비스의 속성인 <code>commonCharset<</code> 의 설정을 따른다.
+     * */
+    private boolean handleBinaryToString = false;
+    /**
+     * 기본값: true<br>
+     * 파일 내용으로 쓰일 Input value의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 이고
+     * <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code>의 데이터 타입이 바이트 배열(<code>byte[]</code>)인 경우 해당 데이터를 바이트 배열 그대로 파일에 쓸지 결정하는 옵션이다. 기본값이 true 이다.<br>
+     * 바이너리 데이터를 파일에 작성할 때
+     * */
+    private boolean handleBinaryAsItIs = true;
+    private String binaryDataWrapper = "<![BINARY[@]]>";
 
     /**
      * 파일명 앞에 붙일 접두사에 대한 설정<br>
@@ -211,6 +227,13 @@ public class WriteFile extends SourceAccessService {
      * */
     private DirectoryType directoryType = DirectoryType.LOCAL_WRITE;
 
+    /**
+     * 생성될 파일의 인코딩을 지정하는 설정이다.<br>
+     * 이 속성이 지정되지 않았을 경우, 이 서비스의 <code>process(ServiceContext)</code> 메소드를 통해 전달된 <code>ServiceContext</code>의 <code>InterfaceInfo</code>가 참조하는
+     * <code>FileTemplate</code> 의 <code>charset<</code> 속성을 인코딩으로 사용한다.
+     * */
+    private Charset commonCharset;
+
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         if (getInput() == null) {
@@ -225,7 +248,7 @@ public class WriteFile extends SourceAccessService {
         Object inputVal = getInputValue(ctx);
 
         if (inputVal == null && !allowCreateEmptyFile) {
-            log.debug("The value of input '{}' is not found. No file paths to move found in context data.", getInput());
+            log.debug("[{}]The value of input '{}' is not found. No file paths to move found in context data.", txId, getInput());
             return;
         }
 
@@ -238,7 +261,13 @@ public class WriteFile extends SourceAccessService {
         if (filenameSuffix != null && !filenameSuffix.isEmpty()) {
             filename += filenameSuffix;
         }
-        Charset charset = template.getCharset();
+
+        Charset charset = null;
+        if (commonCharset != null) {
+            charset = commonCharset;
+        } else {
+            charset = template.getCharset();
+        }
 
 
         String savePath = null;
@@ -263,7 +292,7 @@ public class WriteFile extends SourceAccessService {
         byte[] contentBytes = null;
         List<Map<String, Object>> contentListMap = null;
         try {
-            if (inputVal != null) {
+            if (inputVal != null) { //allowCreateEmptyFile = true 인 경우 현재 위치에서 inputVal이 null 일 수 있기 때문에 null 인지 검증
                 if (inputVal instanceof byte[]) {
                     contentBytes = (byte[]) inputVal;
 
@@ -404,7 +433,12 @@ public class WriteFile extends SourceAccessService {
                 if (objVal == null) {
                     val = replacementOfNullValue;
                 } else {
-                    val = String.valueOf(objVal);
+                    Class clazz = objVal.getClass();
+                    if (clazz == byte[].class) {
+
+                    } else {
+                        val = String.valueOf(objVal);
+                    }
                 }
                 if (val.isEmpty()) {
                     val = replacementOfEmptyValue;

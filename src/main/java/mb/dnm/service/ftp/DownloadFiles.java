@@ -123,7 +123,7 @@ public class DownloadFiles extends AbstractFTPService {
         Object inputVal = getInputValue(ctx);
         List<String> targetFileNames = new ArrayList<>();
         if (inputVal == null) {
-            log.debug("The value of input '{}' is not found. No list of file path to download found in context data.", getInput());
+            log.debug("[{}]The value of input '{}' is not found. No list of file path to download found in context data.", txId, getInput());
             return;
         }
 

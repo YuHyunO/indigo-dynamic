@@ -3,6 +3,11 @@ package com.mb.string;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @Slf4j
 public class StringBufTest {
 
@@ -64,5 +69,31 @@ public class StringBufTest {
 
         System.out.println(buf);
         //System.out.println((buf.toString()).replace("\n", "7").replace("\r", "3"));
+    }
+
+    @Test
+    public void bytes_test() {
+        byte[] bytes = new String("ABCDEFGHIJKLMNOPQRSTUVWXYZ").getBytes();
+        System.out.println(bytes);
+        StringBuffer buf = new StringBuffer();
+        for (byte b : bytes) {
+            System.out.println(b);
+            buf.append(b);
+        }
+        System.out.println();
+        System.out.println(buf);
+
+    }
+
+    @Test
+    public void bytes_test2() throws IOException {
+        Path path = Paths.get("C:\\Users\\admin\\Pictures\\KakaoTalk_20240731_144727283.jpg");
+        byte[] bytes = Files.readAllBytes(path);
+        for (byte b : bytes) {
+         //   System.out.println(b);
+        }
+        String i = "61";
+        byte bb = 61;
+        System.out.println(i.getBytes().length);
     }
 }
