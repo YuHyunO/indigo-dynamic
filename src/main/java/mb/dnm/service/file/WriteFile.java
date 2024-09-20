@@ -342,17 +342,23 @@ public class WriteFile extends SourceAccessService {
                 }
                 Map<String, Object> metadata = new LinkedHashMap<>();
                 metadata.put("encoding", charset);
+                if (filenamePrefix != null)
+                    metadata.put("filename_prefix", filenamePrefix);
                 if (contentListMap != null) {
-                    metadata.put("txId", txId);
-                    metadata.put("ifId", ctx.getInterfaceId());
-                    metadata.put("serviceId", info.getServiceId());
-                    metadata.put("addHeader", addHeader);
+                    metadata.put("tx_id", txId);
+                    metadata.put("if_id", ctx.getInterfaceId());
+                    metadata.put("service_id", info.getServiceId());
+                    metadata.put("add_header", addHeader);
                     metadata.put("delimiter", delimiter);
                     metadata.put("qualifier", qualifier);
-                    metadata.put("replacementOfNullValue", replacementOfNullValue);
-                    metadata.put("replacementOfEmptyValue", replacementOfEmptyValue);
-                    metadata.put("replacementOfLineFeed", replacementOfLineFeed);
-                    metadata.put("replacementOfCarriageReturn", replacementOfCarriageReturn);
+                    metadata.put("replacement_of_null_value", replacementOfNullValue);
+                    metadata.put("replacement_of_empty_value", replacementOfEmptyValue);
+                    metadata.put("replacement_of_line_feed", replacementOfLineFeed);
+                    metadata.put("replacement_of_carriage_return", replacementOfCarriageReturn);
+                    metadata.put("handle_binary_as_it_is", handleBinaryAsItIs);
+                    if (handleBinaryAsItIs)
+                        metadata.put("binary_data_wrapper", BINARY_DATA_WRAPPER);
+                    metadata.put("handle_binary_to_string", handleBinaryToString);
                 }
                 StringBuilder mdbd = new StringBuilder();
                 mdbd.append("<![METADATA[")
