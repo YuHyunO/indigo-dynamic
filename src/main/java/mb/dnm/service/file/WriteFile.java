@@ -13,6 +13,7 @@ import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 import mb.dnm.util.SortingUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -235,7 +236,7 @@ public class WriteFile extends SourceAccessService {
         Path path = Paths.get(savePath);
 
         if (!Files.exists(path)) {
-            Files.createDirectories(path);
+            log.info("[{}]Creating directories \"{}\"",txId, Files.createDirectories(path));
         }
 
 
@@ -269,7 +270,8 @@ public class WriteFile extends SourceAccessService {
 
         Path filePath = path.resolve(filename);
         if (allowOverwriteFile) {
-            Files.deleteIfExists(path);
+            log.debug("[{}]Overwriting file ...", txId);
+            Files.deleteIfExists(filePath);
         }
         log.info("[{}]Writing file to \"{}\" ...", txId, savePath);
 
@@ -277,6 +279,7 @@ public class WriteFile extends SourceAccessService {
         long filesize = 0;
         try {
             if (addMetadata) {
+                log.debug("[{}]Adding metadata to \"{}\"", txId, filePath);
                 if (Files.exists(filePath)) {
                     if (Files.size(path) != 0) {
                         throw new IllegalStateException("The file " + filePath + "'s content is exists. Can not write metadata.");
@@ -284,7 +287,7 @@ public class WriteFile extends SourceAccessService {
                 } else {
                     Files.createFile(filePath);
                 }
-                Map<String, Object> metadata = new HashMap<>();
+                Map<String, Object> metadata = new LinkedHashMap<>();
                 metadata.put("encoding", charset);
                 if (contentListMap != null) {
                     metadata.put("txId", txId);
@@ -306,14 +309,17 @@ public class WriteFile extends SourceAccessService {
                filesize = Files.size(filePath);
             }
             if (contentListMap != null) {
-                os = Files.newOutputStream(filePath, StandardOpenOption.APPEND);
+                log.debug("[{}]Content type: formatted text \"{}\"", txId, filePath);
+                os = Files.newOutputStream(filePath, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                 filesize += writeFileAsFormattedData(filePath, charset, contentListMap, os);
             } else if (contentStr != null) {
+                log.debug("[{}]Content type: text \"{}\"", txId, filePath);
                 filesize += writeFile(filePath, charset, contentStr);
             } else {
+                log.debug("[{}]Content type: bytes \"{}\"", txId, filePath);
                 filesize += writeFile(filePath, charset, contentBytes);
             }
-            log.info("[{}]The file saved at \"{}\"", txId, filePath, savePath);
+            log.info("[{}]The file was saved at \"{}\"", txId, filePath, savePath);
         } catch (Throwable t) {
             Files.deleteIfExists(filePath);
             log.warn("[{}]An error occurred while writing file to \"{}\". Error file is deleted", txId, savePath);
@@ -384,7 +390,7 @@ public class WriteFile extends SourceAccessService {
                 if (val.isEmpty()) {
                     val = replacementOfEmptyValue;
                 }
-                rowBf.append(qualifier).append(qualifier).append(delimiter);
+                rowBf.append(qualifier).append(val).append(qualifier).append(delimiter);
             }
 
             //Carriage Return 과 Line Feed 를 교체하는 과정

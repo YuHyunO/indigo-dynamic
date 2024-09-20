@@ -386,6 +386,7 @@
                     <property name="sourceAlias"    value="TGT"/>
                     <property name="input"          value="Data"/>
                     <property name="directoryType"  value="LOCAL_RECEIVE"/>
+                    <property name="addMetadata"    value="true"/>
                 </bean>
             </list>
         </entry>
