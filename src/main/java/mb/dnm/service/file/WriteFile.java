@@ -70,6 +70,11 @@ public class WriteFile extends SourceAccessService {
      * input으로 전달받은 content가 null 인 경우에 파일을 생성할 것인지에 대한 옵션 (기본값: false)
      * */
     private boolean allowCreateEmptyFile = false;
+
+    /**
+     * 같은 이름의 파일이 존재하는 경우 덮어쓰기 여부에 대한 옵션
+     * */
+    private boolean allowOverwriteFile = true;
     /**
      * 기본값: \n (Line Feed)<br>
      * 파일 내용으로 쓰일 데이터의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우
@@ -228,6 +233,7 @@ public class WriteFile extends SourceAccessService {
         //### PlaceHolder mapping 을 적용할 것
 
         Path path = Paths.get(savePath);
+
         if (!Files.exists(path)) {
             Files.createDirectories(path);
         }
@@ -262,6 +268,9 @@ public class WriteFile extends SourceAccessService {
         }
 
         Path filePath = path.resolve(filename);
+        if (allowOverwriteFile) {
+            Files.deleteIfExists(path);
+        }
         log.info("[{}]Writing file to \"{}\" ...", txId, savePath);
 
         OutputStream os = null;

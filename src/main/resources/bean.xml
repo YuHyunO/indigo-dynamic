@@ -13,7 +13,7 @@
             <list>
                 <!--<value>[cronExpression=0/5 * * * * ?,args=DB_IF_TEST,concurrent=false,targetMethod=dispatch]</value>-->
                 <!--<value>[cronExpression=0/5 * * * * ?,args=FTP_IF_TEST,concurrent=false,targetMethod=dispatch]</value>-->
-                <value>[cronExpression=0/5 * * * * ?,args=FTP_UPLOAD_IF_TEST,concurrent=false,targetMethod=dispatch]</value>
+                <value>[cronExpression=0/10 * * * * ?,args=FILE_WRITE_IF_TEST,concurrent=false,targetMethod=dispatch]</value>
             </list>
         </property>
     </bean>

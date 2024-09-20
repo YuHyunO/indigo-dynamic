@@ -385,6 +385,7 @@
                 <bean class="mb.dnm.service.file.WriteFile">
                     <property name="sourceAlias"    value="TGT"/>
                     <property name="input"          value="Data"/>
+                    <property name="directoryType"  value="LOCAL_RECEIVE"/>
                 </bean>
             </list>
         </entry>

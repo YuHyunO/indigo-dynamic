@@ -162,6 +162,27 @@
                 </list>
             </property>
         </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="FILE_WRITE_IF_TEST"/>
+            <property name="description"            value="FILE 인터페이스 테스트"/>
+            <property name="serviceId"              value="FILE_WRITE"/>
+            <property name="sourceAliases"          value="TGT:LOCAL_DISK, TGT_2:FTP2"/>
+            <property name="querySequence"          value="DB1$@{if_id}.SELECT_10"/>
+            <property name="fileTemplates">
+                <list>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"           value="LOCAL_DISK"/>
+                        <property name="localReceiveDir"        value="C:\FileStorage\receive\@{if_id}"/>
+                        <property name="fileName"               value="FILE_WRITE_IF_TEST.txt"/>
+                    </bean>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"           value="FTP2"/>
+                        <property name="remoteReceiveDir"       value="/@{if_id}/receive"/>
+                    </bean>
+                </list>
+            </property>
+        </bean>
     </util:list>
 
 
