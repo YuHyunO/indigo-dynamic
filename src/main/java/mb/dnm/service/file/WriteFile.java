@@ -10,7 +10,11 @@ import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
+import mb.dnm.util.MessageUtil;
+import mb.dnm.util.SortingUtil;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,31 +60,16 @@ import java.util.*;
  * <code>Map&lt;String, Object&gt; </code><br>
  * <code>List&lt;Map&lt;String, Object&gt; </code><br>
  *
- *
  * @Output 생성한 파일의 저장 경로(파일명 포함)
- * @OutputType <code>String</code>
- * @ErrorOutput 생성 실패한 파일명
  * @OutputType <code>String</code>
  * */
 @Slf4j
 @Setter
 public class WriteFile extends SourceAccessService {
     /**
-     * input으로 전달받은 content가 null 이거나 내용이 없는 경우에도 파일을 생성할 것인지에 대한 옵션 (기본값: false)
+     * input으로 전달받은 content가 null 인 경우에 파일을 생성할 것인지에 대한 옵션 (기본값: false)
      * */
     private boolean allowCreateEmptyFile = false;
-    /**
-     * 기본값: false
-     * */
-    private boolean ignoreErrorFile = false;
-
-    /**
-     * 기본값: StandardOpenOption.APPEND<br>
-     * 파일을 write 할 때의 옵션
-     *
-     * @see StandardOpenOption
-     * */
-    private StandardOpenOption writeOption = StandardOpenOption.APPEND;
     /**
      * 기본값: \n (Line Feed)<br>
      * 파일 내용으로 쓰일 데이터의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우
@@ -116,19 +105,19 @@ public class WriteFile extends SourceAccessService {
      * */
     private String replacementOfEmptyValue = "";
     /**
-     * 기본값: (/LF/)<br>
+     * 기본값: &cr;<br>
      * 파일의 데이터에 Line Feed (\n) 가 존재하는 경우 대체할 문자에 대한 설정이다.<br><br>
      * <i>이 속성은 파일 내용으로 쓰일 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
-    private String replacementOfLineFeed = "(/LF/)";
+    private String replacementOfLineFeed = "&cr;";
     /**
-     * 기본값: (/CR/)<br>
+     * 기본값: &lf;<br>
      * 파일의 데이터에 Carriage return (\r) 이 존재하는 경우 대체할 문자에 대한 설정이다.<br><br>
      * <i>이 속성은 파일 내용으로 쓰일 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
-    private String replacementOfCarriageReturn = "(/CR/)";
+    private String replacementOfCarriageReturn = "&lf;";
     /**
      * 기본값: true<br>
      * 파일의 상단에 컬럼명을 기입할 지에 대한 설정이다.(단 addMetadata = true 인 경우 그 하단에 기입됨)<br>
@@ -148,22 +137,31 @@ public class WriteFile extends SourceAccessService {
      * */
     private boolean addHeader = true;
     /**
+     * addHeader = true 인 경우 헤더 컬럼의 정렬 옵션<br>
+     * 0 → 정렬없음<br>
+     * 1 → 컬럼명 오름차순<br>
+     * -1 → 컬럼명 내림차순<br>
+     * 위의 값에 해당되지 않는 경우 정렬없음으로 설정된다.
+     * */
+    private int headerColumnSorting = 0;
+
+    /**
      * 기본값: false<br>
      * 파일의 내용 가장 상단에 파일 인코딩, Parsing 을 위한 정보 등을 기입할 지에 대한 설정이다.
      * 메타데이터에 대한 설정은 input된 데이터의 타입과 무관하게 적용될 수 있다.
      * 메타데이터는 다음과 같은 형식으로 작성된다.
      * <pre>
      * &lt;![METADATA[{
-     *     "encoding": "UTF-8",
-     *     "recordSeparator": "\n",
-     *     "qualifier": "",
-     *     "replacementOfNullValue": "",
-                       .
-                       .
-                       .
-     
-     *     "replacementOfCarriageReturn": "(/CR/)",
-     *     "addHeader": true
+     * "encoding": "UTF-8",
+     * "recordSeparator": "\n",
+     * "qualifier": "",
+     * "replacementOfNullValue": "",
+     *              .
+     *              .
+     *              .
+     *
+     * "replacementOfCarriageReturn": "(/CR/)",
+     * "addHeader": true
      * }]]&gt;
      *          ...      ← 파일의 Header 또는 본문 부분
      * </pre>
@@ -215,7 +213,6 @@ public class WriteFile extends SourceAccessService {
         // outPutDataType 이 dataTypeDataType.FILE 인 경우 InterfaceInfo에서 FileTemplate을 가져와 directoryType 과 일치하는 경로에 파일을 저장함
         FileTemplate template = info.getFileTemplate(srcName);
         String filename = template.getFileName(ctx);
-        FileContentType contentType = template.getContentType();
         Charset charset = template.getCharset();
 
 
@@ -264,37 +261,183 @@ public class WriteFile extends SourceAccessService {
             throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not contained in [String, byte[], Map<String, Object>, List<Map<String, Object>>]. Inputted value's type: " + inputVal.getClass().getName());
         }
 
-        String successFilePath = null;
-        if (contentListMap != null) {
-            successFilePath = writeFileAsFormattedData(filename, savePath, charset, contentListMap, contentType);
-        } else if (contentStr != null) {
-            successFilePath = writeFileAsText(filename, savePath, charset, contentStr, contentType);
-        } else {
-            successFilePath = writeFileAsBytes(filename, savePath, charset, contentBytes, contentType);
-        }
+        Path filePath = path.resolve(filename);
+        log.info("[{}]Writing file to \"{}\" ...", txId, savePath);
 
+        OutputStream os = null;
+        long filesize = 0;
+        try {
+            if (addMetadata) {
+                if (Files.exists(filePath)) {
+                    if (Files.size(path) != 0) {
+                        throw new IllegalStateException("The file " + filePath + "'s content is exists. Can not write metadata.");
+                    }
+                } else {
+                    Files.createFile(filePath);
+                }
+                Map<String, Object> metadata = new HashMap<>();
+                metadata.put("encoding", charset);
+                if (contentListMap != null) {
+                    metadata.put("txId", txId);
+                    metadata.put("ifId", ctx.getInterfaceId());
+                    metadata.put("serviceId", info.getServiceId());
+                    metadata.put("addHeader", addHeader);
+                    metadata.put("delimiter", delimiter);
+                    metadata.put("qualifier", qualifier);
+                    metadata.put("replacementOfNullValue", replacementOfNullValue);
+                    metadata.put("replacementOfEmptyValue", replacementOfEmptyValue);
+                    metadata.put("replacementOfLineFeed", replacementOfLineFeed);
+                    metadata.put("replacementOfCarriageReturn", replacementOfCarriageReturn);
+                }
+                StringBuilder mdbd = new StringBuilder();
+                mdbd.append("<![METADATA[")
+                        .append(MessageUtil.mapToJson(metadata, true))
+                        .append("]]>\n");
+               Files.write(filePath, mdbd.toString().getBytes(charset), StandardOpenOption.APPEND);
+               filesize = Files.size(filePath);
+            }
+            if (contentListMap != null) {
+                os = Files.newOutputStream(filePath, StandardOpenOption.APPEND);
+                filesize += writeFileAsFormattedData(filePath, charset, contentListMap, os);
+            } else if (contentStr != null) {
+                filesize += writeFile(filePath, charset, contentStr);
+            } else {
+                filesize += writeFile(filePath, charset, contentBytes);
+            }
+            log.info("[{}]The file saved at \"{}\"", txId, filePath, savePath);
+        } catch (Throwable t) {
+            Files.deleteIfExists(filePath);
+            log.warn("[{}]An error occurred while writing file to \"{}\". Error file is deleted", txId, savePath);
+            throw t;
+        } finally {
+            if (os != null) {
+                os.close();
+            }
+        }
         if (getOutput() != null) {
-            setOutputValue(ctx, successFilePath);
+            setOutputValue(ctx, filePath.toString());
         }
 
     }
 
-    public String writeFileAsFormattedData(String filename, String savePath, Charset charset, List<Map<String, Object>> content, FileContentType contentType) throws Throwable {
+    /**
+     * @param path 
+     * 파일이 저장될 경로
+     * @param charset
+     * 파일의 인코딩
+     * @param content
+     * 파일에 쓰일 데이터
+     * @return 생성된 파일의 크기
+     * */
+    private long writeFileAsFormattedData(Path path, Charset charset, List<Map<String, Object>> content, OutputStream os) throws IOException {
+        if (content.size() == 0) {
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+            return 0;
+        }
+
+        //헤더(컬럼명) 작성 시작
+        List<String> columns = new ArrayList<>(content.get(0).keySet());
+        if (addHeader) {
+            //headerColumnSorting 이 1 또는 -1 인 경우 파일의 헤더 컬럼을 정렬한다.
+            if (headerColumnSorting == 1) {
+                SortingUtil.sortList(columns, SortingUtil.Sorting.ASC);
+            } else if (headerColumnSorting == -1) {
+                SortingUtil.sortList(columns, SortingUtil.Sorting.DESC);
+            }
+
+            StringBuffer headerBf = new StringBuffer();
+            for (String column : columns) {
+                headerBf.append(qualifier).append(column).append(qualifier).append(delimiter);
+            }
+            if (headerBf.length() > 0) {
+                headerBf.setLength(headerBf.length() - delimiter.length());
+                headerBf.append(recordSeparator);
+            }
+            os.write(headerBf.toString().getBytes(charset));
+        }
 
 
-        return null;
+        long bytesWritten = 0;
+        //파일 본문 작성시작
+        for (Map<String, Object> row : content) {
+            StringBuffer rowBf = new StringBuffer();
+
+            for (String column : columns) {
+                Object objVal = row.get(column);
+                String val = null;
+                if (objVal == null) {
+                    val = replacementOfNullValue;
+                } else {
+                    val = String.valueOf(objVal);
+                }
+                if (val.isEmpty()) {
+                    val = replacementOfEmptyValue;
+                }
+                rowBf.append(qualifier).append(qualifier).append(delimiter);
+            }
+
+            //Carriage Return 과 Line Feed 를 교체하는 과정
+            while (true) {
+                int crIdx = rowBf.indexOf("\r");
+                int lfIdx = rowBf.indexOf("\n");
+
+                if (crIdx != -1) {
+                    rowBf.deleteCharAt(crIdx);
+                    rowBf.insert(crIdx, replacementOfCarriageReturn);
+                    continue;
+                }
+                if (lfIdx != -1) {
+                    rowBf.deleteCharAt(lfIdx);
+                    rowBf.insert(lfIdx, replacementOfLineFeed);
+                    continue;
+                }
+                if (crIdx == -1 && lfIdx == -1) {
+                    break;
+                }
+            }
+
+            //문자열의 끝부분 불필요한 delimiter를 제거한 뒤 각 라인을 구분할 수 있는 구분자를 추가한다.
+            if (rowBf.length() > 0) {
+                rowBf.setLength(rowBf.length() - delimiter.length());
+                rowBf.append(recordSeparator);
+            }
+
+            byte[] dataToWrite = rowBf.toString().getBytes(charset);
+            os.write(dataToWrite);
+            bytesWritten += dataToWrite.length;
+        }
+
+        return bytesWritten;
     }
 
-    public String writeFileAsText(String filename, String savePath, Charset charset, String content, FileContentType contentType) throws Throwable {
-
-
-        return null;
+    /**
+     * @param path
+     * 파일이 저장될 경로
+     * @param charset
+     * 파일의 인코딩
+     * @param content
+     * 파일에 쓰일 데이터
+     * @return 생성된 파일의 크기
+     * */
+    private long writeFile(Path path, Charset charset, String content) throws IOException {
+        byte[] contentBytes = content.getBytes(charset);
+        return writeFile(path, charset, contentBytes);
     }
 
-    public String writeFileAsBytes(String filename, String savePath, Charset charset, byte[] content, FileContentType contentType) throws Throwable {
-
-
-        return null;
+    /**
+     * @param path
+     * 파일이 저장될 경로
+     * @param charset
+     * 파일의 인코딩
+     * @param content
+     * 파일에 쓰일 데이터
+     * @return 생성된 파일의 크기
+     * */
+    private long writeFile(Path path, Charset charset, byte[] content) throws IOException {
+        Files.write(path, content, StandardOpenOption.APPEND);
+        return content.length;
     }
 
 
@@ -417,5 +560,13 @@ public class WriteFile extends SourceAccessService {
 
     public void setAddHeader(boolean addHeader) {
         this.addHeader = addHeader;
+    }
+
+    public void setHeaderColumnSorting(int headerColumnSorting) {
+        switch (headerColumnSorting) {
+            case -1 : case 0 : case 1 : this.headerColumnSorting = headerColumnSorting;
+            default: this.headerColumnSorting = 0;
+        }
+        this.headerColumnSorting = headerColumnSorting;
     }
 }

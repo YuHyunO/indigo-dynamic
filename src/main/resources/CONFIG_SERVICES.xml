@@ -382,7 +382,10 @@
                 <bean class="mb.dnm.service.db.Select">
                     <property name="output" value="Data"/>
                 </bean>
-
+                <bean class="mb.dnm.service.file.WriteFile">
+                    <property name="sourceAlias"    value="TGT"/>
+                    <property name="input"          value="Data"/>
+                </bean>
             </list>
         </entry>
     </util:map>

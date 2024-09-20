@@ -39,7 +39,6 @@ public class FileTemplate {
     private FileType type = FileType.ALL;
 
     private String fileName;
-    private FileContentType contentType = FileContentType.BYTE_ARRAY;
     /**
      * 파일의 charset 설정은 FileContentType 이 TEXT인 경우에만 적용된다.
      * */
