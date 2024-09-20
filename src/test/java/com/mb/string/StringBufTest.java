@@ -78,7 +78,7 @@ public class StringBufTest {
         StringBuffer buf = new StringBuffer();
         for (byte b : bytes) {
             System.out.println(b);
-            buf.append(b);
+            buf.append(b).append(" ");
         }
         System.out.println();
         System.out.println(buf);

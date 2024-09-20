@@ -162,7 +162,7 @@ public class WriteFile extends SourceAccessService {
      *              .
      *              .
      *
-     * "replacementOfCarriageReturn": "(/CR/)",
+     * "replacementOfCarriageReturn": "&cr;",
      * "addHeader": true
      * }]]&gt;
      *          ...      ← 파일의 Header 또는 본문 부분
@@ -181,10 +181,15 @@ public class WriteFile extends SourceAccessService {
      * 기본값: true<br>
      * 파일 내용으로 쓰일 Input value의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 이고
      * <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code>의 데이터 타입이 바이트 배열(<code>byte[]</code>)인 경우 해당 데이터를 바이트 배열 그대로 파일에 쓸지 결정하는 옵션이다. 기본값이 true 이다.<br>
-     * 바이너리 데이터를 파일에 작성할 때
+     * 바이너리 데이터가 파일에 작성될 때 데이터는 BINARY_DATA_WRAPPER(&lt;![BINARY[...]]&gt;) 안에 쓰여지며 바이트 배열의 각 원소는 white space 로 구분된다.<br>
+     * <i>예시)</i>
+     * <pre>
+     *    byte[] bytes = new String("ABCDEFGHIJKLMNOPQRSTUVWXYZ").getBytes("UTF-8")
+     *    → &lt;![BINARY[65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90]]&gt;
+     * </pre>
      * */
     private boolean handleBinaryAsItIs = true;
-    private String binaryDataWrapper = "<![BINARY[@]]>";
+    private final String BINARY_DATA_WRAPPER = "<![BINARY[]]>";
 
     /**
      * 파일명 앞에 붙일 접두사에 대한 설정<br>
@@ -423,6 +428,7 @@ public class WriteFile extends SourceAccessService {
 
 
         long bytesWritten = 0;
+
         //파일 본문 작성시작
         for (Map<String, Object> row : content) {
             StringBuffer rowBf = new StringBuffer();
@@ -434,8 +440,20 @@ public class WriteFile extends SourceAccessService {
                     val = replacementOfNullValue;
                 } else {
                     Class clazz = objVal.getClass();
-                    if (clazz == byte[].class) {
-
+                    if (clazz == byte[].class) { //데이터 타입이 바이트 배열인 경우 이 서비스의 설정에 따라 바이트배열이 문자열로 변환되거나 그대로 쓰여진다.
+                        if (handleBinaryToString) {
+                            val = new String((byte[]) objVal, charset);
+                        } else if (handleBinaryAsItIs) {
+                            StringBuffer byteBf = new StringBuffer("<![BINARY[");
+                            for (byte b : (byte[]) objVal) {
+                                byteBf.append(b).append(" ");
+                            }
+                            if (byteBf.length() > 0) {
+                                byteBf.setLength(byteBf.length() - 1);
+                            }
+                            byteBf.append("]]>");
+                            val = byteBf.toString();
+                        }
                     } else {
                         val = String.valueOf(objVal);
                     }
@@ -524,6 +542,8 @@ public class WriteFile extends SourceAccessService {
             throw new IllegalArgumentException("The delimiter '" + delimiter + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
         if (delimiter.equals(replacementOfCarriageReturn))
             throw new IllegalArgumentException("The delimiter '" + delimiter + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+        if (handleBinaryAsItIs && BINARY_DATA_WRAPPER.contains(delimiter))
+            throw new IllegalArgumentException("The delimiter '" + delimiter + "' must not be contained in BINARY_DATA_WRAPPER '" + BINARY_DATA_WRAPPER + "'");
 
         this.delimiter = delimiter;
     }
@@ -541,6 +561,8 @@ public class WriteFile extends SourceAccessService {
             throw new IllegalArgumentException("The recordSeparator '" + recordSeparator + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
         if (recordSeparator.equals(replacementOfCarriageReturn))
             throw new IllegalArgumentException("The recordSeparator '" + recordSeparator + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+        if (handleBinaryAsItIs && BINARY_DATA_WRAPPER.contains(recordSeparator))
+            throw new IllegalArgumentException("The recordSeparator '" + recordSeparator + "' must not be contained in BINARY_DATA_WRAPPER '" + BINARY_DATA_WRAPPER + "'");
 
         this.recordSeparator = recordSeparator;
     }
@@ -558,6 +580,8 @@ public class WriteFile extends SourceAccessService {
             throw new IllegalArgumentException("The qualifier '" + qualifier + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
         if (qualifier.equals(replacementOfCarriageReturn))
             throw new IllegalArgumentException("The qualifier '" + qualifier + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+        if (handleBinaryAsItIs && BINARY_DATA_WRAPPER.contains(qualifier))
+            throw new IllegalArgumentException("The qualifier '" + qualifier + "' must not be contained in BINARY_DATA_WRAPPER '" + BINARY_DATA_WRAPPER + "'");
 
         this.qualifier = qualifier;
     }
@@ -573,6 +597,8 @@ public class WriteFile extends SourceAccessService {
             throw new IllegalArgumentException("The replacementOfNullValue '" + replacementOfNullValue + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
         if (replacementOfNullValue.equals(replacementOfCarriageReturn))
             throw new IllegalArgumentException("The replacementOfNullValue '" + replacementOfNullValue + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+        if (handleBinaryAsItIs && BINARY_DATA_WRAPPER.contains(replacementOfNullValue))
+            throw new IllegalArgumentException("The replacementOfNullValue '" + replacementOfNullValue + "' must not be contained in BINARY_DATA_WRAPPER '" + BINARY_DATA_WRAPPER + "'");
 
         this.replacementOfNullValue = replacementOfNullValue;
     }
@@ -588,6 +614,8 @@ public class WriteFile extends SourceAccessService {
             throw new IllegalArgumentException("The replacementOfEmptyValue '" + replacementOfEmptyValue + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
         if (replacementOfEmptyValue.equals(replacementOfCarriageReturn))
             throw new IllegalArgumentException("The replacementOfEmptyValue '" + replacementOfEmptyValue + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+        if (handleBinaryAsItIs && BINARY_DATA_WRAPPER.contains(replacementOfEmptyValue))
+            throw new IllegalArgumentException("The replacementOfEmptyValue '" + replacementOfEmptyValue + "' must not be contained in BINARY_DATA_WRAPPER '" + BINARY_DATA_WRAPPER + "'");
 
         this.replacementOfEmptyValue = replacementOfEmptyValue;
     }
@@ -605,6 +633,8 @@ public class WriteFile extends SourceAccessService {
             throw new IllegalArgumentException("The replacementOfLineFeed '" + replacementOfLineFeed + "' must be different with qualifier '" + qualifier + "'");
         if (replacementOfLineFeed.equals(replacementOfCarriageReturn))
             throw new IllegalArgumentException("The replacementOfLineFeed '" + replacementOfLineFeed + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+        if (handleBinaryAsItIs && BINARY_DATA_WRAPPER.contains(replacementOfLineFeed))
+            throw new IllegalArgumentException("The replacementOfLineFeed '" + replacementOfLineFeed + "' must not be contained in BINARY_DATA_WRAPPER '" + BINARY_DATA_WRAPPER + "'");
 
         this.replacementOfLineFeed = replacementOfLineFeed;
     }
@@ -622,12 +652,24 @@ public class WriteFile extends SourceAccessService {
             throw new IllegalArgumentException("The replacementOfCarriageReturn '" + replacementOfCarriageReturn + "' must be different with qualifier '" + qualifier + "'");
         if (replacementOfCarriageReturn.equals(replacementOfLineFeed))
             throw new IllegalArgumentException("The replacementOfCarriageReturn '" + replacementOfCarriageReturn + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
+        if (handleBinaryAsItIs && BINARY_DATA_WRAPPER.contains(replacementOfCarriageReturn))
+            throw new IllegalArgumentException("The replacementOfCarriageReturn '" + replacementOfCarriageReturn + "' must not be contained in BINARY_DATA_WRAPPER '" + BINARY_DATA_WRAPPER + "'");
 
         this.replacementOfCarriageReturn = replacementOfCarriageReturn;
     }
 
     public void setAddHeader(boolean addHeader) {
         this.addHeader = addHeader;
+    }
+
+    public void setHandleBinaryToString(boolean handleBinaryToString) {
+        handleBinaryAsItIs = !handleBinaryToString;
+        this.handleBinaryToString = handleBinaryToString;
+    }
+
+    public void setHandleBinaryAsItIs(boolean handleBinaryAsItIs) {
+        handleBinaryToString = !handleBinaryAsItIs;
+        this.handleBinaryAsItIs = handleBinaryAsItIs;
     }
 
     public void setHeaderColumnSorting(int headerColumnSorting) {
