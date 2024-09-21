@@ -184,6 +184,22 @@
                 </list>
             </property>
         </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="FILE_READ_IF_TEST"/>
+            <property name="description"            value="FILE 인터페이스 테스트"/>
+            <property name="serviceId"              value="FILE_READ_AND_PARSE"/>
+            <property name="sourceAliases"          value="TGT:LOCAL_DISK"/>
+            <property name="fileTemplates">
+                <list>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"           value="LOCAL_DISK"/>
+                        <property name="charset"                value="UTF-8"/>
+                        <property name="dataType"               value="PARSED_TEXT"/>
+                    </bean>
+                </list>
+            </property>
+        </bean>
     </util:list>
 
 

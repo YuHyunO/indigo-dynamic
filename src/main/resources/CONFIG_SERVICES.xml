@@ -400,6 +400,27 @@
                 </bean>-->
             </list>
         </entry>
+
+        <entry key="FILE_READ_AND_PARSE">
+            <list>
+                <bean class="mb.dnm.service.general.OutputCustomData">
+                    <property name="customData">
+                        <value>C:\Projects\indigo-dynamic\src\main\resources\FILE_SAMPLE.txt</value>
+                    </property>
+                    <property name="output" value="file_to_read"/>
+                </bean>
+                <bean class="mb.dnm.service.file.ReadFile">
+                    <property name="sourceAlias"    value="TGT"/>
+                    <property name="input"  value="file_to_read"/>
+                    <property name="output"  value="file_data"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="file_data"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+            </list>
+        </entry>
     </util:map>
 
 

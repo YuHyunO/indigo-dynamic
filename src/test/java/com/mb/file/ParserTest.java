@@ -47,7 +47,8 @@ public class ParserTest {
 
     @Test
     public void readDataToList_test() throws Exception {
-        String data = new String(Files.readAllBytes(Paths.get("C:\\Projects\\indigo-dynamic\\src\\main\\resources\\FILE_SAMPLE_2.txt")), "UTF-8");
+        //String data = new String(Files.readAllBytes(Paths.get("C:\\Projects\\indigo-dynamic\\src\\main\\resources\\FILE_SAMPLE_2.txt")), "UTF-8");
+        String data = new String(Files.readAllBytes(Paths.get("C:\\Projects\\indigo-dynamic\\src\\main\\resources\\FILE_SAMPLE.txt")), "UTF-8");
         List<List<Object>> result = FileParser.readDataToList(data, getTemplate());
 
         for (int i = 0; i < result.size(); i++) {

@@ -224,18 +224,25 @@ public class ReadFile extends SourceAccessService {
 
             switch (outputType) {
                 case BYTE_ARRAY: {
-                    log.info("[{}]Reading file \"{}\" to 'String' using charset '{}' ...", txId, readFilePath, charset);
+                    log.info("[{}]Reading file \"{}\" to 'byte array' ...", txId, readFilePath);
                     fileData = Files.readAllBytes(readFilePath);
+                    log.info("[{}]Read complete. Size: {} bytes", txId, ((byte[]) fileData).length);
                     break;
                 }
                 case STRING: {
-                    log.info("[{}]Reading file \"{}\" to 'byte array' ...", txId, readFilePath);
+                    log.info("[{}]Reading file \"{}\" to 'String' using charset '{}' ...", txId, readFilePath, charset);
                     fileData = new String(Files.readAllBytes(readFilePath), charset);
+                    log.info("[{}]Read complete. String encoding: '{}'", txId, charset);
                     break;
                 }
                 case PARSED_TEXT: {
-                    log.info("[{}]Reading file \"{}\" to 'formatted data' ...", txId, readFilePath);
+                    log.info("[{}]Reading file \"{}\" to 'FORMATTED_DATA' ...", txId, readFilePath);
                     fileData = readFormattedData(readFilePath, charset);
+                    if (fileData != null) {
+                        log.info("[{}]Read complete. Parsed records count: {}", txId, ((List) fileData).size());
+                    } else {
+                        log.info("[{}]Read complete. Parsed data is null", txId);
+                    }
                     break;
                 }
                 default: throw new IllegalArgumentException("Unsupported output data type: " + outputDataType);
@@ -296,27 +303,20 @@ public class ReadFile extends SourceAccessService {
             headerExist = Boolean.parseBoolean((String) metadata.get("add_header"));
             handleBinaryData =  Boolean.parseBoolean((String) metadata.get("handle_binary_as_it_is"));
         }
+
         FileParserTemplate parserTemplate = new FileParserTemplate(recordSeparator, delimiter, qualifier,
                 replacementOfNullValue, replacementOfEmptyValue, replacementOfLineFeed,
                 replacementOfCarriageReturn, headerExist, handleBinaryData);
 
         if (headerExist) {
-            List<String> headerColumns = new ArrayList<>();
-            headerColumns = FileParser.readHeader(content.toString(), parserTemplate);
+            //List<Map<String, Object>> 형태로 parsing
+            resultData = FileParser.readDataToRecord(content.toString(), parserTemplate);
+        } else {
+            //List<List<Object>> 형태로 parsing
+            resultData = FileParser.readDataToList(content.toString(), parserTemplate);
         }
 
-
-
-
-        return null;
-    }
-
-    private void parseAndSetRecord(StringBuilder buffer, String recordLine, Collection mapOrListToSet,
-                                   String recordSeparator, String delimiter, String qualifier,
-                                   String replacementOfNullValue, String replacementOfEmptyValue, boolean handleBinaryData) {
-
-
-
+        return resultData;
     }
 
     private void throwExceptionIfMetadataInvalid(Map<String, Object> metadata) {
