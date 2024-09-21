@@ -1,5 +1,6 @@
 package mb.dnm.service.file;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.access.file.FileTemplate;
@@ -8,6 +9,8 @@ import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
+import mb.dnm.util.MessageUtil;
+import org.springframework.util.Assert;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -15,9 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * 파일의 데이터를 읽는다.<br>
@@ -33,7 +34,7 @@ import java.util.Properties;
  *
  *     <code>LIST_OF_MAP</code> 인 경우<br>
  *     &nbsp;1. Input으로 전달된 파일경로에 있는 파일의 IO Stream 을 open 한다. (파일이 없는 경우 FileNotFoundException 발생)<br>
- *     &nbsp;2. 아래에 속성에 따라 파일의 데이터를 Parsing 한다.(<code>metadataExist</code> 가 true이고 파일에 메타데이터가 존재하는 경우 메타데이터의 속성대로 Parsing 한다.)<br>
+ *     &nbsp;2. 아래에 속성에 따라 파일의 데이터를 Parsing 한다.(<code>metadataExist</code> 가 true 인 경우 메타데이터의 속성대로 Parsing 한다.)<br>
  *     <code>recordSeparator</code>, <code>delimiter</code>, <code>qualifier</code>, <code>replacementOfNullValue</code>,
  *     <code>replacementOfEmptyValue</code>, <code>replacementOfLineFeed</code>, <code>replacementOfCarriageReturn</code>
  *     , <code>headerExist</code>, <code>handleBinaryToString</code>, <code>handleBinaryAsItIs</code><br>
@@ -144,7 +145,11 @@ public class ReadFile extends SourceAccessService {
      * 기본값: false<br>
      * 파일 내용을 읽은 뒤 output할 데이터의 타입이 PARSED_TEXT 인 경우
      * 파일의 내용 가장 상단에 파일 인코딩, Parsing 을 위한 정보 등이 기입되어 있는지에 대한 설정이다.
-     * 이 속성이 true이고 파일내용에 메타데이터가 존재하는 경우 메타데이터의 정보를 기반으로 파일을 Parsing 한다.
+     * 이 속성이 true인 경우 파일 내용에서 메타데이터를 분석하여 그 정보를 기반으로 파일을 Parsing 한다.<br>
+     * 메타데이터의 형식은 <code>mb.dnm.service.file.WriteFile</code> 의 형식을 따르며, metadataExist = true 이지만
+     * 메타데이터의 속성 중 특정 값이 하나라도 없는 경우 Exception이 발생한다.
+     *
+     * @see WriteFile
      * */
     private boolean metadataExist = false;
 
@@ -212,26 +217,23 @@ public class ReadFile extends SourceAccessService {
             charset = template.getCharset();
         }
 
-        InputStream is = null;
-        ByteArrayOutputStream baos = null;
         Object fileData = null;
         try {
-            is = Files.newInputStream(readFilePath, StandardOpenOption.READ);
-            
+
             switch (outputType) {
                 case BYTE_ARRAY: {
                     log.info("[{}]Reading file \"{}\" to 'String' using charset '{}' ...", txId, readFilePath, charset);
-
+                    fileData = Files.readAllBytes(readFilePath);
                     break;
                 }
                 case STRING: {
                     log.info("[{}]Reading file \"{}\" to 'byte array' ...", txId, readFilePath);
-
+                    fileData = new String(Files.readAllBytes(readFilePath), charset);
                     break;
                 }
                 case PARSED_TEXT: {
-                    log.info("[{}]Parsing file \"{}\" ...", txId, readFilePath);
-
+                    log.info("[{}]Reading file \"{}\" to 'formatted data' ...", txId, readFilePath);
+                    fileData = readFormattedData(readFilePath, charset);
                     break;
                 }
                 default: throw new IllegalArgumentException("Unsupported output data type: " + outputDataType);
@@ -239,10 +241,6 @@ public class ReadFile extends SourceAccessService {
         } catch (Throwable t) {
             log.warn("[{}]Failed to read file \"{}\"", txId, readFilePath);
             throw t;
-        } finally {
-            if (is != null) {
-                is.close();
-            }
         }
 
         if (getOutput() != null) {
@@ -251,13 +249,77 @@ public class ReadFile extends SourceAccessService {
 
     }
 
-    private Map<String, Object> readMeatdata(InputStream is) throws Exception {
-        Map<String, Object> metadata = new HashMap<>();
+    private List readFormattedData(Path filePath, Charset charset) throws Exception {
+        List resultData = null;
+        StringBuilder content = new StringBuilder(new String(Files.readAllBytes(filePath), charset));
 
-        return metadata;
+        String recordSeparator = this.recordSeparator;
+        String delimiter = this.delimiter;
+        String qualifier = this.qualifier;
+        String replacementOfNullValue = this.replacementOfNullValue;
+        String replacementOfEmptyValue = this.replacementOfEmptyValue;
+        String replacementOfLineFeed = this.replacementOfLineFeed;
+        String replacementOfCarriageReturn = this.replacementOfCarriageReturn;
+        boolean headerExist = this.headerExist;
+        boolean handleBinaryData = this.handleBinaryData;
+
+        //메타데이터를 읽고 검증하는 과정이다.
+        if (metadataExist) {
+            int firstLineEndIdx = content.indexOf("\n");
+            if (firstLineEndIdx == -1) {
+                throw new IllegalStateException("Can not parse metadata of the file \"" + filePath + "\". If the 'metadataExist' property is 'true', the first line of the file must contain only metadata.");
+            }
+            String metadataLine = content.substring(0, firstLineEndIdx).trim();
+            boolean mdPrefix = metadataLine.startsWith("<![METADATA[");
+            boolean mdSuffix = metadataLine.endsWith("]]>");
+            if (mdPrefix || mdSuffix)
+                throw new IllegalStateException("Can not parse metadata of the file \"" + filePath + "\". The metadata is not contained in the Metadata wrapper \"<![METADATA[]>\".");
+            metadataLine = metadataLine.substring("<![METADATA[".length(), metadataLine.length() - "]]>".length());
+
+            Map<String, Object> metadata = null;
+            try {
+                metadata = MessageUtil.jsonToMap(metadataLine);
+                throwExceptionIfMetadataInvalid(metadata);
+                content.delete(0, firstLineEndIdx); //메타데이터 추출 후 데이터에서 메타데이터 부분은 지운다.
+            } catch (JsonProcessingException je) {
+                throw new IllegalStateException("Can not parse metadata of the file \"" + filePath + "\". The metadata is not JSON format.");
+            }
+            recordSeparator = (String) metadata.get("record_separator");
+            delimiter = (String) metadata.get("delimiter");
+            qualifier = (String) metadata.get("qualifier");
+            replacementOfNullValue = (String) metadata.get("replacement_of_null_value");
+            replacementOfEmptyValue = (String) metadata.get("replacement_of_empty_value");
+            replacementOfLineFeed = (String) metadata.get("replacement_of_line_feed");
+            replacementOfCarriageReturn = (String) metadata.get("replacement_of_carriage_return");
+            headerExist = Boolean.parseBoolean((String) metadata.get("add_header"));
+            handleBinaryData =  Boolean.parseBoolean((String) metadata.get("handle_binary_as_it_is"));
+        }
+
+
+        if (headerExist) {
+            List<String> headerColumns = new ArrayList<>();
+            int recordSeparatorIdx = content.indexOf(recordSeparator);
+            if (recordSeparatorIdx == -1)
+                throw new IllegalStateException("Invalid file content. Can not parse header columns. There is no record separator(" + recordSeparator +").");
+            CharSequence recordSequence = content.subSequence(0, recordSeparatorIdx);
+
+        }
+
+
+        return null;
     }
 
-
+    private void throwExceptionIfMetadataInvalid(Map<String, Object> metadata) {
+        Assert.notNull(metadata.get("record_separator"), "Invalid metadata property 'record_separator'.");
+        Assert.notNull(metadata.get("delimiter"), "Invalid metadata property 'delimiter'.");
+        Assert.notNull(metadata.get("qualifier"), "Invalid metadata property 'qualifier'.");
+        Assert.notNull(metadata.get("replacement_of_null_value"), "Invalid metadata property 'replacement_of_null_value'.");
+        Assert.notNull(metadata.get("replacement_of_empty_value"), "Invalid metadata property 'replacement_of_empty_value'.");
+        Assert.notNull(metadata.get("replacement_of_line_feed"), "Invalid metadata property 'replacement_of_line_feed'.");
+        Assert.notNull(metadata.get("replacement_of_carriage_return"), "Invalid metadata property 'replacement_of_carriage_return'.");
+        Assert.notNull(metadata.get("add_header"), "Invalid metadata property 'add_header'.");
+        Assert.notNull(metadata.get("handle_binary_as_it_is"), "Invalid metadata property 'handle_binary_as_it_is'.");
+    }
 
     public void setOutputDataType(DataType outputDataType) {
         switch (outputDataType) {

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -95,5 +96,12 @@ public class StringBufTest {
         String i = "61";
         byte bb = 61;
         System.out.println(i.getBytes().length);
+    }
+
+    @Test
+    public void bytes_test3() throws IOException {
+        log.info("UTF-8: {}", "\n".getBytes(Charset.forName("UTF-8")).length);
+        log.info("UTF-16: {}", "\n".getBytes(Charset.forName("UTF-16")).length);
+        log.info("UTF-32: {}", "\n".getBytes(Charset.forName("UTF-32")).length);
     }
 }

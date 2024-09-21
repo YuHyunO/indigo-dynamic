@@ -150,23 +150,14 @@ public class WriteFile extends SourceAccessService {
     /**
      * 기본값: false<br>
      * 파일의 내용 가장 상단에 파일 인코딩, Parsing 을 위한 정보 등을 기입할 지에 대한 설정이다.
-     * 메타데이터에 대한 설정은 input된 데이터의 타입과 무관하게 적용될 수 있다.
+     * 메타데이터에 대한 설정은 input된 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 인 경우에 적용된다.
      * 메타데이터는 다음과 같은 형식으로 작성된다.
      * <pre>
-     * &lt;![METADATA[{
-     * "encoding": "UTF-8",
-     * "recordSeparator": "\n",
-     * "qualifier": "",
-     * "replacementOfNullValue": "",
-     *              .
-     *              .
-     *              .
-     *
-     * "replacementOfCarriageReturn": "&cr;",
-     * "addHeader": true
-     * }]]&gt;
+     * &lt;![METADATA[...]]&gt;
      *          ...      ← 파일의 Header 또는 본문 부분
      * </pre>
+     * <br>
+     * <br>
      * */
     private boolean addMetadata = false;
 
@@ -331,7 +322,8 @@ public class WriteFile extends SourceAccessService {
         OutputStream os = null;
         long filesize = 0;
         try {
-            if (addMetadata) {
+            //addMetadata 가 true 이고 input 된 데이터의 타입이 Map<String, Object> 또는 List<Map<String, Object>>인 경우에만 메타데이터를 작성한다.
+            if (addMetadata && contentListMap != null) {
                 log.debug("[{}]Adding metadata to \"{}\"", txId, filePath);
                 if (Files.exists(filePath)) {
                     if (Files.size(path) != 0) {
@@ -341,31 +333,23 @@ public class WriteFile extends SourceAccessService {
                     Files.createFile(filePath);
                 }
                 Map<String, Object> metadata = new LinkedHashMap<>();
-                metadata.put("encoding", charset);
-                if (filenamePrefix != null)
-                    metadata.put("filename_prefix", filenamePrefix);
-                if (contentListMap != null) {
-                    metadata.put("tx_id", txId);
-                    metadata.put("if_id", ctx.getInterfaceId());
-                    metadata.put("service_id", info.getServiceId());
-                    metadata.put("add_header", addHeader);
-                    metadata.put("delimiter", delimiter);
-                    metadata.put("qualifier", qualifier);
-                    metadata.put("replacement_of_null_value", replacementOfNullValue);
-                    metadata.put("replacement_of_empty_value", replacementOfEmptyValue);
-                    metadata.put("replacement_of_line_feed", replacementOfLineFeed);
-                    metadata.put("replacement_of_carriage_return", replacementOfCarriageReturn);
-                    metadata.put("handle_binary_as_it_is", handleBinaryAsItIs);
-                    if (handleBinaryAsItIs)
-                        metadata.put("binary_data_wrapper", BINARY_DATA_WRAPPER);
-                    metadata.put("handle_binary_to_string", handleBinaryToString);
-                }
+                metadata.put("add_header", addHeader);
+                metadata.put("record_separator", recordSeparator);
+                metadata.put("delimiter", delimiter);
+                metadata.put("qualifier", qualifier);
+                metadata.put("replacement_of_null_value", replacementOfNullValue);
+                metadata.put("replacement_of_empty_value", replacementOfEmptyValue);
+                metadata.put("replacement_of_line_feed", replacementOfLineFeed);
+                metadata.put("replacement_of_carriage_return", replacementOfCarriageReturn);
+                metadata.put("handle_binary_as_it_is", handleBinaryAsItIs);
+                metadata.put("handle_binary_to_string", handleBinaryToString);
                 StringBuilder mdbd = new StringBuilder();
                 mdbd.append("<![METADATA[")
-                        .append(MessageUtil.mapToJson(metadata, true))
+                        .append(MessageUtil.mapToJson(metadata, false))
                         .append("]]>\n");
-               Files.write(filePath, mdbd.toString().getBytes(charset), StandardOpenOption.APPEND);
-               filesize = Files.size(filePath);
+
+                Files.write(filePath, mdbd.toString().getBytes(charset), StandardOpenOption.APPEND);
+                filesize = Files.size(filePath);
             }
             if (contentListMap != null) {
                 log.debug("[{}]Content type: formatted text \"{}\"", txId, filePath);
