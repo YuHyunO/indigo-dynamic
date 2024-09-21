@@ -7,6 +7,7 @@ import mb.dnm.code.DataType;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -14,8 +15,6 @@ import java.util.List;
 @Slf4j
 public class ParserTest {
 
-    private Charset commonCharset;
-    private DataType outputDataType;
     private String recordSeparator = "\n";
     private String delimiter = "|";
     private String qualifier = "";
@@ -47,8 +46,59 @@ public class ParserTest {
     }
 
     @Test
+    public void readDataToList_test() throws Exception {
+        String data = new String(Files.readAllBytes(Paths.get("C:\\Projects\\indigo-dynamic\\src\\main\\resources\\FILE_SAMPLE_2.txt")), "UTF-8");
+        List<List<Object>> result = FileParser.readDataToList(data, getTemplate());
+
+        for (int i = 0; i < result.size(); i++) {
+            log.info("({}) Result: {}", i, result.get(i));
+        }
+    }
+
+    @Test
     public void readRecord_test() throws Exception {
         System.out.println("asd");
+    }
+
+    public byte[] replaceByteArray(StringBuilder buffer) {
+        byte[] result = null;
+        if (buffer.indexOf("<![BINARY[") == 0 && ((buffer.lastIndexOf("]]>")) == (buffer.length() - "]]>".length())) ) {
+            String[] byteStr = (buffer.substring("<![BINARY[".length(), buffer.length() - "]]>".length())).split(" ");
+            int len = byteStr.length;
+            result = new byte[len];
+            for (int i = 0; i < len; i++) {
+                result[i] = Byte.parseByte(byteStr[i]);
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    public void byte_parse_test() throws Exception {
+        String text = "푸른하늘 은하수 하얀 쪽 배엔\n" +
+                "계수나무 한 나무 토끼 한 마리\n" +
+                "돛대도 아니 달고 삿대도 없이\n" +
+                "가기도 잘도간다 서쪽 나라로\n" +
+                "\n" +
+                "은하수를 건너서 구름나라로\n" +
+                "구름나라 지나선 어디로 가나\n" +
+                "멀리서 반짝반짝 비치이는 건\n" +
+                "샛별이 등대란다 길을 찾아라";
+        byte[] textBytes = text.getBytes(StandardCharsets.UTF_8);
+        StringBuilder bd = new StringBuilder();
+        bd.append("<![BINARY[");
+        for (byte b : textBytes) {
+            bd.append(b).append(" ");
+        }
+        bd.setLength(bd.length() - " ".length());
+        bd.append("]]>");
+        log.info("BINARY FORM: {}", bd.toString());
+
+        byte[] bytes = replaceByteArray(bd);
+        String parsedText = new String(bytes, "UTF-8");
+        log.info("Equals: {}", parsedText.equals(text));
+        log.info("Result String: {}", parsedText);
     }
 
 }
