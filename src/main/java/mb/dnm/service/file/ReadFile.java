@@ -300,8 +300,13 @@ public class ReadFile extends SourceAccessService {
             List<String> headerColumns = new ArrayList<>();
             int recordSeparatorIdx = content.indexOf(recordSeparator);
             if (recordSeparatorIdx == -1)
-                throw new IllegalStateException("Invalid file content. Can not parse header columns. There is no record separator(" + recordSeparator +").");
-            CharSequence recordSequence = content.subSequence(0, recordSeparatorIdx);
+                throw new IllegalStateException("Invalid file content. Can not parse header columns. There is no record separator '" + recordSeparator +"'.");
+            CharSequence recordSequence = content.substring(0, recordSeparatorIdx);
+            int len = recordSequence.length();
+
+            for (int i = 0; i < len; i++) {
+
+            }
 
         }
 

@@ -82,10 +82,10 @@ public class EncodingTest {
         byte[] utf8Bytes = data.getBytes(StandardCharsets.UTF_8);
         byte[] utf16Bytes = data.getBytes(Charset.forName("UTF-16"));
 
-        if (new String(utf8Bytes, Charset.forName("UTF-8")).contains("테스트")) {
+        if (new String(utf8Bytes, Charset.forName("UTF-8")).contains("\n")) {
             System.out.println("@@@@@");
         }
-        if (new String(utf16Bytes, Charset.forName("UTF-16")).contains("테스트")) {
+        if (new String(utf16Bytes, Charset.forName("UTF-16")).contains("\n")) {
             System.out.println("#####");
         }
     }
