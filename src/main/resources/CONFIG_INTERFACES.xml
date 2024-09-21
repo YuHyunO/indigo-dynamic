@@ -174,8 +174,8 @@
                     <bean class="mb.dnm.access.file.FileTemplate">
                         <property name="templateName"           value="LOCAL_DISK"/>
                         <property name="localReceiveDir"        value="C:\FileStorage\receive\@{if_id}"/>
-                        <property name="fileName"               value="FILE_WRITE_IF_TEST.txt"/>
-                        <property name="charset"                value="UTF-16"/>
+                        <property name="fileName"               value="FILE_SAMPLE.txt"/>
+                        <property name="charset"                value="UTF-8"/>
                     </bean>
                     <bean class="mb.dnm.access.file.FileTemplate">
                         <property name="templateName"           value="FTP2"/>

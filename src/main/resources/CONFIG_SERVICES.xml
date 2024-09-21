@@ -389,7 +389,7 @@
                     <property name="sourceAlias"    value="TGT"/>
                     <property name="input"          value="Data"/>
                     <property name="directoryType"  value="LOCAL_RECEIVE"/>
-                    <property name="addMetadata"    value="true"/>
+                    <property name="addMetadata"    value="false"/>
                     <property name="output"         value="written_file"/>
                 </bean>
                 <!--<bean class="mb.dnm.service.ftp.UploadFiles">

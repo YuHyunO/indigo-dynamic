@@ -3,6 +3,8 @@ package mb.dnm.service.file;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.access.file.FileParser;
+import mb.dnm.access.file.FileParserTemplate;
 import mb.dnm.access.file.FileTemplate;
 import mb.dnm.code.DataType;
 import mb.dnm.core.context.ServiceContext;
@@ -294,24 +296,25 @@ public class ReadFile extends SourceAccessService {
             headerExist = Boolean.parseBoolean((String) metadata.get("add_header"));
             handleBinaryData =  Boolean.parseBoolean((String) metadata.get("handle_binary_as_it_is"));
         }
-
+        FileParserTemplate parserTemplate = new FileParserTemplate(recordSeparator, delimiter, qualifier,
+                replacementOfNullValue, replacementOfEmptyValue, replacementOfLineFeed,
+                replacementOfCarriageReturn, headerExist, handleBinaryData);
 
         if (headerExist) {
             List<String> headerColumns = new ArrayList<>();
-            int recordSeparatorIdx = content.indexOf(recordSeparator);
-            if (recordSeparatorIdx == -1)
-                throw new IllegalStateException("Invalid file content. Can not parse header columns. There is no record separator '" + recordSeparator +"'.");
-            CharSequence recordSequence = content.substring(0, recordSeparatorIdx);
-            int len = recordSequence.length();
-
-            for (int i = 0; i < len; i++) {
-
-            }
-
+            headerColumns = FileParser.readHeader(content.toString(), parserTemplate);
         }
 
 
         return null;
+    }
+
+    private void parseAndSetRecord(StringBuilder buffer, String recordLine, Collection mapOrListToSet,
+                                   String recordSeparator, String delimiter, String qualifier,
+                                   String replacementOfNullValue, String replacementOfEmptyValue, boolean handleBinaryData) {
+
+
+
     }
 
     private void throwExceptionIfMetadataInvalid(Map<String, Object> metadata) {
