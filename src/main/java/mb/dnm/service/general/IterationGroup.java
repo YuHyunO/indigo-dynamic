@@ -15,19 +15,55 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Input 파라미터로 Iterable 객체를 전달받아 <code>fetchSize</code> 만큼 반복하며 등록된 <code>List<Service> services</code>를 수행한다.<br>
+ * <code>createNewContextEachLoop</code> 설정을 true로 한 경우에는 반복문이 수행되며 때마다 등록된 <code>List<Service> services</code>를 관통하는
+ * <code>ServiceContext</code> 가 매번 새로 생성된다. 하지만 이렇게 반복마다 매번 생성되는 Context 객체는 하나의 반복문 안에서만 유효하다.<br><br>
+ *
+ * 이 서비스가 실행되기 전의 <code>ServiceContext</code> 객체는 사라지지 않는다.
+ *
+ * @author Yuhyun O
+ * @version 2024.09.22
+ * @Input 매번의 Iteration 에서 반복할 요소
+ * @InputType <code>Iterable</code>
+ * @Output <code>createNewContextEachLoop</code>가 true 인 경우 <code>List&lt;Service&gt; services</code>를 수행하며 output으로 지정된 값을 output으로 사용할 수 있다.
+ * @OutputType Object
+ * @Exceptions <code>InvalidServiceConfigurationException</code>: Input parameter의 타입이 Iterable 객체가 아닌 경우<br>
+ * */
 @Slf4j
 @Setter
 public class IterationGroup extends ParameterAssignableService {
+    /**
+     * IterationGroup 에서 실행될 service strategies
+     * */
     private List<Service> services;
+    /**
+     * 각각의 Iteration 에서 service strategies 를 실행하는 도중 에러발생 시 등록할 수 있는 error handlers
+     * */
     private List<ErrorHandler> errorHandlers;
+    /**
+     * 각각의 Iteration 에서 service strategies 의 Input 매개변수로 전달될 요소명<br>
+     * */
     private String iterationInputName;
+    /**
+     * 기본값: 1<br>
+     * 각각의 Iteration의 반복되는 요소가 service strategies 의 Input 매개변수로 전달될 때 몇 개만큼 전달될 지를 결정한다.<br>
+     * */
     private int fetchSize = 1;
+    /**
+     * 기본값: false<br>
+     * 각각의 Iteration 에서 매번 새로운 ServiceContext를 생성할 지에 대한 설정
+     * */
     private boolean createNewContextEachLoop = false;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         if (getInput() == null) {
             throw new InvalidServiceConfigurationException(this.getClass(), "The IterationGroup requires a parameter to execute repeated elements.");
+        }
+
+        if (iterationInputName == null || iterationInputName.isEmpty()) {
+            throw new InvalidServiceConfigurationException(this.getClass(), "The property 'iterationInputName' is null. The IterationGroup requires the \"iteration input name\" which to be passed into inner loop service's input parameter.");
         }
 
         InterfaceInfo info = ctx.getInfo();
@@ -54,6 +90,10 @@ public class IterationGroup extends ParameterAssignableService {
         while (iterator.hasNext()) {
             ++iterCnt;
             Object val = null;
+
+            /*fetchSize 가 1보다 큰 경우 Inner Processing service chaining 의 Input 파라미터의 데이터 타입으로 List 가 전달됨.
+            이때의 List 의 size는 fetchSize 보다 작거나 같다.
+             */
             List<Object> valList = new ArrayList<>();
             int fetched = 0;
             if (fetchSize > 1) {
@@ -74,6 +114,7 @@ public class IterationGroup extends ParameterAssignableService {
             ServiceContext innerCtx = null;
             String innerTxId = null;
             if (createNewContextEachLoop) {
+                //createNewContextEachLoop=true 인 경우 각 반복문에서 Inner Processing service chaining 을 할 때 전달될 ServiceContext 객체를 새로 생성함
                 innerCtx = new ServiceContext(info);
                 innerTxId = innerCtx.getTxId();
                 log.debug("[{}]Iteration-Group: New service context is created.", innerTxId);
@@ -81,13 +122,17 @@ public class IterationGroup extends ParameterAssignableService {
                 innerCtx = ctx;
                 innerTxId = txId;
             }
+
+            /*Inner Processing services 에서는 이 서비스에 등록된 iterationInputName 으로 input 을 파라미터로 받을 수 있다.
+              지금 이 코드는 ParameterAssignableService#setOutputValue(ServiceContext ctx, Object outputValue); 와 같은 효과를 가진다.
+             */
             innerCtx.addContextParam(this.iterationInputName, val);
 
 
             log.debug("[{}]Iteration-Group: Fetching {} element from the input parameter '{}' ...", innerTxId, fetched, getInput());
             int cnt1 = 0;
             try {
-                //Processing service chaining
+                //Inner Processing service chaining 시작
                 innerCtx.setProcessStatus(ProcessCode.IN_PROCESS);
                 log.info("[{}]Iteration-Group: Unfold the services", innerTxId);
                 for (Service service : services) {
@@ -146,6 +191,11 @@ public class IterationGroup extends ParameterAssignableService {
         }
         log.debug("[{}]Iteration-Group: Total iteration count: {}", txId, iterCnt);
 
+        if (createNewContextEachLoop) {
+            if (getOutput() != null) {
+                setOutputValue(ctx, ctx.getContextParam(getOutput()));
+            }
+        }
     }
 
     public void setFetchSize(int fetchSize) {

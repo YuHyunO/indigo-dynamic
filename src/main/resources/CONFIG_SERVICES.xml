@@ -436,6 +436,46 @@
                     <property name="input"                      value="data_list"/>
                     <property name="iterationInputName"         value="data"/>
                     <property name="fetchSize"                  value="3"/>
+                    <property name="createNewContextEachLoop"   value="false"/>
+                    <property name="services">
+                        <list>
+                            <!--<bean class="mb.dnm.service.general.PrintInput">
+                                <property name="input"                          value="data"/>
+                                <property name="printToXmlWhenCollection"       value="true"/>
+                                <property name="indented"                       value="true"/>
+                            </bean>-->
+                            <bean class="mb.dnm.service.db.Select">
+                                <property name="input"     value="data"/>
+                                <property name="output"     value="last_selected"/>
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="output" value="last_selected"/>
+                </bean>
+
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="last_selected"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+
+            </list>
+        </entry>
+
+        <entry key="ITERATE_PROCESS_2">
+            <list>
+                <bean class="mb.dnm.service.db.Select">
+                    <property name="output"     value="data_list"/>
+                </bean>
+
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="input"      value="data_list"/>
+                </bean>
+
+                <bean class="mb.dnm.service.general.IterationGroup">
+                    <property name="input"                      value="data_list"/>
+                    <property name="iterationInputName"         value="data"/>
+                    <property name="fetchSize"                  value="3"/>
                     <property name="createNewContextEachLoop"   value="true"/>
                     <property name="services">
                         <list>
@@ -447,7 +487,7 @@
                         </list>
                     </property>
                 </bean>
-                
+
             </list>
         </entry>
     </util:map>

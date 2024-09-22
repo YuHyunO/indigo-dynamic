@@ -3,7 +3,12 @@
 <mapper namespace="ITERATE_IF_TEST">
 
     <select id="SELECT" resultType="java.util.HashMap">
-        SELECT * FROM ifs_hosiptal_info where esb_link_stcd_mid = 'N' LIMIT 10
+        SELECT * FROM ifs_hosiptal_info where encryption_symbol in ('JDQ4MTAxMiM1MSMkMSMkMCMkNzIkMzgxOTYxIzExIyQxIyQ3IyQ4MiQ0NjE0ODEjNTEjJDEjJDYjJDgz'
+            ,'JDQ4MTg4MSM1MSMkMSMkMCMkNzIkNDgxMzUxIzExIyQxIyQzIyQxMyQ0NjEwMDIjNDEjJDEjJDgjJDgz')
+    </select>
+
+    <select id="SELECT_INNER" resultType="java.util.HashMap">
+        SELECT * FROM ifs_hosiptal_info where nursing_agency_name = #{nursing_agency_name}
     </select>
 
     <select id="SELECT_10" resultType="java.util.HashMap">
