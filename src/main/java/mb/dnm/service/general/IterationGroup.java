@@ -146,16 +146,11 @@ public class IterationGroup extends ParameterAssignableService {
         }
         log.debug("[{}]Iteration-Group: Total iteration count: {}", txId, iterCnt);
 
-
-
-
-
-
     }
 
-    public void setPatchSize(int fetchSize) {
+    public void setFetchSize(int fetchSize) {
         if (fetchSize <= 0) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "Iteration patch size must be greater than 0.");
+            throw new InvalidServiceConfigurationException(this.getClass(), "Iteration fetch size must be greater than 0.");
         }
         this.fetchSize = fetchSize;
     }
