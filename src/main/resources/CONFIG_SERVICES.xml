@@ -405,7 +405,7 @@
             <list>
                 <bean class="mb.dnm.service.general.OutputCustomData">
                     <property name="customData">
-                        <value>C:\Projects\indigo-dynamic\src\main\resources\FILE_SAMPLE.txt</value>
+                        <value>C:\FileStorage\receive\FILE_WRITE_IF_TEST\FILE_SAMPLE.txt</value>
                     </property>
                     <property name="output" value="file_to_read"/>
                 </bean>
@@ -421,7 +421,35 @@
                 </bean>
             </list>
         </entry>
-    </util:map>
 
+        <entry key="ITERATE_PROCESS">
+            <list>
+                <bean class="mb.dnm.service.db.Select">
+                    <property name="output"     value="data_list"/>
+                </bean>
+                
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="input"      value="data_list"/>
+                </bean>
+                
+                <bean class="mb.dnm.service.general.IterationGroup">
+                    <property name="input"                      value="data_list"/>
+                    <property name="iterationInputName"         value="data"/>
+                    <property name="fetchSize"                  value="3"/>
+                    <property name="createNewContextEachLoop"   value="true"/>
+                    <property name="services">
+                        <list>
+                            <bean class="mb.dnm.service.general.PrintInput">
+                                <property name="input"                          value="data"/>
+                                <property name="printToXmlWhenCollection"       value="true"/>
+                                <property name="indented"                       value="true"/>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+                
+            </list>
+        </entry>
+    </util:map>
 
 </beans>

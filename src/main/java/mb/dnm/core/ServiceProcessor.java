@@ -129,6 +129,8 @@ public class ServiceProcessor {
             int handlerCount = errorHandlers.size();
             int cnt2 = 0;
             for (ErrorHandler errorHandler : errorHandlers) {
+                if (!errorHandler.isTriggered(t1.getClass()))
+                    continue;
                 Class errorHandlerClass = errorHandler.getClass();
                 try {
                     log.warn("[{}]Start the error handler '{}'({}/{})", txId, errorHandlerClass, cnt2, handlerCount);

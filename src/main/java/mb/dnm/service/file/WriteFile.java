@@ -65,14 +65,16 @@ import java.util.*;
 @Setter
 public class WriteFile extends SourceAccessService {
     /**
+     * 기본값: true
+     * <br>
+     * true일 때 파일이 이미 존재하는 경우 덮어쓰기를 한다.
+     * false인 경우에는 EOF 부터 내용을 덧붙인다.
+     * */
+    private boolean overwrite = true;
+    /**
      * input으로 전달받은 content가 null 인 경우에 파일을 생성할 것인지에 대한 옵션 (기본값: false)
      * */
     private boolean allowCreateEmptyFile = false;
-
-    /**
-     * 같은 이름의 파일이 존재하는 경우 덮어쓰기 여부에 대한 옵션
-     * */
-    private boolean allowOverwriteFile = true;
     /**
      * 기본값: \n (Line Feed)<br>
      * 파일 내용으로 쓰일 Input value의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우
@@ -313,7 +315,7 @@ public class WriteFile extends SourceAccessService {
         }
 
         Path filePath = path.resolve(filename);
-        if (allowOverwriteFile) {
+        if (overwrite) {
             log.debug("[{}]Overwriting file ...", txId);
             Files.deleteIfExists(filePath);
         }
@@ -512,7 +514,7 @@ public class WriteFile extends SourceAccessService {
      * @return 생성된 파일의 크기
      * */
     private long writeFile(Path path, Charset charset, byte[] content) throws IOException {
-        Files.write(path, content, StandardOpenOption.APPEND);
+        Files.write(path, content, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         return content.length;
     }
 
@@ -520,7 +522,7 @@ public class WriteFile extends SourceAccessService {
 
 
     public void setDelimiter(String delimiter) {
-        if (delimiter.equals(recordSeparator))
+        /*if (delimiter.equals(recordSeparator))
             throw new IllegalArgumentException("The delimiter '" + delimiter + "' must be different with recordSeparator '" + recordSeparator + "'");
         if (delimiter.equals(qualifier))
             throw new IllegalArgumentException("The delimiter '" + delimiter + "' must be different with qualifier '" + qualifier + "'");
@@ -531,7 +533,7 @@ public class WriteFile extends SourceAccessService {
         if (delimiter.equals(replacementOfLineFeed))
             throw new IllegalArgumentException("The delimiter '" + delimiter + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
         if (delimiter.equals(replacementOfCarriageReturn))
-            throw new IllegalArgumentException("The delimiter '" + delimiter + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+            throw new IllegalArgumentException("The delimiter '" + delimiter + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");*/
         if (handleBinaryAsItIs && FileParser.BINARY_DATA_WRAPPER.contains(delimiter))
             throw new IllegalArgumentException("The delimiter '" + delimiter + "' must not be contained in FileParser.BINARY_DATA_WRAPPER '" + FileParser.BINARY_DATA_WRAPPER + "'");
 
@@ -539,7 +541,7 @@ public class WriteFile extends SourceAccessService {
     }
 
     public void setRecordSeparator(String recordSeparator) {
-        if (recordSeparator.equals(delimiter))
+        /*if (recordSeparator.equals(delimiter))
             throw new IllegalArgumentException("The recordSeparator '" + recordSeparator + "' must be different with delimiter '" + delimiter + "'");
         if (recordSeparator.equals(qualifier))
             throw new IllegalArgumentException("The recordSeparator '" + recordSeparator + "' must be different with qualifier '" + qualifier + "'");
@@ -550,7 +552,7 @@ public class WriteFile extends SourceAccessService {
         if (recordSeparator.equals(replacementOfLineFeed))
             throw new IllegalArgumentException("The recordSeparator '" + recordSeparator + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
         if (recordSeparator.equals(replacementOfCarriageReturn))
-            throw new IllegalArgumentException("The recordSeparator '" + recordSeparator + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+            throw new IllegalArgumentException("The recordSeparator '" + recordSeparator + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");*/
         if (handleBinaryAsItIs && FileParser.BINARY_DATA_WRAPPER.contains(recordSeparator))
             throw new IllegalArgumentException("The recordSeparator '" + recordSeparator + "' must not be contained in FileParser.BINARY_DATA_WRAPPER '" + FileParser.BINARY_DATA_WRAPPER + "'");
 
@@ -558,7 +560,7 @@ public class WriteFile extends SourceAccessService {
     }
 
     public void setQualifier(String qualifier) {
-        if (qualifier.equals(delimiter))
+        /*if (qualifier.equals(delimiter))
             throw new IllegalArgumentException("The qualifier '" + qualifier + "' must be different with delimiter '" + delimiter + "'");
         if (qualifier.equals(recordSeparator))
             throw new IllegalArgumentException("The qualifier '" + qualifier + "' must be different with recordSeparator '" + recordSeparator + "'");
@@ -569,7 +571,7 @@ public class WriteFile extends SourceAccessService {
         if (qualifier.equals(replacementOfLineFeed))
             throw new IllegalArgumentException("The qualifier '" + qualifier + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
         if (qualifier.equals(replacementOfCarriageReturn))
-            throw new IllegalArgumentException("The qualifier '" + qualifier + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+            throw new IllegalArgumentException("The qualifier '" + qualifier + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");*/
         if (handleBinaryAsItIs && FileParser.BINARY_DATA_WRAPPER.contains(qualifier))
             throw new IllegalArgumentException("The qualifier '" + qualifier + "' must not be contained in FileParser.BINARY_DATA_WRAPPER '" + FileParser.BINARY_DATA_WRAPPER + "'");
 
@@ -577,7 +579,7 @@ public class WriteFile extends SourceAccessService {
     }
 
     public void setReplacementOfNullValue(String replacementOfNullValue) {
-        if (replacementOfNullValue.equals(delimiter))
+        /*if (replacementOfNullValue.equals(delimiter))
             throw new IllegalArgumentException("The replacementOfNullValue '" + replacementOfNullValue + "' must be different with delimiter '" + delimiter + "'");
         if (replacementOfNullValue.equals(recordSeparator))
             throw new IllegalArgumentException("The replacementOfNullValue '" + replacementOfNullValue + "' must be different with recordSeparator '" + recordSeparator + "'");
@@ -586,7 +588,7 @@ public class WriteFile extends SourceAccessService {
         if (replacementOfNullValue.equals(replacementOfLineFeed))
             throw new IllegalArgumentException("The replacementOfNullValue '" + replacementOfNullValue + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
         if (replacementOfNullValue.equals(replacementOfCarriageReturn))
-            throw new IllegalArgumentException("The replacementOfNullValue '" + replacementOfNullValue + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+            throw new IllegalArgumentException("The replacementOfNullValue '" + replacementOfNullValue + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");*/
         if (handleBinaryAsItIs && FileParser.BINARY_DATA_WRAPPER.contains(replacementOfNullValue))
             throw new IllegalArgumentException("The replacementOfNullValue '" + replacementOfNullValue + "' must not be contained in FileParser.BINARY_DATA_WRAPPER '" + FileParser.BINARY_DATA_WRAPPER + "'");
 
@@ -594,7 +596,7 @@ public class WriteFile extends SourceAccessService {
     }
 
     public void setReplacementOfEmptyValue(String replacementOfEmptyValue) {
-        if (replacementOfEmptyValue.equals(delimiter))
+        /*if (replacementOfEmptyValue.equals(delimiter))
             throw new IllegalArgumentException("The replacementOfEmptyValue '" + replacementOfEmptyValue + "' must be different with delimiter '" + delimiter + "'");
         if (replacementOfEmptyValue.equals(recordSeparator))
             throw new IllegalArgumentException("The replacementOfEmptyValue '" + replacementOfEmptyValue + "' must be different with recordSeparator '" + recordSeparator + "'");
@@ -603,7 +605,7 @@ public class WriteFile extends SourceAccessService {
         if (replacementOfEmptyValue.equals(replacementOfLineFeed))
             throw new IllegalArgumentException("The replacementOfEmptyValue '" + replacementOfEmptyValue + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
         if (replacementOfEmptyValue.equals(replacementOfCarriageReturn))
-            throw new IllegalArgumentException("The replacementOfEmptyValue '" + replacementOfEmptyValue + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+            throw new IllegalArgumentException("The replacementOfEmptyValue '" + replacementOfEmptyValue + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");*/
         if (handleBinaryAsItIs && FileParser.BINARY_DATA_WRAPPER.contains(replacementOfEmptyValue))
             throw new IllegalArgumentException("The replacementOfEmptyValue '" + replacementOfEmptyValue + "' must not be contained in FileParser.BINARY_DATA_WRAPPER '" + FileParser.BINARY_DATA_WRAPPER + "'");
 
@@ -611,7 +613,7 @@ public class WriteFile extends SourceAccessService {
     }
 
     public void setReplacementOfLineFeed(String replacementOfLineFeed) {
-        if (replacementOfLineFeed.equals(delimiter))
+        /*if (replacementOfLineFeed.equals(delimiter))
             throw new IllegalArgumentException("The replacementOfLineFeed '" + replacementOfLineFeed + "' must be different with delimiter '" + delimiter + "'");
         if (replacementOfLineFeed.equals(recordSeparator))
             throw new IllegalArgumentException("The replacementOfLineFeed '" + replacementOfLineFeed + "' must be different with recordSeparator '" + recordSeparator + "'");
@@ -622,7 +624,7 @@ public class WriteFile extends SourceAccessService {
         if (replacementOfLineFeed.equals(qualifier))
             throw new IllegalArgumentException("The replacementOfLineFeed '" + replacementOfLineFeed + "' must be different with qualifier '" + qualifier + "'");
         if (replacementOfLineFeed.equals(replacementOfCarriageReturn))
-            throw new IllegalArgumentException("The replacementOfLineFeed '" + replacementOfLineFeed + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");
+            throw new IllegalArgumentException("The replacementOfLineFeed '" + replacementOfLineFeed + "' must be different with replacementOfCarriageReturn '" + replacementOfCarriageReturn + "'");*/
         if (handleBinaryAsItIs && FileParser.BINARY_DATA_WRAPPER.contains(replacementOfLineFeed))
             throw new IllegalArgumentException("The replacementOfLineFeed '" + replacementOfLineFeed + "' must not be contained in FileParser.BINARY_DATA_WRAPPER '" + FileParser.BINARY_DATA_WRAPPER + "'");
 
@@ -630,7 +632,7 @@ public class WriteFile extends SourceAccessService {
     }
 
     public void setReplacementOfCarriageReturn(String replacementOfCarriageReturn) {
-        if (replacementOfCarriageReturn.equals(delimiter))
+        /*if (replacementOfCarriageReturn.equals(delimiter))
             throw new IllegalArgumentException("The replacementOfCarriageReturn '" + replacementOfCarriageReturn + "' must be different with delimiter '" + delimiter + "'");
         if (replacementOfCarriageReturn.equals(recordSeparator))
             throw new IllegalArgumentException("The replacementOfCarriageReturn '" + replacementOfCarriageReturn + "' must be different with recordSeparator '" + recordSeparator + "'");
@@ -641,7 +643,7 @@ public class WriteFile extends SourceAccessService {
         if (replacementOfCarriageReturn.equals(qualifier))
             throw new IllegalArgumentException("The replacementOfCarriageReturn '" + replacementOfCarriageReturn + "' must be different with qualifier '" + qualifier + "'");
         if (replacementOfCarriageReturn.equals(replacementOfLineFeed))
-            throw new IllegalArgumentException("The replacementOfCarriageReturn '" + replacementOfCarriageReturn + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");
+            throw new IllegalArgumentException("The replacementOfCarriageReturn '" + replacementOfCarriageReturn + "' must be different with replacementOfLineFeed '" + replacementOfLineFeed + "'");*/
         if (handleBinaryAsItIs && FileParser.BINARY_DATA_WRAPPER.contains(replacementOfCarriageReturn))
             throw new IllegalArgumentException("The replacementOfCarriageReturn '" + replacementOfCarriageReturn + "' must not be contained in FileParser.BINARY_DATA_WRAPPER '" + FileParser.BINARY_DATA_WRAPPER + "'");
 

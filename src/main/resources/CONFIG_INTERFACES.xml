@@ -200,6 +200,13 @@
                 </list>
             </property>
         </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="ITERATE_IF_TEST"/>
+            <property name="description"            value="ITERATE 인터페이스 테스트"/>
+            <property name="serviceId"              value="ITERATE_PROCESS"/>
+            <property name="querySequence"          value="DB1$@{if_id}.SELECT"/>
+        </bean>
     </util:list>
 
 
