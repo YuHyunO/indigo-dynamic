@@ -6,33 +6,39 @@
         SELECT * FROM ifs_hosiptal_info WHERE encryption_symbol='JDQ4MTYyMiM3MSMkMSMkMCMkNzIkMzgxOTYxIzExIyQxIyQzIyQ4OSQyNjEwMDIjNjEjJDEjJDAjJDgz'<!--esb_link_stcd_mid != 'L' LIMIT 1-->
     </select>
 
-    <select id="CALL_NO_RETURN" statementType="CALLABLE" resultType="java.util.HashMap">
+    <select id="CALL_NO_RETURN" resultType="java.util.HashMap">
         CALL public.test_proc_1(#{encryption_symbol}, 'Z')
     </select>
 
-    <select id="CALL_RETURN_1" statementType="CALLABLE" resultType="java.util.HashMap">
+    <select id="CALL_RETURN_1" resultType="java.util.HashMap">
         CALL public.test_proc_1_return(
             #{encryption_symbol},
             'H',
             null)
     </select>
 
-    <select id="CALL_RETURN_A_ROW" statementType="CALLABLE" resultType="java.util.HashMap">
-        BEGIN;
+    <select id="CALL_RETURN_A_ROW" resultType="java.util.HashMap">
+            --BEGIN;
             CALL public.test_proc_1_return_table(
                 #{encryption_symbol},
                 'K',
-                'result');
-        FETCH ALL FROM result;
+                'result')
     </select>
 
-    <select id="CALL_RETURN_MULTI_ROWS" statementType="CALLABLE" resultType="java.util.HashMap">
+    <select id="OPEN_CURSOR">
+        declare row_cursor cursor for select * from ifs_hosiptal_info;
+    </select>
+
+    <select id="FETCH" resultType="java.util.HashMap">
+        FETCH ALL FROM result
+    </select>
+
+    <select id="CALL_RETURN_MULTI_ROWS" resultType="java.util.HashMap">
         BEGIN;
         CALL public.test_proc_1_return_rows(
             'N',
             10,
-            'records');
-        FETCH ALL FROM records
+            'records')
     </select>
 
 </mapper>

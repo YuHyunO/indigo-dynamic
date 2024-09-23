@@ -211,15 +211,22 @@
         <bean class="mb.dnm.storage.InterfaceInfo">
             <property name="interfaceId"            value="CALL_PROCEDURE_IF_TEST"/>
             <property name="description"            value="CALL_PROCEDURE 인터페이스 테스트"/>
-            <property name="serviceId"              value="CALL_PROCEDURE_TEST"/>
-            <property name="querySequence"          value="DB1$@{if_id}.SELECT,DB1$@{if_id}.CALL_RETURN_A_ROW"/>
+            <property name="serviceId"              value="CALL_PROCEDURE_AND_FETCH"/>
+            <property name="querySequence"          value="DB1$@{if_id}.SELECT,DB1$@{if_id}.CALL_RETURN_A_ROW, DB1$@{if_id}.FETCH"/>
         </bean>
 
         <bean class="mb.dnm.storage.InterfaceInfo">
             <property name="interfaceId"            value="CALL_PROCEDURE_IF_TEST_"/>
             <property name="description"            value="CALL_PROCEDURE 인터페이스 테스트"/>
             <property name="serviceId"              value="CALL_PROCEDURE_TEST"/>
-            <property name="querySequence"          value="DB1$@{if_id}.CALL_RETURN_MULTI_ROWS"/>
+            <property name="querySequence"          value="DB1$@{if_id}.SELECT,DB1$@{if_id}.CALL_RETURN_MULTI_ROWS"/>
+        </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="CURSOR_TEST_IF"/>
+            <property name="description"            value="CURSOR 테스트"/>
+            <property name="serviceId"              value="FETCHED_SELECT"/>
+            <property name="querySequence"          value="DB1$@{if_id}.OPEN_CURSOR,DB1$@{if_id}.FETCH"/>
         </bean>
     </util:list>
 

@@ -1,0 +1,55 @@
+package mb.dnm.service.db;
+
+import lombok.extern.slf4j.Slf4j;
+import mb.dnm.access.db.DataSourceProvider;
+import mb.dnm.access.db.QueryExecutor;
+import mb.dnm.access.db.QueryMap;
+import mb.dnm.core.context.ServiceContext;
+import mb.dnm.core.context.TransactionContext;
+import mb.dnm.exeption.InvalidServiceConfigurationException;
+import mb.dnm.service.ParameterAssignableService;
+
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * Database의 Fetch 문을 수행한다.
+ * <code>CallProcedure</code> 서비스와 연계해서 사용한다.<br>
+ *
+ * <i>이 서비스는 트랜잭션 그룹이 열려있는 경우에만 사용 가능하다.(StartTransaction 서비스 참고)</i>
+ *
+ * @see mb.dnm.service.db.Fetch
+ * @see mb.dnm.service.db.StartTransaction
+ * @see mb.dnm.service.db.EndTransaction
+ * @see mb.dnm.storage.InterfaceInfo#setQuerySequence(String)
+ * @see mb.dnm.storage.InterfaceInfo#getQuerySequence()
+ *
+ * @author Yuhyun O
+ * @version 2024.09.23
+ *
+ * @Throws Cursor를 open할 수 없는 경우
+ * */
+
+@Slf4j
+public class OpenCursor extends ParameterAssignableService {
+
+
+    @Override
+    public void process(ServiceContext ctx) {
+
+        if (!ctx.hasMoreQueryMaps()) {
+            throw new InvalidServiceConfigurationException(this.getClass(), "No more query found in the query sequence queue");
+        }
+
+        //(1) Get QueryMap and QueryExecutor.
+        QueryMap queryMap = ctx.nextQueryMap();
+        TransactionContext txContext = ctx.getTransactionContext(queryMap);
+        QueryExecutor executor = DataSourceProvider.access().getExecutor(queryMap.getExecutorName());
+
+        //(2) Prepare object for result and do fetch
+        executor.openCursor(txContext, queryMap.getQueryId());
+        log.info("[{}]Cursor opened", ctx.getTxId());
+
+    }
+}

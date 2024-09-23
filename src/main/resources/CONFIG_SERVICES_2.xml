@@ -7,7 +7,7 @@
 
 
     <util:map id="serviceStrategies">
-        <entry key="CALL_PROCEDURE_TEST">
+        <entry key="CALL_PROCEDURE_AND_FETCH">
             <list>
                 <bean class="mb.dnm.service.db.Select">
                     <property name="output" value="records"/>
@@ -17,18 +17,48 @@
                     <property name="input"  value="records"/>
                 </bean>
 
-                <bean class="mb.dnm.service.general.PrintInput">
-                    <property name="input"                          value="records"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
-                    <property name="indented"                       value="true"/>
-                </bean>
 
+                <bean class="mb.dnm.service.db.StartTransaction"/>
                 <bean class="mb.dnm.service.db.CallProcedure">
                     <property name="input"  value="records"/>
+                </bean>
+
+                <bean class="mb.dnm.service.db.Fetch">
+                    <property name="output"     value="fetch_result"/>
+                </bean>
+
+                <bean class="mb.dnm.service.db.EndTransaction"/>
+
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="fetch_result"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
                 </bean>
             </list>
         </entry>
 
+        <entry key="FETCHED_SELECT">
+            <list>
+                <bean class="mb.dnm.service.db.StartTransaction"/>
+                <bean class="mb.dnm.service.db.OpenCursor"/>
+                <bean class="mb.dnm.service.general.IterationGroup">
+                    <property name="iterateUntilBreak"  value="true"/>
+                    <property name="services">
+                        <list>
+                            <bean class="mb.dnm.service.db.Fetch">
+                                <property name="output"     value="fetch_result"/>
+                            </bean>
+                            <bean class="mb.dnm.service.general.BreakIteration">
+                                <property name="input"  value="fetch_result"/>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+                <bean class="mb.dnm.service.db.EndTransaction"/>
+
+
+            </list>
+        </entry>
     </util:map>
 
 </beans>
