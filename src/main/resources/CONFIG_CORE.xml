@@ -3,7 +3,7 @@
 
     <import resource="commons_configures.xml"/>
     <import resource="CONFIG_INTERFACES.xml"/>
-    <import resource="CONFIG_SERVICES.xml"/>
+    <import resource="CONFIG_SERVICES_2.xml"/>
     <import resource="CONFIG_ERROR_HANDLERS.xml"/>
 
     <!-- Storage Manager -->

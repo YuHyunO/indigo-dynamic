@@ -6,6 +6,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.ResultContext;
+import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,14 +72,38 @@ public class QueryExecutor {
         List<Map<String, Object>> result = new ArrayList<>();
         SqlSessionTemplate executor = getDefaultExecutor();
 
-        for (Map<String, Object> param : selectParam) {
-            List<Map<String, Object>> subResult = executor.selectList(sqlId, param);
+        if (selectParam == null || selectParam.isEmpty()) {
+            List<Map<String, Object>> subResult = executor.selectList(sqlId, null);
             result.addAll(subResult);
+        } else {
+            for (Map<String, Object> param : selectParam) {
+                List<Map<String, Object>> subResult = executor.selectList(sqlId, param);
+                result.addAll(subResult);
+            }
         }
         return result;
     }
 
-    
+    public List<Map<String, Object>> doCall(TransactionContext txCtx, String sqlId, List<Map<String, Object>> callParam) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        SqlSessionTemplate executor = getDefaultExecutor();
+
+        if (callParam == null || callParam.isEmpty()) {
+            Object obj = executor.selectOne(sqlId);
+            log.info("@@@Object: {}", obj);
+            //result.add(subResult);
+        } else {
+            for (Map<String, Object> param : callParam) {
+                Object obj = executor.selectOne(sqlId, param);
+                log.info("@@@Object: {}", obj);
+
+                //result.add(subResult);
+            }
+        }
+
+        return result;
+    }
+
     public int doInsert(TransactionContext txCtx, String sqlId, Map<String, Object> insertRow) {
         return getDefaultExecutor().insert(sqlId, insertRow);
     }

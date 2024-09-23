@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+
+    <util:map id="serviceStrategies">
+        <entry key="CALL_PROCEDURE_TEST">
+            <list>
+                <bean class="mb.dnm.service.db.Select">
+                    <property name="output" value="records"/>
+                </bean>
+
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="input"  value="records"/>
+                </bean>
+
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="records"/>
+                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+
+                <bean class="mb.dnm.service.db.CallProcedure">
+                    <property name="input"  value="records"/>
+                </bean>
+            </list>
+        </entry>
+
+    </util:map>
+
+</beans>

@@ -207,6 +207,20 @@
             <property name="serviceId"              value="ITERATE_PROCESS"/>
             <property name="querySequence"          value="DB1$@{if_id}.SELECT,DB1$@{if_id}.SELECT_INNER"/>
         </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="CALL_PROCEDURE_IF_TEST"/>
+            <property name="description"            value="CALL_PROCEDURE 인터페이스 테스트"/>
+            <property name="serviceId"              value="CALL_PROCEDURE_TEST"/>
+            <property name="querySequence"          value="DB1$@{if_id}.SELECT,DB1$@{if_id}.CALL_RETURN_A_ROW"/>
+        </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="CALL_PROCEDURE_IF_TEST_"/>
+            <property name="description"            value="CALL_PROCEDURE 인터페이스 테스트"/>
+            <property name="serviceId"              value="CALL_PROCEDURE_TEST"/>
+            <property name="querySequence"          value="DB1$@{if_id}.CALL_RETURN_MULTI_ROWS"/>
+        </bean>
     </util:list>
 
 

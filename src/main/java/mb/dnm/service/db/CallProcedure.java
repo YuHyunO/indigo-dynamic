@@ -10,22 +10,23 @@ import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
 /**
- * Database의 Procedure를 호출한다.
+ * Database의 Stored procedure 또는 Function 을 호출한다.
  *
  * @see mb.dnm.storage.InterfaceInfo#setQuerySequence(String)
  * @see mb.dnm.storage.InterfaceInfo#getQuerySequence()
  *
  * @author Yuhyun O
  * @version 2024.09.22
- * @Input 프로시저 호출 시 사용될 parameter
+ * @Input Stored procedure 또는 Function 호출 시 사용될 parameter
  * @InputType <code>Map&lt;String, Object&gt;</code> or <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
- * @Output
- * @OutputType
+ * @Output Stored procedure 또는 Function 의 호출 결과
+ * @OutputType <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
  *
  * @Throws <code>IllegalArgumentException</code>: Input parameter의 type이 지원되지 않는 타입인 경우 <br> <code>InvalidServiceConfigurationException</code>: QuerySequnce queue에서 더 이상 실행할 query를 찾지 못했을 때
  * */
@@ -33,12 +34,9 @@ import java.util.Map;
 @Slf4j
 public class CallProcedure extends ParameterAssignableService {
 
+
     @Override
     public void process(ServiceContext ctx) {
-
-
-        //개발중
-
 
         if (!ctx.hasMoreQueryMaps()) {
             throw new InvalidServiceConfigurationException(this.getClass(), "No more query found in the query sequence queue");
@@ -53,32 +51,31 @@ public class CallProcedure extends ParameterAssignableService {
         Object inValue = getInputValue(ctx);
 
         //(3) Prepare object for result
-        List<Map<String, Object>> selectResult = new ArrayList<>();
+        List<Map<String, Object>> callResult = new ArrayList<>();
 
         //(4) Execute query when parameter is not null
         if (inValue != null) {
-            List<Map<String, Object>> selectParameters = new ArrayList<>();
+            List<Map<String, Object>> callParameters = new ArrayList<>();
             try {
                 if (inValue instanceof Map) {
                     Map<String, Object> param = (Map<String, Object>) inValue;
-                    selectParameters.add(param);
+                    callParameters.add(param);
                 } else if (inValue instanceof List) {
-                    selectParameters.addAll((List<Map<String, Object>>) inValue);
+                    callParameters.addAll((List<Map<String, Object>>) inValue);
                 }
             } catch (ClassCastException ce) {
                 throw new IllegalArgumentException("The type of input parameter is invalid: " + inValue.getClass());
             }
 
-            String queryId = queryMap.getQueryId();
-            selectResult = executor.doSelects(txContext, queryId, selectParameters);
+            callResult = executor.doCall(txContext, queryMap.getQueryId(), callParameters);
         } else { //(4) Execute query when parameter is null
-            selectResult = executor.doSelect(txContext, queryMap.getQueryId(), null);
+            callResult = executor.doCall(txContext, queryMap.getQueryId(), null);
         }
 
-        log.info("[{}]{} rows selected", ctx.getTxId(), selectResult.size());
+        log.info("[{}]{} rows selected", ctx.getTxId(), callResult.size());
 
         if (getOutput() != null) {
-            setOutputValue(ctx, selectResult);
+            setOutputValue(ctx, callResult);
         }
     }
 }
