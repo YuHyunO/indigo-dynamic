@@ -31,6 +31,7 @@
     <div>◎ PlaceHolderMapper 기능 추가 ▶<i>[완료여부: X]</i></div>
     <div>◎ DB Select/File Write, File Read/DB Insert 패턴에서 대용량 처리 지원하도록 기능 추가 ▶<i>[완료여부: X]</i></div>
     <div>◎ IterationGroup에서 반복문 수행 시 DB관련 서비스를 사용할 때 쿼리 시퀀스가 매번의 반복문에서 소진되지 않도록 로직 고안 필요함 ▶<i>[완료여부: X]</i></div>
+    <div>◎ QueryExecutor#doCall 메소드 완성하기 ▶<i>[완료여부: X]</i></div>
     
   
    </p>
