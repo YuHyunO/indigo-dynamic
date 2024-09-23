@@ -14,8 +14,8 @@ import java.util.Map;
 
 
 /**
- * Database의 Fetch 문을 수행한다.
- * <code>CallProcedure</code> 서비스와 연계해서 사용한다.<br>
+ * Database의 Cursor 를 open 한다.
+ * <code>Fetch</code> 서비스와 연계해서 사용한다.<br>
  *
  * <i>이 서비스는 트랜잭션 그룹이 열려있는 경우에만 사용 가능하다.(StartTransaction 서비스 참고)</i>
  *
@@ -28,7 +28,7 @@ import java.util.Map;
  * @author Yuhyun O
  * @version 2024.09.23
  *
- * @Throws Cursor를 open할 수 없는 경우
+ * @Throws cursor문이 잘못되었거나 Cursor를 open할 수 없는 경우
  * */
 
 @Slf4j
