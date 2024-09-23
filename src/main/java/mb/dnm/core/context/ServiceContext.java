@@ -108,6 +108,12 @@ public class ServiceContext {
         contextParams.put(key, value);
     }
 
+    public void deleteContextParam(String key) {
+        if (contextParams.containsKey(key)) {
+            contextParams.remove(key);
+        }
+    }
+
     public Object getContextParam(String key) {
         if (key == null)
             return null;

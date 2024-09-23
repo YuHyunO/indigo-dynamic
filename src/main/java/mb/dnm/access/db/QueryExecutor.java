@@ -87,20 +87,27 @@ public class QueryExecutor {
     public List<Map<String, Object>> doCall(TransactionContext txCtx, String sqlId, List<Map<String, Object>> callParam) {
         List<Map<String, Object>> result = new ArrayList<>();
         SqlSessionTemplate executor = getDefaultExecutor();
-
         if (callParam == null || callParam.isEmpty()) {
-            Object obj = executor.selectOne(sqlId);
-            log.info("@@@Object: {}", obj);
+            Object obj = executor.selectList(sqlId);
+            log.info("@@Object: {}", obj);
             //result.add(subResult);
         } else {
             for (Map<String, Object> param : callParam) {
-                Object obj = executor.selectOne(sqlId, param);
-                log.info("@@@Object: {}", obj);
-
+                Object obj = executor.selectList(sqlId, param);
+                log.info("@@Object: {}", obj);
                 //result.add(subResult);
             }
         }
 
+        return result;
+    }
+
+    public void openCursor(TransactionContext txCtx, String sqlId) {
+        getDefaultExecutor().selectOne(sqlId);
+    }
+
+    public List<Map<String, Object>> doFetch(TransactionContext txCtx, String sqlId) {
+        List<Map<String, Object>> result = getDefaultExecutor().selectList(sqlId);
         return result;
     }
 

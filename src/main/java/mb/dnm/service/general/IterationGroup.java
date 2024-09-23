@@ -29,6 +29,7 @@ import java.util.List;
  * @Output <code>createNewContextEachLoop</code>가 true 인 경우 <code>List&lt;Service&gt; services</code>를 수행하며 output으로 지정된 값을 output으로 사용할 수 있다.
  * @OutputType Object
  * @Exceptions <code>InvalidServiceConfigurationException</code>: Input parameter의 타입이 Iterable 객체가 아닌 경우<br>
+ *
  * */
 @Slf4j
 @Setter
@@ -45,6 +46,14 @@ public class IterationGroup extends ParameterAssignableService {
      * 각각의 Iteration 에서 service strategies 의 Input 매개변수로 전달될 요소명<br>
      * */
     private String iterationInputName;
+
+    /**
+     * 기본값: false<br>
+     * <code>BreakIteration</code> 서비스를 통해 Break 가 멈출 때 까지 반복을 수행한다.<br>
+     * 이 속성이 true 이지만 이 <code>IterationGroup</code> 에 등록된 서비스 중 <code>mb.dnm.service.general.BreakIteration</code> 이 존재하지 않는 경우 InvalidServiceConfigurationException 이 발생한다.<br>
+     * 또 이 속성이 true로 지정되었을 때 <code>iterationInputName</code> 속성 지정을 통한 input 파라미터 전달은 효력이 없다.
+     * */
+    private boolean iterateUntilBreak = false;
     /**
      * 기본값: 1<br>
      * 각각의 Iteration의 반복되는 요소가 service strategies 의 Input 매개변수로 전달될 때 몇 개만큼 전달될 지를 결정한다.<br>
@@ -56,146 +65,268 @@ public class IterationGroup extends ParameterAssignableService {
      * */
     private boolean createNewContextEachLoop = false;
 
+    private boolean initialCheck = false;
+
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         if (getInput() == null) {
             throw new InvalidServiceConfigurationException(this.getClass(), "The IterationGroup requires a parameter to execute repeated elements.");
         }
 
+        if (!initialCheck && iterateUntilBreak) {
+            for (Service service : services) {
+                if (service.getClass() == BreakIteration.class) {
+                    initialCheck = true;
+                    break;
+                }
+            }
+            if (!initialCheck)
+                throw new InvalidServiceConfigurationException(this.getClass(), "The IterationGroup must requires a BreakIteration class when the property 'iterateUntilBreak' is true");
+        }
+
         if (iterationInputName == null || iterationInputName.isEmpty()) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "The property 'iterationInputName' is null. The IterationGroup requires the \"iteration input name\" which to be passed into inner loop service's input parameter.");
+            if (!iterateUntilBreak) {
+                throw new InvalidServiceConfigurationException(this.getClass(), "The property 'iterationInputName' is null. The IterationGroup requires the \"iteration input name\" which to be passed into inner loop service's input parameter.");
+            }
         }
 
         InterfaceInfo info = ctx.getInfo();
         String interfaceId = info.getInterfaceId();
         String txId = ctx.getTxId();
+        
+        // 우선 iterateUntilBreak 조건에 따라 로직을 나눔 (코드정리 작업은 나중에 수행)
+        if (iterateUntilBreak) {
+            int serviceCount = services.size();
 
-        Object inputVal = getInputValue(ctx);
-        if (inputVal == null) {
-            log.debug("[{}]The value of input '{}' is not found. No file paths to read found in context data.", txId, getInput());
-            return;
-        }
 
-        if (services == null || services.isEmpty()) {
-            log.warn("[{}]No services are found for this iterationGroup", txId);
-        }
-        int serviceCount = services.size();
 
-        if (!Iterable.class.isAssignableFrom(inputVal.getClass())) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "The class '" + inputVal.getClass() + "' is not Iterable");
-        }
+            int iterCnt = 0;
+            while (true) {
+                boolean breaked = false;
+                ServiceContext innerCtx = null;
+                String innerTxId = null;
+                if (createNewContextEachLoop) {
+                    //createNewContextEachLoop=true 인 경우 각 반복문에서 Inner Processing service chaining 을 할 때 전달될 ServiceContext 객체를 새로 생성함
+                    innerCtx = new ServiceContext(info);
+                    innerTxId = innerCtx.getTxId();
+                    innerCtx.addContextParam("$iter_break", false);
+                    log.debug("[{}]Iteration-Group: New service context is created.", innerTxId);
+                } else {
+                    innerCtx = ctx;
+                    innerTxId = txId;
+                    innerCtx.addContextParam("$iter_break", false);
+                }
+                int cnt1 = 0;
+                try {
+                    //Inner Processing service chaining 시작
+                    innerCtx.setProcessStatus(ProcessCode.IN_PROCESS);
+                    log.info("[{}]Iteration-Group: Unfold the services", innerTxId);
+                    for (Service service : services) {
+                        Class serviceClass = service.getClass();
+                        innerCtx.addServiceTrace(serviceClass);
+                        try {
+                            if (innerCtx.isProcessOn()) {
+                                ++cnt1;
+                                log.debug("[{}]Iteration-Group: Start the service '{}'({}/{})", innerTxId, serviceClass, cnt1, serviceCount);
+                                service.process(innerCtx);
+                            } else {
+                                log.warn("[{}]Iteration-Group: Service chain is broken. An error may be exist.({}/{})\nService trace: {}", innerTxId, cnt1, serviceCount, innerCtx.getServiceTraceMessage());
+                                break;
+                            }
+                            innerCtx.setProcessStatus(ProcessCode.SUCCESS);
+                        } catch (Throwable t0) {
+                            innerCtx.setProcessStatus(ProcessCode.FAILURE);
+                            innerCtx.addErrorTrace(serviceClass, t0);
+                            if (service.isIgnoreError()) {
+                                log.warn("[{}]Iteration-Group: An error occurred at the service '{}' but ignored.({}/{}). Error:{}", innerTxId, serviceClass, cnt1, serviceCount, MessageUtil.toString(t0));
+                                continue;
+                            }
+                            log.error("[" + innerTxId + "]Iteration-Group: Service chain is broken. An error occurred at the service '" + serviceClass + "'", t0);
+                            throw t0;
+                        } finally {
+                            innerCtx.stampEndTime();
+                            log.debug("[{}]Iteration-Group: End the service '{}'", innerTxId, serviceClass);
 
-        Iterator iterator = ((Iterable) inputVal).iterator();
-        int iterCnt = 0;
-        while (iterator.hasNext()) {
-            ++iterCnt;
-            Object val = null;
+                            if ((boolean) ctx.getContextParam("$iter_break")) {
+                                log.debug("[{}]Iteration-Group: Breaking this iteration group. Total iteration count: {}", txId, iterCnt);
+                                breaked = true;
+                                break;
+                            }
+                        }
+                    }
+                } catch (Throwable t1) {
+                    //Processing error handling
+                    if (errorHandlers == null || errorHandlers.isEmpty()) {
+                        log.warn("[{}]Iteration-Group: No error handlers are found for this iteration group", innerTxId);
+                    }
+
+                    int handlerCount = errorHandlers.size();
+                    int cnt2 = 0;
+                    for (ErrorHandler errorHandler : errorHandlers) {
+                        if (!errorHandler.isTriggered(t1.getClass()))
+                            continue;
+                        Class errorHandlerClass = errorHandler.getClass();
+                        try {
+                            log.warn("[{}]Start the error handler '{}'({}/{})", innerTxId, errorHandlerClass, cnt2, handlerCount);
+                            errorHandler.handleError(innerCtx);
+                        } catch (Throwable t2) {
+                            log.error("[" + innerTxId + "]Iteration-Group: An error occurred when handling error.(" + cnt2 + "/" + handlerCount
+                                    + "), Error handler class: '" + errorHandlerClass + "'"
+                                    + "Continue error handling process.", t2);
+                        } finally {
+                            //* Set the end time at each end of error handler
+                            innerCtx.stampEndTime();
+                            log.debug("[{}]End the error handler '{}'", innerTxId, errorHandlerClass);
+                        }
+                    }
+                }
+                if (breaked) {
+                    break;
+                }
+            }
+            ctx.deleteContextParam("$iter_break");
+            log.debug("[{}]Iteration-Group: Total iteration count: {}", txId, iterCnt);
+
+        } else {
+            Object inputVal = getInputValue(ctx);
+            if (inputVal == null) {
+                log.debug("[{}]The value of input '{}' is not found. No file paths to read found in context data.", txId, getInput());
+                return;
+            }
+
+            if (services == null || services.isEmpty()) {
+                log.warn("[{}]No services are found for this iterationGroup", txId);
+            }
+            int serviceCount = services.size();
+
+            if (!Iterable.class.isAssignableFrom(inputVal.getClass())) {
+                throw new InvalidServiceConfigurationException(this.getClass(), "The class '" + inputVal.getClass() + "' is not Iterable");
+            }
+
+            Iterator iterator = ((Iterable) inputVal).iterator();
+            int iterCnt = 0;
+            while (iterator.hasNext()) {
+                ++iterCnt;
+                Object val = null;
 
             /*fetchSize 가 1보다 큰 경우 Inner Processing service chaining 의 Input 파라미터의 데이터 타입으로 List 가 전달됨.
             이때의 List 의 size는 fetchSize 보다 작거나 같다.
              */
-            List<Object> valList = new ArrayList<>();
-            int fetched = 0;
-            if (fetchSize > 1) {
-                while (iterator.hasNext()) {
-                    ++fetched;
-                    Object inval = iterator.next();
-                    valList.add(inval);
-                    if (fetchSize == fetched) {
-                        break;
+                List<Object> valList = new ArrayList<>();
+                int fetched = 0;
+                if (fetchSize > 1) {
+                    while (iterator.hasNext()) {
+                        ++fetched;
+                        Object inval = iterator.next();
+                        valList.add(inval);
+                        if (fetchSize == fetched) {
+                            break;
+                        }
                     }
+                    val = valList;
+                } else {
+                    ++fetched;
+                    val = iterator.next();
                 }
-                val = valList;
-            } else {
-                ++fetched;
-                val = iterator.next();
-            }
 
-            ServiceContext innerCtx = null;
-            String innerTxId = null;
-            if (createNewContextEachLoop) {
-                //createNewContextEachLoop=true 인 경우 각 반복문에서 Inner Processing service chaining 을 할 때 전달될 ServiceContext 객체를 새로 생성함
-                innerCtx = new ServiceContext(info);
-                innerTxId = innerCtx.getTxId();
-                log.debug("[{}]Iteration-Group: New service context is created.", innerTxId);
-            } else {
-                innerCtx = ctx;
-                innerTxId = txId;
-            }
+                ServiceContext innerCtx = null;
+                String innerTxId = null;
+                if (createNewContextEachLoop) {
+                    //createNewContextEachLoop=true 인 경우 각 반복문에서 Inner Processing service chaining 을 할 때 전달될 ServiceContext 객체를 새로 생성함
+                    innerCtx = new ServiceContext(info);
+                    innerTxId = innerCtx.getTxId();
+                    log.debug("[{}]Iteration-Group: New service context is created.", innerTxId);
+                } else {
+                    innerCtx = ctx;
+                    innerTxId = txId;
+                }
 
             /*Inner Processing services 에서는 이 서비스에 등록된 iterationInputName 으로 input 을 파라미터로 받을 수 있다.
               지금 이 코드는 ParameterAssignableService#setOutputValue(ServiceContext ctx, Object outputValue); 와 같은 효과를 가진다.
              */
-            innerCtx.addContextParam(this.iterationInputName, val);
+                innerCtx.addContextParam(this.iterationInputName, val);
 
 
-            log.debug("[{}]Iteration-Group: Fetching {} element from the input parameter '{}' ...", innerTxId, fetched, getInput());
-            int cnt1 = 0;
-            try {
-                //Inner Processing service chaining 시작
-                innerCtx.setProcessStatus(ProcessCode.IN_PROCESS);
-                log.info("[{}]Iteration-Group: Unfold the services", innerTxId);
-                for (Service service : services) {
-                    Class serviceClass = service.getClass();
-                    innerCtx.addServiceTrace(serviceClass);
-                    try {
-                        if (innerCtx.isProcessOn()) {
-                            ++cnt1;
-                            log.debug("[{}]Iteration-Group: Start the service '{}'({}/{})", innerTxId, serviceClass, cnt1, serviceCount);
-                            service.process(innerCtx);
-                        } else {
-                            log.warn("[{}]Iteration-Group: Service chain is broken. An error may be exist.({}/{})\nService trace: {}", innerTxId, cnt1, serviceCount, innerCtx.getServiceTraceMessage());
-                            break;
+                log.debug("[{}]Iteration-Group: Fetching {} element from the input parameter '{}' ...", innerTxId, fetched, getInput());
+                int cnt1 = 0;
+                try {
+                    //Inner Processing service chaining 시작
+                    innerCtx.setProcessStatus(ProcessCode.IN_PROCESS);
+                    log.info("[{}]Iteration-Group: Unfold the services", innerTxId);
+                    for (Service service : services) {
+                        Class serviceClass = service.getClass();
+                        innerCtx.addServiceTrace(serviceClass);
+                        try {
+                            if (innerCtx.isProcessOn()) {
+                                ++cnt1;
+                                log.debug("[{}]Iteration-Group: Start the service '{}'({}/{})", innerTxId, serviceClass, cnt1, serviceCount);
+                                service.process(innerCtx);
+                            } else {
+                                log.warn("[{}]Iteration-Group: Service chain is broken. An error may be exist.({}/{})\nService trace: {}", innerTxId, cnt1, serviceCount, innerCtx.getServiceTraceMessage());
+                                break;
+                            }
+                            innerCtx.setProcessStatus(ProcessCode.SUCCESS);
+                        } catch (Throwable t0) {
+                            innerCtx.setProcessStatus(ProcessCode.FAILURE);
+                            innerCtx.addErrorTrace(serviceClass, t0);
+                            if (service.isIgnoreError()) {
+                                log.warn("[{}]Iteration-Group: An error occurred at the service '{}' but ignored.({}/{}). Error:{}", innerTxId, serviceClass, cnt1, serviceCount, MessageUtil.toString(t0));
+                                continue;
+                            }
+                            log.error("[" + innerTxId + "]Iteration-Group: Service chain is broken. An error occurred at the service '" + serviceClass + "'", t0);
+                            throw t0;
+                        } finally {
+                            innerCtx.stampEndTime();
+                            log.debug("[{}]Iteration-Group: End the service '{}'", innerTxId, serviceClass);
                         }
-                        innerCtx.setProcessStatus(ProcessCode.SUCCESS);
-                    } catch (Throwable t0) {
-                        innerCtx.setProcessStatus(ProcessCode.FAILURE);
-                        innerCtx.addErrorTrace(serviceClass, t0);
-                        if (service.isIgnoreError()) {
-                            log.warn("[{}]Iteration-Group: An error occurred at the service '{}' but ignored.({}/{}). Error:{}", innerTxId, serviceClass, cnt1, serviceCount, MessageUtil.toString(t0));
-                            continue;
-                        }
-                        log.error("[" + innerTxId + "]Iteration-Group: Service chain is broken. An error occurred at the service '" + serviceClass + "'", t0);
-                        throw t0;
-                    } finally {
-                        innerCtx.stampEndTime();
-                        log.debug("[{}]Iteration-Group: End the service '{}'", innerTxId, serviceClass);
                     }
-                }
-            } catch (Throwable t1) {
-                //Processing error handling
-                if (errorHandlers == null || errorHandlers.isEmpty()) {
-                    log.warn("[{}]Iteration-Group: No error handlers are found for this iteration group", innerTxId);
-                }
+                } catch (Throwable t1) {
+                    //Processing error handling
+                    if (errorHandlers == null || errorHandlers.isEmpty()) {
+                        log.warn("[{}]Iteration-Group: No error handlers are found for this iteration group", innerTxId);
+                    }
 
-                int handlerCount = errorHandlers.size();
-                int cnt2 = 0;
-                for (ErrorHandler errorHandler : errorHandlers) {
-                    if (!errorHandler.isTriggered(t1.getClass()))
-                        continue;
-                    Class errorHandlerClass = errorHandler.getClass();
-                    try {
-                        log.warn("[{}]Start the error handler '{}'({}/{})", innerTxId, errorHandlerClass, cnt2, handlerCount);
-                        errorHandler.handleError(innerCtx);
-                    } catch (Throwable t2) {
-                        log.error("[" + innerTxId + "]Iteration-Group: An error occurred when handling error.(" + cnt2 + "/" + handlerCount
-                                + "), Error handler class: '" + errorHandlerClass + "'"
-                                + "Continue error handling process.", t2);
-                    } finally {
-                        //* Set the end time at each end of error handler
-                        innerCtx.stampEndTime();
-                        log.debug("[{}]End the error handler '{}'", innerTxId, errorHandlerClass);
+                    int handlerCount = errorHandlers.size();
+                    int cnt2 = 0;
+                    for (ErrorHandler errorHandler : errorHandlers) {
+                        if (!errorHandler.isTriggered(t1.getClass()))
+                            continue;
+                        Class errorHandlerClass = errorHandler.getClass();
+                        try {
+                            log.warn("[{}]Start the error handler '{}'({}/{})", innerTxId, errorHandlerClass, cnt2, handlerCount);
+                            errorHandler.handleError(innerCtx);
+                        } catch (Throwable t2) {
+                            log.error("[" + innerTxId + "]Iteration-Group: An error occurred when handling error.(" + cnt2 + "/" + handlerCount
+                                    + "), Error handler class: '" + errorHandlerClass + "'"
+                                    + "Continue error handling process.", t2);
+                        } finally {
+                            //* Set the end time at each end of error handler
+                            innerCtx.stampEndTime();
+                            log.debug("[{}]End the error handler '{}'", innerTxId, errorHandlerClass);
+                        }
                     }
                 }
             }
+            log.debug("[{}]Iteration-Group: Total iteration count: {}", txId, iterCnt);
         }
-        log.debug("[{}]Iteration-Group: Total iteration count: {}", txId, iterCnt);
 
         if (createNewContextEachLoop) {
             if (getOutput() != null) {
                 setOutputValue(ctx, ctx.getContextParam(getOutput()));
             }
         }
+    }
+
+    public void setIterationInputName(String iterationInputName) {
+        if (this.iterateUntilBreak)
+            throw new InvalidServiceConfigurationException(this.getClass(), "The property 'iterateUntilBreak' can't be true when 'iterationInputName' is exist.");
+        this.iterationInputName = iterationInputName;
+    }
+
+    public void setIterateUntilBreak(boolean iterateUntilBreak) {
+        if (iterationInputName != null && iterateUntilBreak)
+            throw new InvalidServiceConfigurationException(this.getClass(), "The property 'iterationInputName' can't be exist when 'iterateUntilBreak' is true.");
+        this.iterateUntilBreak = iterateUntilBreak;
     }
 
     public void setFetchSize(int fetchSize) {
@@ -205,4 +336,7 @@ public class IterationGroup extends ParameterAssignableService {
         this.fetchSize = fetchSize;
     }
 
+    private void SetInitialCheck(boolean initialCheck) {
+        this.initialCheck = initialCheck;
+    }
 }
