@@ -29,7 +29,7 @@
     <div>◎ Compiler 기능을 활용하여 Mapper 개발 ▶<i>[완료여부: X]</i></div>
     <div>◎ DB CRUD 시 Mybatis 로 전달되는 파라미터에 if_id, tx_id, 프로세스 코드 등이 기본으로 포함되도록 설정 ▶<i>[완료여부: X]</i></div>
     <div>◎ PlaceHolderMapper 기능 추가 ▶<i>[완료여부: X]</i></div>
-    <div>◎ DB Select/File Write, File Read/DB Insert 패턴에서 대용량 처리 지원하도록 기능 추가 ▶<i>[완료여부: X]</i></div>
+    <div>◎ <del>DB Select/File Write</del> IterationGroup과 OpenCursor, Fetch 서비스를 사용하여 처리가능, File Read/DB Insert 패턴에서 대용량 처리 지원하도록 기능 추가 ▶<i>[완료여부: X]</i></div>
     <div>◎ IterationGroup에서 반복문 수행 시 DB관련 서비스를 사용할 때 쿼리 시퀀스가 매번의 반복문에서 소진되지 않도록 로직 고안 필요함 ▶<i>[완료여부: X]</i></div>
     <div>◎ QueryExecutor#doCall 메소드 완성하기 ▶<i>[완료여부: X]</i></div>
     
