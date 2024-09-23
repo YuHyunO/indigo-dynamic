@@ -89,23 +89,29 @@ public class QueryExecutor {
         SqlSessionTemplate executor = getDefaultExecutor();
         if (callParam == null || callParam.isEmpty()) {
             Object obj = executor.selectList(sqlId);
-            log.info("@@Object: {}", obj);
-            //result.add(subResult);
+            if (obj != null)
+                result = (List<Map<String, Object>>) obj;
         } else {
             for (Map<String, Object> param : callParam) {
                 Object obj = executor.selectList(sqlId, param);
-                log.info("@@Object: {}", obj);
-                //result.add(subResult);
+                if (obj != null)
+                    result.addAll((List<Map<String, Object>>) obj);
             }
         }
 
         return result;
     }
 
+    /**
+     * Not always available in all databases
+     * */
     public void openCursor(TransactionContext txCtx, String sqlId) {
         getDefaultExecutor().selectOne(sqlId);
     }
 
+    /**
+     * Not always available in all databases
+     * */
     public List<Map<String, Object>> doFetch(TransactionContext txCtx, String sqlId) {
         List<Map<String, Object>> result = getDefaultExecutor().selectList(sqlId);
         return result;
