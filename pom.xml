@@ -7,6 +7,7 @@
     <groupId>com.metabuild</groupId>
     <artifactId>indigo-dynamic</artifactId>
     <version>1.0.0</version>
+    <!--<packaging>pom</packaging>-->
 
     <repositories>
         <repository>
@@ -26,26 +27,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.indigo</groupId>
-            <artifactId>adaptor</artifactId>
-            <version>2.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.indigo</groupId>
-            <artifactId>AdaptorTemplate</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.indigo</groupId>
-            <artifactId>AdaptorTemplate-dongwon</artifactId>
-            <version>202408091</version>
-        </dependency>
-        <dependency>
-            <groupId>com.indigo</groupId>
-            <artifactId>indigoProxyServer</artifactId>
-            <version>1.0.0</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
