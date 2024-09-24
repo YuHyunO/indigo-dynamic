@@ -228,6 +228,14 @@
             <property name="serviceId"              value="FETCHED_SELECT"/>
             <property name="querySequence"          value="DB1$@{if_id}.OPEN_CURSOR,DB1$@{if_id}.FETCH"/>
         </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="ITERATE_IF_TEST_2"/>
+            <property name="description"            value="ITERATE 인터페이스 테스트"/>
+            <property name="serviceId"              value="ITER_TEST"/>
+            <property name="querySequence"          value="DB1$@{if_id}.SELECT,DB1$@{if_id}.UPDATE"/>
+        </bean>
+
     </util:list>
 
 

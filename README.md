@@ -22,7 +22,8 @@
     <div>◈ FTP 파일 다운로드 시 재귀적으로 다운로드 가능하도록 기능 수정 ▶<i>[완료여부: O]</i></div>
     <div>◈ FTP에서 파일 다운로드 시 디렉터리 내부에 파일이 있는 경우 같은 구조로 다운로드 할 수 있도록 하는 옵션 추가 ▶<i>[완료여부: O]</i></div>
     <div>◈ FTP 파일명이 한글인 경우 다운로드 안되는 문제(550 Failed to open file.) 해결완료. FTP 객체를 통해 connection 을 맺기 전에 controlEncoding을 변경해줘야 함 ▶<i>[완료여부: O]</i></div>
-    <div>◈ org.apache.commons.io.filefilter.WildcardFileFilter를 활용하여 File 명 패턴 필터를 와일드 카드 여러개인 경우에도 적용되도록 기능 수정 완료 ▶<i>[완료여부: X]</i></div>
+    <div>◈ org.apache.commons.io.filefilter.WildcardFileFilter를 활용하여 File 명 패턴 필터를 와일드 카드 여러개인 경우에도 적용되도록 기능 수정 완료 ▶<i>[완료여부: O]</i></div>
+    <div>◎ IterationGroup에서 반복문 수행 시 DB관련 서비스를 사용할 때 쿼리 시퀀스가 매번의 반복문에서 소진되지 않도록 개발 완료 ▶<i>[완료여부: O]</i></div>
     <br>
     <div>◎ 최종 배포 시 logging level 조정, 불필요 로그 제거 및 주석 처리 작업 선행 ▶<i>[완료여부: X]</i></div>
     <div>◎ 운영전환 시 동일한 어댑터에 속한 인터페이스이더라도 순차전환 할 수 있도록 인터페이스 활성화/비활성화 기능 필요.<br>→ 인터페이스 활성/비활성 HTTP API 어댑터 생성, 개별적인 어댑터에서는 스케줄링을 하면서 API 어댑터와 파일로 인터페이스 하여 서비스 인터페이스들을 활성/비활성 하는 방식. ▶<i>[완료여부: X]</i> </div>
@@ -30,9 +31,7 @@
     <div>◎ DB CRUD 시 Mybatis 로 전달되는 파라미터에 if_id, tx_id, 프로세스 코드 등이 기본으로 포함되도록 설정 ▶<i>[완료여부: X]</i></div>
     <div>◎ PlaceHolderMapper 기능 추가 ▶<i>[완료여부: X]</i></div>
     <div>◎ DB Select/File Write, File Read/DB Insert 패턴에서 대용량 처리 지원하도록 기능 추가 ▶<i>[완료여부: X]</i></div>
-    <div>◎ IterationGroup에서 반복문 수행 시 DB관련 서비스를 사용할 때 쿼리 시퀀스가 매번의 반복문에서 소진되지 않도록 로직 고안 필요함 ▶<i>[완료여부: X]</i></div>
     <div>◎ QueryExecutor#doCall 메소드 완성하기 ▶<i>[완료여부: X]</i></div>
-    
-  
+
    </p>
 </div>

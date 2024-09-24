@@ -37,12 +37,15 @@ public class TransactionProxyInterceptor implements MethodInterceptor {
     @Override
     public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         String methodName = method.getName();
-        if (!methodName.startsWith("do"))
-            return methodProxy.invoke(proxy, args);
+        if (!methodName.startsWith("do")) {
+            log.debug("Executing query with id '{}'", args[1]);
+            return methodProxy.invoke(target, args);
+        }
 
-        if (args[0] == null) //TransactionContext 객체가 null 인 경우
-            return methodProxy.invoke(proxy, args);
-
+        if (args[0] == null) {//TransactionContext 객체가 null 인 경우
+            log.debug("Executing query with id '{}'", args[1]);
+            return methodProxy.invoke(target, args);
+        }
 
         TransactionContext txCtx = null;
         DataSourceTransactionManager txManager = null;

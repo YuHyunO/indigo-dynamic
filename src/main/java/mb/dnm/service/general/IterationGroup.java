@@ -6,6 +6,7 @@ import mb.dnm.code.ProcessCode;
 import mb.dnm.core.ErrorHandler;
 import mb.dnm.core.Service;
 import mb.dnm.core.context.ServiceContext;
+import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.storage.InterfaceInfo;
@@ -14,6 +15,7 @@ import mb.dnm.util.MessageUtil;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Input 파라미터로 Iterable 객체를 전달받아 <code>fetchSize</code> 만큼 반복하며 등록된 <code>List<Service> services</code>를 수행한다.<br>
@@ -69,7 +71,7 @@ public class IterationGroup extends ParameterAssignableService {
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
-        if (getInput() == null) {
+        if (getInput() == null && !iterateUntilBreak) {
             throw new InvalidServiceConfigurationException(this.getClass(), "The IterationGroup requires a parameter to execute repeated elements.");
         }
 
@@ -93,16 +95,19 @@ public class IterationGroup extends ParameterAssignableService {
         InterfaceInfo info = ctx.getInfo();
         String interfaceId = info.getInterfaceId();
         String txId = ctx.getTxId();
-        
+
+        //반복문 수행 시 query sequence가 매번 초기화 되어야 하므로 반복문을 수행하기 전의 query order 를 미리 저장한다.
+        int currentQueryOrder = ctx.getCurrentQueryOrder();
+        int currentErrorQueryOrder = ctx.getCurrentErrorQueryOrder();
+
+
         // 우선 iterateUntilBreak 조건에 따라 로직을 나눔 (코드정리 작업은 나중에 수행)
         if (iterateUntilBreak) {
             int serviceCount = services.size();
 
-
-
             int iterCnt = 0;
+            boolean breaked = false;
             while (true) {
-                boolean breaked = false;
                 ServiceContext innerCtx = null;
                 String innerTxId = null;
                 if (createNewContextEachLoop) {
@@ -116,6 +121,11 @@ public class IterationGroup extends ParameterAssignableService {
                     innerTxId = txId;
                     innerCtx.addContextParam("$iter_break", false);
                 }
+
+                //매번의 반복문에서 같은 QueryOrder 를 지정해준다.
+                innerCtx.setCurrentQueryOrder(currentQueryOrder);
+                innerCtx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
+
                 int cnt1 = 0;
                 try {
                     //Inner Processing service chaining 시작
@@ -147,7 +157,7 @@ public class IterationGroup extends ParameterAssignableService {
                             innerCtx.stampEndTime();
                             log.debug("[{}]Iteration-Group: End the service '{}'", innerTxId, serviceClass);
 
-                            if ((boolean) ctx.getContextParam("$iter_break")) {
+                            if ((boolean) innerCtx.getContextParam("$iter_break")) {
                                 log.debug("[{}]Iteration-Group: Breaking this iteration group. Total iteration count: {}", txId, iterCnt);
                                 breaked = true;
                                 break;
@@ -179,9 +189,11 @@ public class IterationGroup extends ParameterAssignableService {
                             log.debug("[{}]End the error handler '{}'", innerTxId, errorHandlerClass);
                         }
                     }
-                }
-                if (breaked) {
-                    break;
+                } finally {
+                    if (breaked) {
+                        break;
+                    }
+                    ++iterCnt;
                 }
             }
             ctx.deleteContextParam("$iter_break");
@@ -241,9 +253,13 @@ public class IterationGroup extends ParameterAssignableService {
                     innerTxId = txId;
                 }
 
-            /*Inner Processing services 에서는 이 서비스에 등록된 iterationInputName 으로 input 을 파라미터로 받을 수 있다.
-              지금 이 코드는 ParameterAssignableService#setOutputValue(ServiceContext ctx, Object outputValue); 와 같은 효과를 가진다.
-             */
+                //매번의 반복문에서 같은 QueryOrder 를 지정해준다.
+                innerCtx.setCurrentQueryOrder(currentQueryOrder);
+                innerCtx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
+
+                /*Inner Processing services 에서는 이 서비스에 등록된 iterationInputName 으로 input 을 파라미터로 받을 수 있다.
+                  지금 이 코드는 ParameterAssignableService#setOutputValue(ServiceContext ctx, Object outputValue); 와 같은 효과를 가진다.
+                 */
                 innerCtx.addContextParam(this.iterationInputName, val);
 
 
@@ -307,6 +323,11 @@ public class IterationGroup extends ParameterAssignableService {
                     }
                 }
             }
+
+            //반복문 수행이 끝나면 ServiceContext에 원래의 QueryOrder를 다시 지정해줘야 한다.
+            ctx.setCurrentQueryOrder(currentQueryOrder);
+            ctx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
+
             log.debug("[{}]Iteration-Group: Total iteration count: {}", txId, iterCnt);
         }
 

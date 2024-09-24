@@ -9,9 +9,6 @@ import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
 
-import java.util.List;
-import java.util.Map;
-
 
 /**
  * Database의 Cursor 를 open 한다.
@@ -48,7 +45,7 @@ public class OpenCursor extends ParameterAssignableService {
         QueryExecutor executor = DataSourceProvider.access().getExecutor(queryMap.getExecutorName());
 
         //(2) Prepare object for result and do fetch
-        executor.openCursor(txContext, queryMap.getQueryId());
+        executor.doOpenCursor(txContext, queryMap.getQueryId());
         log.info("[{}]Cursor opened", ctx.getTxId());
 
     }

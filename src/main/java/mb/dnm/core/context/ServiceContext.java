@@ -26,8 +26,10 @@ public class ServiceContext {
     private Map<String, TransactionContext> txContextMap;
     private Map<String, ClosableStreamWrapper> sessionMap;
     private StringBuilder msg;
-
+    @Setter
     private int currentQueryOrder = 0;
+    @Setter
+    private int currentErrorQueryOrder = 0;
     private int currentMappingOrder = 0;
     @Setter @Getter
     private ProcessCode processStatus = ProcessCode.NOT_STARTED;
@@ -139,6 +141,37 @@ public class ServiceContext {
             throw new NoSuchElementException("Query sequence reached to the last");
         String query = querySequence[currentQueryOrder];
         ++currentQueryOrder;
+
+        int executorNameIdx = query.indexOf('$');
+        String executorName = query.substring(0, executorNameIdx);
+        String queryId = query.substring(executorNameIdx + 1);
+
+        QueryMap qmap = new QueryMap(executorName, queryId);
+        qmap.setTimeoutSecond(info.getTxTimeoutSecond());
+        addTransactionContext(qmap);
+
+        return new QueryMap(executorName, queryId);
+    }
+
+    public boolean hasMoreErrorQueryMaps() {
+        String[] querySequence = info.getErrorQuerySequence();
+        int seqSize = querySequence.length;
+        if (currentErrorQueryOrder <= seqSize)
+            return true;
+        return false;
+    }
+
+    public QueryMap nextErrorQueryMap() {
+        String[] querySequence = info.getErrorQuerySequence();
+        if (querySequence == null) {
+            throw new NoSuchElementException("Error query sequence is null");
+        }
+
+        int seqSize = querySequence.length;
+        if (currentErrorQueryOrder > seqSize)
+            throw new NoSuchElementException("Error query sequence reached to the last");
+        String query = querySequence[currentErrorQueryOrder];
+        ++currentErrorQueryOrder;
 
         int executorNameIdx = query.indexOf('$');
         String executorName = query.substring(0, executorNameIdx);

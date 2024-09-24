@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ITERATE_IF_TEST_2">
+
+    <select id="SELECT" resultType="java.util.HashMap">
+        select * from ifs_hosiptal_info where esb_link_stcd_mid ='Q' limit 2
+    </select>
+
+    <update id="UPDATE">
+        UPDATE ifs_hosiptal_info SET esb_link_stcd_mid='V' where encryption_symbol=#{encryption_symbol}
+    </update>
+
+</mapper>

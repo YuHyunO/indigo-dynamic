@@ -3,11 +3,11 @@
 <mapper namespace="CURSOR_TEST_IF">
 
     <select id="OPEN_CURSOR">
-        DECLARE row_cursor CURSOR FOR SELECT * FROM ifs_hosiptal_info;
+        DECLARE row_cursor CURSOR FOR SELECT * FROM ifs_hosiptal_info limit 10;
     </select>
 
     <select id="FETCH" resultType="java.util.HashMap">
-        FETCH 10000 FROM row_cursor
+        FETCH 1 FROM row_cursor
     </select>
 
 </mapper>

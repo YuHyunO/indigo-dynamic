@@ -34,13 +34,14 @@ public class BreakIteration extends ParameterAssignableService {
             log.info("[{}]The value of input parameter '{}' is null. Breaking iteration", ctx.getTxId(), getInput());
             ctx.addContextParam("$iter_break", true);
             return;
-        }
-
-        if (inputVal instanceof Iterable) {
+        } else if (inputVal instanceof Iterable) {
             if ( !((Iterable)inputVal).iterator().hasNext() ) {
                 log.info("[{}]The value of input parameter '{}' is empty. Breaking iteration", ctx.getTxId(), getInput());
                 ctx.addContextParam("$iter_break", true);
             }
+        } else {
+            log.warn("[{}]The input parameter is not iterable. Stop iteration", ctx.getTxId());
+            ctx.addContextParam("$iter_break", true);
         }
     }
 

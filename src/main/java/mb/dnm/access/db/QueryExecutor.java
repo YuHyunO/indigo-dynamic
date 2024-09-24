@@ -6,11 +6,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.ResultContext;
-import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,7 +102,7 @@ public class QueryExecutor {
     /**
      * Not always available in all databases
      * */
-    public void openCursor(TransactionContext txCtx, String sqlId) {
+    public void doOpenCursor(TransactionContext txCtx, String sqlId) {
         getDefaultExecutor().selectOne(sqlId);
     }
 
