@@ -270,6 +270,7 @@
                         <exclude>**/test/</exclude>
                         <exclude>**/*.xml</exclude>
                         <exclude>**/*.mp</exclude>
+                        <exclude>**/*.txt</exclude>
                     </excludes>
                 </configuration>
             </plugin>

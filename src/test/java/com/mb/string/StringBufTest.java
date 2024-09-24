@@ -8,6 +8,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class StringBufTest {
@@ -104,4 +108,53 @@ public class StringBufTest {
         log.info("UTF-16: {}", "\n".getBytes(Charset.forName("UTF-16")).length);
         log.info("UTF-32: {}", "\n".getBytes(Charset.forName("UTF-32")).length);
     }
+
+
+
+
+    public String[] tokenize(String data, String token) {
+        return data.split(token);
+    }
+
+
+    @Test
+    public void tokenize_test() {
+        String data = "M151648056@2010@소)대관령(홍천대리점)@MA2230277858강원도@홍천군@갈마로1길@10-15@강원도@홍천군@갈마로1길@10-15@6812261PGTOAC김영래@우유,임대@도매,부동산@250922@250922@30000000000000000000048056@033@4348586@4331741@033@438@2100@4600#";
+
+
+
+        //Read File
+        Map<String, Object> dataMap = new HashMap<>();
+        String[] tokens = tokenize(data, "@");
+        for (int i = 0; i < tokens.length; i++) {
+            System.out.println("Data[" + (i + 1) + "]=" + tokens[i]);
+            dataMap.put("data[" + i + "]", tokens[i]); // 각 데이터를 특정 컬럼명에 매핑하는 과정
+        }
+
+        //Data parse
+        List<Map<String, Object>> POI = new ArrayList<>();
+        List<Map<String, Object>> POH = new ArrayList<>();
+        List<Map<String, Object>> POD = new ArrayList<>();
+
+        switch (tokens[1]) {
+            case "2010" : POI.add(dataMap); break;
+            case "2020" : POH.add(dataMap); break;
+            case "2030" : POD.add(dataMap); break;
+            default: log.info("연계할 데이터 없음 혹은 파일이 잘못됨");return;
+        }
+
+        //Chekc data is exist and execute query
+        if (!POI.isEmpty()) {
+            //Insert data into LOEX.TABLE1
+
+        } else if (!POH.isEmpty()) {
+            //Insert data into LOEX.TABLE2
+
+        } else if (!POD.isEmpty()) {
+            //Insert data into LOEX.TABLE3
+
+        }
+
+    }
+
 }

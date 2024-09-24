@@ -110,7 +110,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                      value="file_list"/>
-                    <property name="printToJsonWhenCollection"  value="true"/>
+                    <property name="printToJsonWhenCollectionOrMap"  value="true"/>
                     <property name="indented"                   value="true"/>
                 </bean>
             </list>
@@ -128,7 +128,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                      value="file_list"/>
-                    <property name="printToXmlWhenCollection"   value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"   value="true"/>
                     <property name="indented"                   value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.ftp.DownloadFiles">
@@ -140,7 +140,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                      value="local_file_list"/>
-                    <property name="printToXmlWhenCollection"   value="false"/>
+                    <property name="printToXmlWhenCollectionOrMap"   value="false"/>
                     <property name="indented"                   value="true"/>
                 </bean>
             </list>
@@ -154,6 +154,7 @@
                 <bean class="mb.dnm.service.general.OutputCustomData">
                     <property name="output"             value="file_list"/>
                     <property name="customData">
+
                         <list>
                             <value>/test/inner/새 텍스트 문서.txt</value>
                             <!--<value>/app.js</value>
@@ -172,7 +173,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                      value="local_file_list"/>
-                    <property name="printToXmlWhenCollection"   value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"   value="true"/>
                     <property name="indented"                   value="true"/>
                 </bean>
             </list>
@@ -191,7 +192,7 @@
                 </bean>
                 <!--<bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="local_file_list"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>-->
                 <bean class="mb.dnm.service.file.MoveFiles">
@@ -205,12 +206,12 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="moved_files"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="error_files"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
             </list>
@@ -230,7 +231,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="file_list"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.file.CopyFiles">
@@ -242,7 +243,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="copied_list"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
             </list>
@@ -271,7 +272,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="old_paths"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.ftp.MoveFiles">
@@ -282,9 +283,10 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="moved_path"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
+
             </list>
         </entry>
 
@@ -302,7 +304,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="file_list"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.file.DeleteFiles">
@@ -311,7 +313,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="deleted_list"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
             </list>
@@ -331,7 +333,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="file_list"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.ftp.DeleteFiles">
@@ -355,7 +357,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="file_list"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.ftp.UploadFiles">
@@ -371,7 +373,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="uploaded_list"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
             </list>
@@ -416,7 +418,7 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="file_data"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
             </list>
@@ -441,7 +443,7 @@
                         <list>
                             <!--<bean class="mb.dnm.service.general.PrintInput">
                                 <property name="input"                          value="data"/>
-                                <property name="printToXmlWhenCollection"       value="true"/>
+                                <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                                 <property name="indented"                       value="true"/>
                             </bean>-->
                             <bean class="mb.dnm.service.db.Select">
@@ -455,7 +457,7 @@
 
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="last_selected"/>
-                    <property name="printToXmlWhenCollection"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
 
@@ -481,7 +483,7 @@
                         <list>
                             <bean class="mb.dnm.service.general.PrintInput">
                                 <property name="input"                          value="data"/>
-                                <property name="printToXmlWhenCollection"       value="true"/>
+                                <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                                 <property name="indented"                       value="true"/>
                             </bean>
                         </list>

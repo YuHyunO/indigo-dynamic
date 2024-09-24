@@ -9,6 +9,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +32,13 @@ public class MessageUtil {
     }
 
     public static String mapToJson(Map map, boolean prettyFormat) throws JsonProcessingException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return mapToJson(map, prettyFormat, dateFormat);
+    }
+
+    public static String mapToJson(Map map, boolean prettyFormat, SimpleDateFormat dateFormat) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setDateFormat(dateFormat);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         String jsonString = objectMapper.writeValueAsString(map);
 
@@ -56,7 +63,13 @@ public class MessageUtil {
     }
 
     public static String mapToXml (Map map, String rootName, boolean prettyFormat) throws JsonProcessingException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return mapToXml(map, rootName, prettyFormat, dateFormat);
+    }
+
+    public static String mapToXml (Map map, String rootName, boolean prettyFormat, SimpleDateFormat dateFormat) throws JsonProcessingException {
         XmlMapper xmlMapper = XmlMapper.builder().build();
+        xmlMapper.setDateFormat(dateFormat);
         xmlMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         if (prettyFormat) {
             xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
