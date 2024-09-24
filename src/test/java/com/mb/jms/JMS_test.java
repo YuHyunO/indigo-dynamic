@@ -18,11 +18,13 @@ import com.indigo.indigomq.transport.tcp.TcpTransportFactory;
 import com.indigo.indigomq.transport.udp.UdpTransportFactory;
 import com.indigo.indigomq.transport.vm.VMTransportFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 
 @Slf4j
 public class JMS_test {
 
-    public static void main(String[] args) {
+    @Test
+    public void esb_transport() {
         PooledConnectionFactory cp = new PooledConnectionFactory();
         IndigoMQConnectionFactory icf = new IndigoMQConnectionFactory();
 
@@ -42,6 +44,12 @@ public class JMS_test {
         VMTransportFactory vmf = new VMTransportFactory();//?
 
         TcpTransport tcpo = null;
+
+    }
+
+    @Test
+    public void jms_dependency_check() {
+        
     }
 
 }
