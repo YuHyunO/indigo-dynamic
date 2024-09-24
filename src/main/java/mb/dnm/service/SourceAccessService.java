@@ -2,6 +2,8 @@ package mb.dnm.service;
 
 import lombok.Getter;
 import lombok.Setter;
+import mb.dnm.exeption.InvalidServiceConfigurationException;
+import mb.dnm.storage.InterfaceInfo;
 
 /**
  * FTP, SFTP 등의 server source에 접근하기 위해 사용될 수 있는 추상 클래스이다.<br>
@@ -18,5 +20,24 @@ import lombok.Setter;
 public abstract class SourceAccessService extends ParameterAssignableService {
     protected String sourceName;
     protected String sourceAlias;
+    
+    protected String getSourceName(InterfaceInfo info) {
+        if (sourceName != null) {
+            return sourceName;
+        }
+        String srcAlias = getSourceAlias();
+        if (srcAlias == null) {
+            throw new InvalidServiceConfigurationException(this.getClass(), "Source alias is null");
+        }
+        String srcName = info.getSourceNameByAlias(srcAlias);
+        if (srcName == null) {
+            srcName = getSourceName();
+            if (srcName == null) {
+                throw new InvalidServiceConfigurationException(this.getClass(), "There is no source name for alias of '" + srcAlias + "'");
+            }
+        }
+
+        return srcName;
+    }
 
 }

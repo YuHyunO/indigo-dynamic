@@ -236,6 +236,13 @@
             <property name="querySequence"          value="DB1$@{if_id}.SELECT,DB1$@{if_id}.UPDATE"/>
         </bean>
 
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="JMS_IF_TEST"/>
+            <property name="description"            value="JMS 인터페이스 테스트"/>
+            <property name="serviceId"              value="JMS_TEST"/>
+            <property name="sourceAliases"          value="SRC:ESB"/>
+        </bean>
+
     </util:list>
 
 

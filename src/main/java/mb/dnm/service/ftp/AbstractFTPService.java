@@ -34,22 +34,7 @@ public abstract class AbstractFTPService extends SourceAccessService {
     }
 
     protected String getFTPSourceName(InterfaceInfo info) {
-        if (sourceName != null) {
-            return sourceName;
-        }
-        String srcAlias = getSourceAlias();
-        if (srcAlias == null) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "Source alias is null");
-        }
-        String srcName = info.getSourceNameByAlias(srcAlias);
-        if (srcName == null) {
-            srcName = getSourceName();
-            if (srcName == null) {
-                throw new InvalidServiceConfigurationException(this.getClass(), "There is no source name for alias of '" + srcAlias + "'");
-            }
-        }
-
-        return srcName;
+        return super.getSourceName(info);
     }
 
 

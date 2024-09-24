@@ -65,9 +65,11 @@
     <bean class="mb.dnm.access.jms.JMSSourceProvider">
         <property name="jmsTemplates">
             <list>
-                <bean class="mb.dnm.access.jms.JmsTemplateWrapper">
-                    <property name="templateName"               value="ESB"/>
 
+                <bean class="mb.dnm.access.jms.IndigoJmsTemplateWrapper">
+                    <property name="templateName"               value="ESB"/>
+                    <property name="connectTimeoutMillis"       value="5000"/>
+                    <property name="connectionFactory"          ref="LOCAL"/>
                 </bean>
                 
             </list>

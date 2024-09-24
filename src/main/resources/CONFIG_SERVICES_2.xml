@@ -87,6 +87,14 @@
                 <bean class="mb.dnm.service.db.EndTransaction"/>
             </list>
         </entry>
+
+
+
+        <entry key="JMS_TEST">
+            <list>
+
+            </list>
+        </entry>
     </util:map>
 
 </beans>
