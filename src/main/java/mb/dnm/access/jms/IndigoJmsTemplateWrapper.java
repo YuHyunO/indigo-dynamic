@@ -11,7 +11,7 @@ import java.net.URI;
 
 /**
  * IMC의 JMS 공통 리소스를 사용하는 경우 BrokerUrl 에 연결 타임아웃을 설정하는 부분이 없다.
- * 이를 지원하기위한 Wrapper 클래스이다.
+ * 화면 수정없이 jms connect timeout 설정을 할 수 있도록 하기위한 Wrapper 클래스이다.
  * 
  * @author Yuhyun O
  * @version 2024.09.24
