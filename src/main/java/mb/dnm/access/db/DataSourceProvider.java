@@ -19,6 +19,9 @@ public class DataSourceProvider {
     private Map<String, DataSourceTransactionManager> txManagers;
     private boolean initilized = false;
 
+    /*
+    * Spring version 만 맞다면 private 으로 변경해도 bean으로 등록 가능함
+    * */
     public DataSourceProvider() {
         if (instance == null) {
             instance = this;

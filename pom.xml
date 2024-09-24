@@ -7,7 +7,7 @@
     <groupId>com.metabuild</groupId>
     <artifactId>indigo-dynamic</artifactId>
     <version>1.0.0</version>
-    <!--<packaging>pom</packaging>-->
+    <packaging>jar</packaging>
 
     <repositories>
         <repository>
@@ -27,6 +27,44 @@
     </properties>
 
     <dependencies>
+        
+        <dependency>
+            <groupId>com.indigo</groupId>
+            <artifactId>adaptor</artifactId>
+            <version>2.5.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.indigo</groupId>
+            <artifactId>AdaptorTemplate</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.indigo</groupId>
+            <artifactId>AdaptorTemplate-dongwon</artifactId>
+            <version>202408091</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.indigo</groupId>
+            <artifactId>indigomq-core</artifactId>
+            <version>1.5.5_C</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.indigo</groupId>
+            <artifactId>indigomq-pool</artifactId>
+            <version>1.5.5_B</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.indigo</groupId>
+            <artifactId>indigomq-ra</artifactId>
+            <version>1.5.5_B</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
@@ -202,6 +240,17 @@
             <artifactId>jsch</artifactId>
             <version>0.2.19</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jms_1.1_spec</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-j2ee-management_1.0_spec</artifactId>
+            <version>1.1</version>
+        </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>
@@ -248,6 +297,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/TestStarter.class</exclude>
+                        <exclude>**/deprecated/</exclude>
                         <exclude>**/test/</exclude>
                         <exclude>**/*.xml</exclude>
                         <exclude>**/*.mp</exclude>

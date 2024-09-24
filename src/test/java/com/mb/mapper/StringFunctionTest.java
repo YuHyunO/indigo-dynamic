@@ -64,8 +64,10 @@ public class StringFunctionTest {
     @Test
     public void rpad() {
         String test = "abc";
-        log.info("test: {}", new StringFunction().rpad(test, 7, "*"));
-        log.info("test: {}", new StringFunction().rpad(test, 7));
+
+        log.info("original: {}, len: {}", test, test.length());
+        log.info("rpad(test, 7, \"*\"): {}, len: {}", new StringFunction().rpad(test, 7, "*"), new StringFunction().rpad(test, 7, "*").length());
+        log.info("rpad(test, 7): {}, len: {}", new StringFunction().rpad(test, 7), new StringFunction().rpad(test, 7, "*").length());
     }
 
     @Test

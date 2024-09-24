@@ -61,5 +61,18 @@
         </property>
     </bean>
 
+    <!-- ¡ØJMS Access Component -->
+    <bean class="mb.dnm.access.jms.JMSSourceProvider">
+        <property name="jmsTemplates">
+            <list>
+                <bean class="mb.dnm.access.jms.JmsTemplateWrapper">
+                    <property name="templateName"               value="ESB"/>
+
+                </bean>
+                
+            </list>
+        </property>
+    </bean>
+
 
 </beans>
