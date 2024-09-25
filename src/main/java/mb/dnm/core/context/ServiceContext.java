@@ -78,12 +78,14 @@ public class ServiceContext {
         for (Map.Entry<Class<? extends Service>, Throwable> entry : errorTrace.entrySet()) {
             Class service = entry.getKey();
             Throwable throwable = entry.getValue();
-            sb.append("Error class: ");
-            sb.append(service.getName());
-            sb.append("\n");
-            sb.append("Error trace: ");
-            sb.append(MessageUtil.toStringBuf(throwable));
-            sb.append("\n");
+            sb.append("Error class: ")
+                    .append(service.getName())
+                    .append("\n")
+                    .append("Service trace: ")
+                    .append(getServiceTraceMessage())
+                    .append("\n")
+                    .append("Error trace: ")
+                    .append(MessageUtil.toStringBuf(throwable));
         }
         if (sb.length() > 0) {
             sb.setLength(sb.length() - 1);
