@@ -88,13 +88,27 @@
             </list>
         </entry>
 
+        <entry key="SIZE_TEST">
+            <list>
+                <bean class="mb.dnm.service.db.Select">
+                    <property name="output"     value="select_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.GetSize">
+                    <property name="input"      value="select_list"/>
+                    <property name="output"     value="select_list_size"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"      value="select_list_size"/>
+                </bean>
+            </list>
+        </entry>
 
 
-        <entry key="JMS_TEST">
+        <!--<entry key="JMS_TEST">
             <list>
 
             </list>
-        </entry>
+        </entry>-->
     </util:map>
 
 </beans>

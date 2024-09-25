@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SIZE_IF_TEST">
+
+    <select id="SELECT" resultType="java.util.HashMap">
+        select * from ifs_hosiptal_info limit 50
+    </select>
+
+</mapper>

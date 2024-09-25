@@ -75,9 +75,9 @@ public class GetSize extends ParameterAssignableService {
 
 
                 if (couldnt) {
-                    log.debug("[{}]Couldn't get the size of input '{}'. Not supported type: {}, Ouput: 0", ctx.getTxId(), inputName, type);
+                    log.debug("[{}]Couldn't get the size of input '{}'. Not supported input type: {}, Output: 0", ctx.getTxId(), inputName, type);
                 } else {
-                    log.debug("[{}]The size of input '{}' is detected. Output: {}, Type: {}", ctx.getTxId(), inputName, size, type);
+                    log.debug("[{}]The size of input '{}' is detected. Input type: {}, Output: {}, Output type: {}", ctx.getTxId(), inputName, type, size, size.getClass());
                 }
 
             } else {

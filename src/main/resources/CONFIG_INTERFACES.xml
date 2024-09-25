@@ -243,6 +243,13 @@
             <property name="sourceAliases"          value="SRC:ESB"/>
         </bean>
 
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="SIZE_IF_TEST"/>
+            <property name="description"            value="SIZE 인터페이스 테스트"/>
+            <property name="serviceId"              value="SIZE_TEST"/>
+            <property name="querySequence"          value="DB1$@{if_id}.SELECT"/>
+        </bean>
+
     </util:list>
 
 
