@@ -93,9 +93,9 @@ public class ServiceProcessor {
             log.info("[{}]Unfold the service strategy '{}'", txId, serviceId);
             for (Service service : services) {
                 Class serviceClass = service.getClass();
-                ctx.addServiceTrace(serviceClass);
                 try {
                     if (ctx.isProcessOn()) {
+                        ctx.addServiceTrace(serviceClass);
                         ++cnt1;
                         log.debug("[{}]Start the service '{}'({}/{})", txId, serviceClass, cnt1, serviceCount);
                         service.process(ctx);
