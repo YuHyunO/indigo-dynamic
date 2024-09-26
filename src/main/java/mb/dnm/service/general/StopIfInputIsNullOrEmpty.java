@@ -34,38 +34,38 @@ public class StopIfInputIsNullOrEmpty extends ParameterAssignableService {
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         Object inputVal = getInputValue(ctx);
-        if (getOutput() != null) {
-            setOutputValue(outputValue);
-        }
+        
+        boolean stop = false;
 
         if (inputVal == null) {
             ctx.setProcessOn(false);
             log.info("[{}]Input value is null. The service process will be stop", ctx.getTxId());
-            return;
-        }
-
-        if (inputVal instanceof Collection) {
+            stop = true;
+            
+        } else if (inputVal instanceof Collection) {
             if (((Collection) inputVal).isEmpty()) {
                 ctx.setProcessOn(false);
                 log.info("[{}]Input value is empty. The service process will be stop", ctx.getTxId());
-                return;
+                stop = true;
             }
-        }
 
-        if (inputVal instanceof Map) {
+        } else if (inputVal instanceof Map) {
             if (((Map) inputVal).isEmpty()) {
                 ctx.setProcessOn(false);
                 log.info("[{}]Input value is empty. The service process will be stop", ctx.getTxId());
-                return;
+                stop = true;
             }
-        }
 
-        if (inputVal instanceof EmptyCheckable) {
+        } else if (inputVal instanceof EmptyCheckable) {
             if (((EmptyCheckable) inputVal).isEmpty()) {
                 ctx.setProcessOn(false);
                 log.info("[{}]Input value is empty. The service process will be stop", ctx.getTxId());
-                return;
+                stop = true;
             }
+        }
+
+        if ( stop && (getOutput() != null) ) {
+            setOutputValue(outputValue);
         }
 
     }
