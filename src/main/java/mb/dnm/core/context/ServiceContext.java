@@ -54,50 +54,45 @@ public class ServiceContext {
     }
 
     public String getServiceTraceMessage() {
-        StringBuilder sb = new StringBuilder();
-        for (Class service : serviceTrace) {
-            sb.append(service.getName());
-            sb.append("→");
+        Map<String, Object> msgMap = new LinkedHashMap<>();
+
+        String msg = "";
+        try {
+            msg = MessageUtil.mapToJson(msgMap, true);
+        } catch (Exception e) {
         }
-        if (sb.length() > 0) {
-            sb.setLength(sb.length() - 1);
-        }
-        return sb.toString();
+        return msg;
     }
 
     public void addErrorTrace(Class<? extends Service> service, Throwable throwable) {
         errorTrace.put(service, throwable);
     }
 
-    public String getErrorTraceMessage() {
-        return getErrorTraceMessage(-1);
-    }
 
-    public String getErrorTraceMessage(int maxlength) {
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Class<? extends Service>, Throwable> entry : errorTrace.entrySet()) {
-            Class service = entry.getKey();
-            Throwable throwable = entry.getValue();
-            sb.append("Error class: ")
-                    .append(service.getName())
-                    .append("\n")
-                    .append("Service trace: ")
-                    .append(getServiceTraceMessage())
-                    .append("\n")
-                    .append("Error trace: ")
-                    .append(MessageUtil.toStringBuf(throwable));
-        }
-        if (sb.length() > 0) {
-            sb.setLength(sb.length() - 1);
-            if (maxlength >= 0) {
-                int sblen = sb.length();
-                if (sblen > maxlength) {
-                    sb.setLength(maxlength);
-                }
+    public String getErrorTraceMessage() {
+        Map<String, Object> msgMap = new LinkedHashMap<>();
+        msgMap.put("tx_id", txId);
+        msgMap.put("if_id", getInterfaceId());
+        msgMap.put("start_time", startTime);
+        msgMap.put("end_time", endTime);
+        msgMap.put("service_trace", serviceTrace);
+        msgMap.put("error_trace", errorTrace);
+        Map<String, Object> queryHistories = null;
+        if (txContextMap.size() > 0) {
+            queryHistories = new LinkedHashMap<>();
+            for (Map.Entry<String, TransactionContext> entry : txContextMap.entrySet()) {
+                queryHistories.put(entry.getKey(), entry.getValue());
             }
         }
-
-        return sb.toString();
+        if (queryHistories != null) {
+            msgMap.put("query_histories", queryHistories);
+        }
+        String msg = "";
+        try {
+           msg = MessageUtil.mapToJson(msgMap, true);
+        } catch (Exception e) {
+        }
+        return msg;
     }
 
     public String getInterfaceId() {

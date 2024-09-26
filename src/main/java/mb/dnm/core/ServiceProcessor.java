@@ -148,12 +148,12 @@ public class ServiceProcessor {
 
         } finally {
             //Processing callbacks
-            for (AfterProcessCallback listener : callbacks) {
+            for (AfterProcessCallback callback : callbacks) {
                 try {
-                    log.debug("[{}]Processing callback: {}", txId, listener.getClass());
-                    listener.afterProcess(ctx);
+                    log.debug("[{}]Processing callback: {}", txId, callback.getClass());
+                    callback.afterProcess(ctx);
                 } catch (Throwable t) {
-                    log.error("[" + txId + "]Callback " + listener.getClass() + " process failed. Cause: ", t);
+                    log.error("[" + txId + "]Callback " + callback.getClass() + " process failed. Cause: ", t);
                 }
             }
         }

@@ -1,30 +1,51 @@
 package mb.dnm.core.context;
 
+import mb.dnm.util.MessageUtil;
 import org.springframework.transaction.TransactionStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionContext {
     private String name;
     private boolean groupTxEnabled = false;
     private TransactionStatus txStatus;
     private int timeoutSecond = -1;
-    private StringBuffer queryHistory;
+    private List<StringBuilder> queryHistory;
     private Throwable error;
 
     TransactionContext(String name) {
         this.name = name;
-        queryHistory = new StringBuffer();
+        queryHistory = new ArrayList<>();
     }
 
     public void addQueryHistory(String queryId) {
-        if (queryHistory.length() != 0) {
-            queryHistory.append('→').append(queryId);
-        } else {
-            queryHistory.append(queryId);
-        }
+        queryHistory.add(new StringBuilder(queryId));
     }
 
-    public String getQueryHistory() {
-        return queryHistory.toString();
+    public void addQueryHistory(StringBuilder queryId) {
+        queryHistory.add(queryId);
+    }
+
+    public List<String> getQueryHistory() {
+        List<String> result = new ArrayList<>();
+        for (StringBuilder queryId : queryHistory) {
+            result.add(queryId.toString());
+        }
+        return result;
+    }
+
+    public String getQueryHistoryMsg() {
+        StringBuilder msg = new StringBuilder();
+        int i = 1;
+        for (StringBuilder queryId : queryHistory) {
+            msg.append("(").append(i).append("):").append(queryId).append(",").append(" ");
+            ++i;
+        }
+        if (msg.length() > 0) {
+            msg.setLength(msg.length() - " ".length());
+        }
+        return msg.toString();
     }
 
     public void setName(String name) {
