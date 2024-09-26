@@ -56,10 +56,23 @@ public class ServiceContext {
     public String getServiceTraceMessage() {
         Map<String, Object> msgMap = new LinkedHashMap<>();
 
+        int i = 1;
+        Map<String, Object> innerMap = new LinkedHashMap<>();
+        for (Class<? extends Service> serviceClass : serviceTrace) {
+            innerMap.put(String.valueOf(i), serviceClass);
+            ++i;
+        }
+
+        if (!innerMap.isEmpty()) {
+            msgMap.put("service_trace", innerMap);
+        }
+
         String msg = "";
-        try {
-            msg = MessageUtil.mapToJson(msgMap, true);
-        } catch (Exception e) {
+        if (!msgMap.isEmpty()) {
+            try {
+                msg = MessageUtil.mapToJson(msgMap, true);
+            } catch (Exception e) {
+            }
         }
         return msg;
     }
