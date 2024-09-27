@@ -33,5 +33,6 @@
     <div>◎ PlaceHolderMapper 기능 추가 ▶<i>[완료여부: X]</i></div>
     <div>◎ DB Select/File Write, File Read/DB Insert 패턴에서 대용량 처리 지원하도록 기능 추가 ▶<i>[완료여부: X]</i></div>
     <div>◎ 암호화 서비스 추가 ▶<i>[완료여부: X]</i></div>
+    <div>◎ Scheduler 실행 시 새로운 Thread 에서 실행되도록 수정 ▶<i>[완료여부: X]</i></div>
    </p>
 </div>
