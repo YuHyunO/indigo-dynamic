@@ -1,13 +1,11 @@
 package mb.dnm.dispatcher.http;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.access.http.HttpServletRequestEntity;
 import mb.dnm.core.ServiceProcessor;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.storage.StorageManager;
-import org.eclipse.jetty.util.IO;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

@@ -39,6 +39,10 @@ public class InterfaceInfo {
     //Property for mapping
     protected String[] mappingSequence;
 
+    //Properties for logging
+    protected boolean loggingWhenNormal = true;
+    protected boolean loggingWhenError = true;
+
 
     public void setQuerySequence(String querySequence) {
         this.querySequenceArr = parseQuerySequence(querySequence);
