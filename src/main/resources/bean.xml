@@ -3,7 +3,7 @@
 <beans>
     <import resource="CONFIG_CORE.xml"/>
 
-    <bean class="com.indigo.springsupport.schedule.ScheduleBean" id="adaptorTemplateSchedule">
+    <!--<bean class="com.indigo.springsupport.schedule.ScheduleBean" id="adaptorTemplateSchedule">
         <description><![CDATA[adaptorTemplateSchedule]]></description>
         <property name="targetObject">
             <bean class="mb.dnm.dispatcher.SimpleDispatcher"/>
@@ -11,12 +11,12 @@
         <property name="threadCount" value="1"/>
         <property name="timeList">
             <list>
-                <!--<value>[cronExpression=0/5 * * * * ?,args=DB_IF_TEST,concurrent=false,targetMethod=dispatch]</value>-->
-                <!--<value>[cronExpression=0/5 * * * * ?,args=FTP_IF_TEST,concurrent=false,targetMethod=dispatch]</value>-->
+                &lt;!&ndash;<value>[cronExpression=0/5 * * * * ?,args=DB_IF_TEST,concurrent=false,targetMethod=dispatch]</value>&ndash;&gt;
+                &lt;!&ndash;<value>[cronExpression=0/5 * * * * ?,args=FTP_IF_TEST,concurrent=false,targetMethod=dispatch]</value>&ndash;&gt;
                 <value>[cronExpression=0/10 * * * * ?,args=SIZE_IF_TEST,concurrent=false,targetMethod=dispatch]</value>
             </list>
         </property>
-    </bean>
+    </bean>-->
 
 
 </beans>

@@ -14,6 +14,8 @@ public class StorageManager {
     private Map<String, InterfaceInfo> interfaceRegistry;
     private Map<String, List<Service>> serviceRegistry;
     private Map<String, List<ErrorHandler>> errorHandlerRegistry;
+    private Map<String, String> httpRequestMappingRegistry;
+    private boolean httpInterfaceEnabled = true;
 
     public StorageManager() {
         if (StorageManager.instance == null) {
@@ -21,6 +23,7 @@ public class StorageManager {
             instance.interfaceRegistry = new HashMap<>();
             instance.serviceRegistry = new HashMap<>();
             instance.errorHandlerRegistry = new HashMap<>();
+            instance.httpRequestMappingRegistry = new HashMap<>();
         }
     }
 
@@ -35,7 +38,38 @@ public class StorageManager {
         for(InterfaceInfo info : interfaceInfos){
             String ifId = info.getInterfaceId();
             this.interfaceRegistry.put(ifId, info);
+            if (httpInterfaceEnabled) {
+                String frontUrl = info.getFrontHttpUrl();
+                if (frontUrl != null) {
+                    frontUrl = frontUrl.trim();
+                    if (!frontUrl.isEmpty()) {
+                        if (!frontUrl.startsWith("/")) {
+                            frontUrl = "/" + frontUrl;
+                            if (frontUrl.contains("?") || frontUrl.contains("&")) {
+                                throw new IllegalArgumentException("Invalid front url path. Illegal characters in frontHttpUrl path '?' or '&': " + frontUrl);
+                            }
+                            frontUrl = frontUrl.replace("@{if_id}", ifId);
+                            if (httpRequestMappingRegistry.containsKey(frontUrl)) {
+                                throw new IllegalArgumentException("Duplicate front url '" + frontUrl + "' of Interface id: " + ifId);
+                            }
+                            httpRequestMappingRegistry.put(frontUrl, ifId);
+                        }
+                    }
+                }
+            }
         }
+
+        if (httpInterfaceEnabled) {
+            log.debug("The HTTP request mapping registry has been initialized.");
+            if (httpRequestMappingRegistry.size() > 0) {
+                for (Map.Entry<String, String> entry : httpRequestMappingRegistry.entrySet()) {
+                    log.debug("HTTP request mapping: url: " + entry.getKey() + " -> interface id" + entry.getValue());
+                }
+            } else {
+                log.debug("No HTTP request routing set is exist.");
+            }
+        }
+
     }
 
     public void setServiceRegistry(Map<String, List<Service>> services){
@@ -102,5 +136,17 @@ public class StorageManager {
         getInterfaceInfo(interfaceId).setActivated(false);
         return true;
     }
+
+    public InterfaceInfo getInterfaceInfoOfHttpRequest(String url, String method) {
+        if (httpRequestMappingRegistry.containsKey(url)) {
+            String interfaceId = httpRequestMappingRegistry.get(url);
+            return getInterfaceInfo(interfaceId);
+
+        } else {
+            return null;
+        }
+    }
+
+
 
 }

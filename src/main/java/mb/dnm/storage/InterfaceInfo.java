@@ -3,6 +3,7 @@ package mb.dnm.storage;
 import lombok.Getter;
 import lombok.Setter;
 import mb.dnm.access.file.FileTemplate;
+import mb.dnm.code.HttpMethod;
 
 import java.util.*;
 
@@ -21,7 +22,7 @@ public class InterfaceInfo {
 
     //Properties for HTTP interfaces
     protected String frontHttpUrl;
-    protected String frontHttpMethod = "GET";
+    protected Set<HttpMethod> frontHttpMethods;
 
     //Properties for DB interfaces
     protected String[] querySequenceArr;
@@ -164,6 +165,40 @@ public class InterfaceInfo {
         return errorQuerySequenceArr;
     }
 
+    public void setFrontHttpMethod(String methods) {
+        if (frontHttpMethods == null) {
+            frontHttpMethods = new HashSet<>();
+        }
 
+        methods = methods.replace(" ", "");
+        if (methods.isEmpty()) {
+            throw new IllegalArgumentException("The frontHttpMethod is empty");
+        }
+
+        String[] methodArr = methods.split(",");
+        for (String method : methodArr) {
+            switch (method.toUpperCase()) {
+                case "GET": frontHttpMethods.add(HttpMethod.GET); break;
+                case "POST": frontHttpMethods.add(HttpMethod.POST); break;
+                case "PUT": frontHttpMethods.add(HttpMethod.PUT); break;
+                case "DELETE": frontHttpMethods.add(HttpMethod.DELETE); break;
+                case "*": {
+                    frontHttpMethods.add(HttpMethod.GET);
+                    frontHttpMethods.add(HttpMethod.POST);
+                    frontHttpMethods.add(HttpMethod.PUT);
+                    frontHttpMethods.add(HttpMethod.DELETE);
+                    break;
+                }
+                default: throw new IllegalArgumentException("The http method " + method + " is not supported");
+            }
+        }
+    }
+
+    public boolean isPermittedHttpMethod(String httpMethod) {
+        if (frontHttpMethods != null) {
+            return frontHttpMethods.contains(HttpMethod.valueOf(httpMethod.toUpperCase()));
+        }
+        return false;
+    }
 
 }

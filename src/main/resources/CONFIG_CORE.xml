@@ -76,5 +76,9 @@
         </property>
     </bean>
 
+    <bean class="mb.dnm.dispatcher.http.HttpDispatcherServer" init-method="start">
+        <property name="port"   value="9090"/>
+    </bean>
+
 
 </beans>
