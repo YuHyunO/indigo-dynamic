@@ -21,7 +21,7 @@ public class HttpServletRequestEntity {
     @Getter
     private Map<String, String> headers;
     @Getter
-    private Map<String, String[]> parameters;
+    private Map<String, String> parameters;
     @Getter
     private String method;
     @Getter
@@ -69,13 +69,15 @@ public class HttpServletRequestEntity {
         return headers.get(key.toLowerCase());
     }
 
-    private Map<String, String[]> getRequestParams() {
-        Map<String, String[]> params = new LinkedHashMap<>();
+    private Map<String, String> getRequestParams() {
+        Map<String, String> params = new LinkedHashMap<>();
         Enumeration paramNames = request.getParameterNames();
         while(paramNames.hasMoreElements()) {
             String name = (String) paramNames.nextElement();
             String[] values = request.getParameterValues(name);
-            params.put(name, values);
+            if (values != null && values.length > 0) {
+                params.put(name, values[0]);
+            }
         }
         return params;
     }

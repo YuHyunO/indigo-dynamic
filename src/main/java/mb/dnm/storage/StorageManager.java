@@ -45,15 +45,18 @@ public class StorageManager {
                     if (!frontUrl.isEmpty()) {
                         if (!frontUrl.startsWith("/")) {
                             frontUrl = "/" + frontUrl;
-                            if (frontUrl.contains("?") || frontUrl.contains("&")) {
-                                throw new IllegalArgumentException("Invalid front url path. Illegal characters in frontHttpUrl path '?' or '&': " + frontUrl);
-                            }
-                            frontUrl = frontUrl.replace("@{if_id}", ifId);
-                            if (httpRequestMappingRegistry.containsKey(frontUrl)) {
-                                throw new IllegalArgumentException("Duplicate front url '" + frontUrl + "' of Interface id: " + ifId);
-                            }
-                            httpRequestMappingRegistry.put(frontUrl, ifId);
                         }
+
+                        if (frontUrl.contains("?") || frontUrl.contains("&")) {
+                            throw new IllegalArgumentException("Invalid front url path. Illegal characters in frontHttpUrl path '?' or '&': " + frontUrl);
+                        }
+                        frontUrl = frontUrl.replace("@{if_id}", ifId);
+
+                        if (httpRequestMappingRegistry.containsKey(frontUrl)) {
+                            throw new IllegalArgumentException("Duplicate front url '" + frontUrl + "' of Interface id: " + ifId);
+                        }
+                        httpRequestMappingRegistry.put(frontUrl, ifId);
+
                     }
                 }
             }
@@ -63,7 +66,7 @@ public class StorageManager {
             log.debug("The HTTP request mapping registry has been initialized.");
             if (httpRequestMappingRegistry.size() > 0) {
                 for (Map.Entry<String, String> entry : httpRequestMappingRegistry.entrySet()) {
-                    log.debug("HTTP request mapping: url: " + entry.getKey() + " -> interface id" + entry.getValue());
+                    log.debug("HTTP request mapping: url: " + entry.getKey() + " -> interface id: " + entry.getValue());
                 }
             } else {
                 log.debug("No HTTP request routing set is exist.");

@@ -104,11 +104,21 @@
         </entry>
 
 
-        <!--<entry key="JMS_TEST">
+        <entry key="HTTP_TEST">
             <list>
-
+                <bean class="mb.dnm.service.general.TransformData">
+                    <property name="input"              value="$http_body"/>
+                    <property name="inputDataType"      value="JSON"/>
+                    <property name="outputDataType"     value="MAP"/>
+                    <property name="output"             value="$http_body"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="$http_body"/>
+                    <property name="printToJsonWhenCollectionOrMap" value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
             </list>
-        </entry>-->
+        </entry>
     </util:map>
 
 </beans>

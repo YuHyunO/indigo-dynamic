@@ -7,7 +7,7 @@ import org.eclipse.jetty.servlet.ServletHandler;
 
 @Slf4j
 public class HttpDispatcherServer {
-    private String rootPath = "/";
+    private final String ROOT_PATH = "/";
     private int port;
     private static HttpDispatcherServer instance;
 
@@ -15,17 +15,32 @@ public class HttpDispatcherServer {
         if (port == -1) {
             throw new IllegalStateException("Set the server port number");
         }
-        Server server = new Server();
+        final Server server = new Server();
         SelectChannelConnector connector = new SelectChannelConnector();
         connector.setPort(port);
         server.addConnector(connector);
 
         ServletHandler servletHandler = new ServletHandler();
-        servletHandler.addServletWithMapping(HttpRequestDispatcher.class, rootPath);
+        servletHandler.addServletWithMapping(HttpRequestDispatcher.class, ROOT_PATH);
         server.setHandler(servletHandler);
+        log.debug("The root path is '{}'", ROOT_PATH);
 
-        server.start();
-        server.join();
+        Thread bootThread = null;
+        bootThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    server.start();
+                    server.join();
+                } catch (Exception e) {
+                    log.error("A fatal error occurred when stating HttpDispatcherServer", e);
+                    System.exit(-1);
+                }
+            }
+        });
+        bootThread.setName("BootThread-HttpDispatcherServer");
+        log.info("Starting boot thread for HttpDispatcherServer. Thread name: {}", bootThread.getName());
+        bootThread.start();
     }
 
 
@@ -39,20 +54,5 @@ public class HttpDispatcherServer {
         }
     }
 
-    public void setRootPath(String rootPath) {
-        if (!rootPath.startsWith("/")) {
-            rootPath = "/" + rootPath;
-        }
-
-        if (rootPath.length() > 1 && rootPath.endsWith("/")) {
-            rootPath = rootPath.substring(0, rootPath.length() - 1);
-        }
-
-        if (rootPath.contains("?") || rootPath.contains("&")) {
-            throw new IllegalArgumentException("Invalid root path. Illegal characters in root path '?' or '&': " + rootPath);
-        }
-
-        this.rootPath = rootPath;
-    }
 
 }

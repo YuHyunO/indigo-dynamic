@@ -250,6 +250,16 @@
             <property name="querySequence"          value="DB1$@{if_id}.SELECT"/>
         </bean>
 
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="HTTP_IF_TEST"/>
+            <property name="description"            value="HTTP 인터페이스 테스트"/>
+            <property name="frontHttpUrl"           value="/@{if_id}"/>
+            <property name="frontHttpMethod"        value="GET, POST"/>
+            <property name="serviceId"              value="HTTP_TEST"/>
+        </bean>
+
+
     </util:list>
 
 
