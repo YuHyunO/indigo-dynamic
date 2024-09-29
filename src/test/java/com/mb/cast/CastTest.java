@@ -21,4 +21,12 @@ public class CastTest {
         System.out.println(Iterable.class.isAssignableFrom(strlist.getClass()));
 
     }
+
+    @Test
+    public void array_cast_test() {
+        int[] i = {1, 2, 3, 4, 5, 6, 7};
+        String[] ss = {"a", "b", "c", "d"};
+        Object[] o = (Object[]) ss;
+        log.info("len: {}", o.length);
+    }
 }

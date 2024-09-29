@@ -36,36 +36,62 @@ public class StopIfInputIsNullOrEmpty extends ParameterAssignableService {
         Object inputVal = getInputValue(ctx);
         
         boolean stop = false;
-
+        boolean nill = false;
         if (inputVal == null) {
-            ctx.setProcessOn(false);
-            log.info("[{}]Input value is null. The service process will be stop", ctx.getTxId());
+            nill = true;
             stop = true;
             
         } else if (inputVal instanceof Collection) {
             if (((Collection) inputVal).isEmpty()) {
-                ctx.setProcessOn(false);
-                log.info("[{}]Input value is empty. The service process will be stop", ctx.getTxId());
                 stop = true;
             }
 
         } else if (inputVal instanceof Map) {
             if (((Map) inputVal).isEmpty()) {
-                ctx.setProcessOn(false);
-                log.info("[{}]Input value is empty. The service process will be stop", ctx.getTxId());
+                stop = true;
+            }
+
+        } else if (inputVal.getClass().isArray()) {
+            int len = 0;
+            if (inputVal instanceof byte[]) {
+                len = ((byte[]) inputVal).length;
+            } else if (inputVal instanceof int[]) {
+                len = ((int[]) inputVal).length;
+            } else if (inputVal instanceof long[]) {
+                len = ((long[]) inputVal).length;
+            } else if (inputVal instanceof double[]) {
+                len = ((double[]) inputVal).length;
+            } else if (inputVal instanceof float[]) {
+                len = ((float[]) inputVal).length;
+            } else if (inputVal instanceof boolean[]) {
+                len = ((boolean[]) inputVal).length;
+            } else if (inputVal instanceof char[]) {
+                len = ((char[]) inputVal).length;
+            } else if (inputVal instanceof Object[]) {
+                len = ((Object[]) inputVal).length;
+            }
+
+            if (len == 0) {
                 stop = true;
             }
 
         } else if (inputVal instanceof EmptyCheckable) {
             if (((EmptyCheckable) inputVal).isEmpty()) {
                 ctx.setProcessOn(false);
-                log.info("[{}]Input value is empty. The service process will be stop", ctx.getTxId());
                 stop = true;
             }
         }
 
-        if ( stop && (getOutput() != null) ) {
-            setOutputValue(outputValue);
+        if (stop) {
+            if (nill) {
+                log.info("[{}]Input value is null. The service process will be stop", ctx.getTxId());
+            } else {
+                log.info("[{}]Input value is empty. The service process will be stop", ctx.getTxId());
+            }
+            ctx.setProcessOn(false);
+            if (getOutput() != null) {
+                setOutputValue(outputValue);
+            }
         }
 
     }

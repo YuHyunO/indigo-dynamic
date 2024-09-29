@@ -237,6 +237,8 @@ public class WriteFile extends SourceAccessService {
         if (getInput() == null) {
             throw new InvalidServiceConfigurationException(this.getClass(), "WriteFile service must have the input parameter in which contain the file data to write");
         }
+        if (getOutput() == null)
+            return;
 
         InterfaceInfo info = ctx.getInfo();
         String srcName = info.getSourceNameByAlias(getSourceAlias());
@@ -374,9 +376,9 @@ public class WriteFile extends SourceAccessService {
                 os.close();
             }
         }
-        if (getOutput() != null) {
-            setOutputValue(ctx, filePath.toString());
-        }
+
+        setOutputValue(ctx, filePath.toString());
+
 
     }
 

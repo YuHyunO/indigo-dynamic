@@ -259,6 +259,13 @@
             <property name="serviceId"              value="HTTP_TEST"/>
         </bean>
 
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="CRYPTO_IF_TEST"/>
+            <property name="description"            value="암호화 인터페이스 테스트"/>
+            <property name="frontHttpUrl"           value="/@{if_id}"/>
+            <property name="frontHttpMethod"        value="GET, POST"/>
+            <property name="serviceId"              value="CRYPTO_TEST"/>
+        </bean>
 
     </util:list>
 
