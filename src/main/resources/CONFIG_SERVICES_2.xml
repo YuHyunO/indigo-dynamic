@@ -137,7 +137,7 @@
                     <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.crypto.Encrypt">
-                    <property name="cryptoType"         value="SEED128"/>
+                    <property name="cryptoType"         value="JASYPT"/>
                     <property name="input"              value="$http_body"/>
                     <property name="output"             value="enc_data"/>
                 </bean>
@@ -147,7 +147,7 @@
                     <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.crypto.Decrypt">
-                    <property name="cryptoType"         value="SEED128"/>
+                    <property name="cryptoType"         value="JASYPT"/>
                     <property name="input"              value="enc_data"/>
                     <property name="output"             value="dec_data"/>
                 </bean>
