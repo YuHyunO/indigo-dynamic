@@ -17,7 +17,7 @@ public class DataSourceProvider {
     private static DataSourceProvider instance;
     private Map<String, QueryExecutor> executorMap;
     private Map<String, DataSourceTransactionManager> txManagers;
-    private boolean initilized = false;
+    private boolean initialized = false;
 
     /*
     * Spring version 만 맞다면 private 으로 변경해도 bean으로 등록 가능함
@@ -40,7 +40,7 @@ public class DataSourceProvider {
 
 
     public void setQueryExecutors(List<ExecutorTemplate> executors) throws Exception {
-        if (!initilized) {
+        if (!initialized) {
             for (ExecutorTemplate executorFactory : executors) {
                 String name = executorFactory.getName();
                 if (name == null || name.isEmpty()) {
@@ -81,7 +81,7 @@ public class DataSourceProvider {
                 QueryExecutor proxy = (QueryExecutor) enhancer.create();
                 executorMap.put(name, proxy);
             }
-            initilized = true;
+            initialized = true;
             return;
         }
         throw new IllegalStateException("DataSourceProvider is already initialized");

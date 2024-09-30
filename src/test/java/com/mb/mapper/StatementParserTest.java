@@ -1,8 +1,5 @@
 package com.mb.mapper;
 
-import deprecated.KeyMapper;
-import deprecated.Mapper;
-import deprecated.StatementParser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -10,7 +7,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.File;
-import java.lang.reflect.Method;
 
 @Slf4j
 public class StatementParserTest {
@@ -18,12 +14,6 @@ public class StatementParserTest {
     @Test
     public void wildCardFilteringTest() throws Exception{
 
-        StatementParser parser = new StatementParser();
-        String location = "C:\\Projects\\indigo-dynamic\\src\\main\\resources\\mapper_*.mp";
-        String location2 = "mapper_*.mp";
-        String location3 = "classpath:mapper_*.mp";
-
-        parser.parse(location3);
     }
 
     @Test
@@ -76,30 +66,17 @@ public class StatementParserTest {
 
     @Test
     public void setProperties_test() throws Exception {
-        Mapper mapper = new KeyMapper();
-        String line = "(id=IF_001-mapper-1, create_null_key=true){";
-        //ew StatementParser().setProperties(line, mapper);
-        log.info("{}", mapper.toString());
+
     }
 
     @Test
     public void parse_test() throws Exception {
-        new StatementParser().parse("mapper_example.mp");
+
     }
 
     @Test
     public void getDeclaredMethod_test() throws Exception {
-        Mapper mapper = new KeyMapper();
-        Method[] methods = mapper.getClass().getDeclaredMethods();
 
-        for (Method method : methods) {
-            Class[] types = method.getParameterTypes();
-            StringBuilder paramTypes = new StringBuilder("-" + method.getName());
-            for (Class clazz : types) {
-                paramTypes.append(" " + clazz.getSimpleName());
-            }
-            log.info("{}", paramTypes.toString());
-        }
     }
 
     @Test

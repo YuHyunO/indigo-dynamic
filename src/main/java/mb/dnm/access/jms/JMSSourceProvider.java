@@ -9,7 +9,7 @@ import java.util.Map;
 public class JMSSourceProvider {
     private static JMSSourceProvider instance;
     private Map<String, JmsTemplateWrapper> templateMap;
-    private boolean initilized = false;
+    private boolean initialized = false;
 
     /*
      * Spring version 만 맞다면 private 생성자로 변경해도 bean으로 등록 가능함
@@ -33,7 +33,7 @@ public class JMSSourceProvider {
     }
 
     public void setJmsTemplates(List<JmsTemplateWrapper> templates) {
-        if (!initilized) {
+        if (!initialized) {
             for (JmsTemplateWrapper template : templates) {
                 String name = template.getTemplateName();
 
@@ -48,7 +48,7 @@ public class JMSSourceProvider {
                 templateMap.put(name, template);
             }
 
-            initilized = true;
+            initialized = true;
             return;
         }
         throw new IllegalStateException("DataSourceProvider is already initialized");

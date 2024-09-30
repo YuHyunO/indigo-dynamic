@@ -65,15 +65,18 @@
     <bean class="mb.dnm.access.jms.JMSSourceProvider">
         <property name="jmsTemplates">
             <list>
-
                 <bean class="mb.dnm.access.jms.IndigoJmsTemplateWrapper">
                     <property name="templateName"               value="ESB"/>
                     <property name="connectTimeoutMillis"       value="5000"/>
                     <property name="connectionFactory"          ref="LOCAL"/>
                 </bean>
-                
             </list>
         </property>
+    </bean>
+
+    <!-- ¡ØDynamicCode Repository -->
+    <bean class="mb.dnm.access.dynamic.DynamicCodeProvider">
+        <property name="codeLocations"      value="SQL_*.xml"/>
     </bean>
 
     <bean class="mb.dnm.dispatcher.http.HttpDispatcherServer" init-method="start">

@@ -30,7 +30,8 @@ public class ServiceContext {
     private int currentQueryOrder = 0;
     @Setter
     private int currentErrorQueryOrder = 0;
-    private int currentMappingOrder = 0;
+    @Setter
+    private int currentDynamicCodeOrder = 0;
     @Setter @Getter
     private ProcessCode processStatus = ProcessCode.NOT_STARTED;
 
@@ -130,6 +131,27 @@ public class ServiceContext {
         if (key == null)
             return null;
         return contextParams.get(key);
+    }
+
+    public String nextDynamicCodeId() {
+        String[] codeSequence = info.getDynamicCodeSequence();
+        if (codeSequence == null) {
+            throw new NoSuchElementException("DynamicCode sequence is null");
+        }
+        int seqSize = codeSequence.length;
+        if (currentDynamicCodeOrder > seqSize)
+            throw new NoSuchElementException("Query sequence reached to the last");
+        String code = codeSequence[currentDynamicCodeOrder];
+        ++currentDynamicCodeOrder;
+        return code;
+    }
+
+    public boolean hasMoreDynamicCodes() {
+        String[] codeSequence = info.getDynamicCodeSequence();
+        int seqSize = codeSequence.length;
+        if (currentDynamicCodeOrder <= seqSize)
+            return true;
+        return false;
     }
 
     public boolean hasMoreQueryMaps() {

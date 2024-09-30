@@ -8,7 +8,7 @@ import java.util.Map;
 public class FTPSourceProvider {
     private static FTPSourceProvider instance;
     private Map<String, FTPClientTemplate> templateMap;
-    private boolean initilized = false;
+    private boolean initialized = false;
 
     /*
      * Spring version 만 맞다면 private 으로 변경해도 bean으로 등록 가능함
@@ -37,7 +37,7 @@ public class FTPSourceProvider {
     }
 
     public void setFtpClients(List<FTPClientTemplate> ftpClientTemplates) {
-        if (!initilized) {
+        if (!initialized) {
             for (FTPClientTemplate template : ftpClientTemplates) {
                 String name = template.getTemplateName();
                 if (name == null || name.isEmpty()) {

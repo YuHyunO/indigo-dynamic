@@ -99,6 +99,7 @@ public class IterationGroup extends ParameterAssignableService {
         //반복문 수행 시 query sequence가 매번 초기화 되어야 하므로 반복문을 수행하기 전의 query order 를 미리 저장한다.
         int currentQueryOrder = ctx.getCurrentQueryOrder();
         int currentErrorQueryOrder = ctx.getCurrentErrorQueryOrder();
+        int currentDynamicCodeOrder = ctx.getCurrentDynamicCodeOrder();
 
 
         // 우선 iterateUntilBreak 조건에 따라 로직을 나눔 (코드정리 작업은 나중에 수행)
@@ -125,6 +126,7 @@ public class IterationGroup extends ParameterAssignableService {
                 //매번의 반복문에서 같은 QueryOrder 를 지정해준다.
                 innerCtx.setCurrentQueryOrder(currentQueryOrder);
                 innerCtx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
+                innerCtx.setCurrentDynamicCodeOrder(currentDynamicCodeOrder);
 
                 int cnt1 = 0;
                 try {
@@ -256,6 +258,7 @@ public class IterationGroup extends ParameterAssignableService {
                 //매번의 반복문에서 같은 QueryOrder 를 지정해준다.
                 innerCtx.setCurrentQueryOrder(currentQueryOrder);
                 innerCtx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
+                innerCtx.setCurrentDynamicCodeOrder(currentDynamicCodeOrder);
 
                 /*Inner Processing services 에서는 이 서비스에 등록된 iterationInputName 으로 input 을 파라미터로 받을 수 있다.
                   지금 이 코드는 ParameterAssignableService#setOutputValue(ServiceContext ctx, Object outputValue); 와 같은 효과를 가진다.
@@ -327,6 +330,7 @@ public class IterationGroup extends ParameterAssignableService {
             //반복문 수행이 끝나면 ServiceContext에 원래의 QueryOrder를 다시 지정해줘야 한다.
             ctx.setCurrentQueryOrder(currentQueryOrder);
             ctx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
+            ctx.setCurrentDynamicCodeOrder(currentDynamicCodeOrder);
 
             log.debug("[{}]Iteration-Group: Total iteration count: {}", txId, iterCnt);
         }

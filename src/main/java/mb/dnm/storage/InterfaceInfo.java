@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import mb.dnm.access.file.FileTemplate;
 import mb.dnm.access.http.HttpAPITemplate;
-import mb.dnm.code.HttpMethod;
 
 import java.util.*;
 
@@ -37,7 +36,7 @@ public class InterfaceInfo {
     protected Map<String, String> sourceAliasMap;
 
     //Property for mapping
-    protected String[] mappingSequence;
+    protected String[] dynamicCodeSequenceArr;
 
     //Properties for logging
     protected boolean loggingWhenNormal = true;
@@ -50,6 +49,14 @@ public class InterfaceInfo {
 
     public void setErrorQuerySequence(String errorQuerySequence) {
         this.errorQuerySequenceArr = parseQuerySequence(errorQuerySequence);
+    }
+
+    public void setDynamicCodeSequence(String dynamicCodeSequence) {
+        this.dynamicCodeSequenceArr = parseDynamicCodeSequence(dynamicCodeSequence);
+    }
+
+    public String[] getDynamicCodeSequence() {
+        return dynamicCodeSequenceArr;
     }
 
     private String[] parseQuerySequence(String querySequence) {
@@ -97,6 +104,30 @@ public class InterfaceInfo {
             ++i;
         }
         return queries;
+    }
+
+    private String[] parseDynamicCodeSequence(String dynamicCodeSequence) {
+        if (interfaceId == null)
+            throw new IllegalStateException("Please register interfaceId first.");
+
+        dynamicCodeSequence = dynamicCodeSequence.trim();
+        if (dynamicCodeSequence.isEmpty()) {
+            throw new IllegalArgumentException("dynamicCodeSequence is empty");
+        }
+
+        String[] tempCodeId = dynamicCodeSequence.split(",");
+        String[] codes = new String[tempCodeId.length];
+
+        int i = 0;
+        for (String code : tempCodeId) {
+            code = code.trim();
+            if (code.isEmpty()) {
+                throw new IllegalArgumentException("code id is empty");
+            }
+            codes[i] = code.replace("@{if_id}", interfaceId);
+            ++i;
+        }
+        return codes;
     }
 
     public void setSourceAliases(String aliasExpression) {

@@ -1,0 +1,10 @@
+
+
+${import}
+
+public class ${class_name} extends ExecutableDynamicCode {
+    @Override
+    public void execute(ServiceContext ctx) throws Exception {
+        ${code}
+    }
+}
