@@ -267,6 +267,19 @@
             <property name="serviceId"              value="CRYPTO_TEST"/>
         </bean>
 
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="HTTP_TEMPLATE_IF_TEST"/>
+            <property name="description"            value="HTTP 템플릿 인터페이스 테스트"/>
+            <property name="httpAPITemplate">
+                <bean class="mb.dnm.access.http.HttpAPITemplate">
+                    <property name="frontUrl"           value="/@{if_id}"/>
+                    <property name="frontMethods"       value="GET, POST"/>
+                    <property name="contentTypes"       value="application/json, application/xml"/>
+                </bean>
+            </property>
+            <property name="serviceId"              value="HTTP_TEMPLATE_TEST"/>
+        </bean>
+
     </util:list>
 
 

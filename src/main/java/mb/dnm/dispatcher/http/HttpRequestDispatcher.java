@@ -1,18 +1,26 @@
 package mb.dnm.dispatcher.http;
 
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.access.http.HttpAPITemplate;
 import mb.dnm.access.http.HttpServletRequestEntity;
 import mb.dnm.core.ServiceProcessor;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.storage.StorageManager;
+import mb.dnm.util.GZipUtils;
+import mb.dnm.util.MessageUtil;
+import org.eclipse.jetty.server.Request;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-
+import java.io.OutputStream;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -60,55 +68,64 @@ public class HttpRequestDispatcher extends HttpServlet {
      * @Type <code>javax.servlet.http.HttpServletResponse</code>
      * */
     public static final String SERVLET_RESPONSE = "$http_servlet_response";
+    public static final String RESPONSE_BODY = "$http_response_body";
+
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String method = request.getMethod();
+        if (method.equals("PATCH")) {
+            doDispatch(request, response);
+            
+        } else {
+            super.service(request, response);
+        }
+    }
 
     protected void doHead(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setHeader("Server", "Indigo-API");
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doDispatch(request, response);
-        response.setHeader("Server", "Indigo-API");
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doDispatch(request, response);
-        response.setHeader("Server", "Indigo-API");
     }
 
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doDispatch(request, response);
-        response.setHeader("Server", "Indigo-API");
     }
 
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doDispatch(request, response);
-        response.setHeader("Server", "Indigo-API");
     }
 
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doOptions(request, response);
-        response.setHeader("Server", "Indigo-API");
     }
 
     private void doDispatch(HttpServletRequest request, HttpServletResponse response) {
         String url = request.getRequestURI();
         String method = request.getMethod();
         InterfaceInfo info = StorageManager.access().getInterfaceInfoOfHttpRequest(url, method);
-
-        if (info == null) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-
-        if (!info.isPermittedHttpMethod(method)) {
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            return;
-        }
+        HttpAPITemplate apiTemplate = null;
 
         try {
-            HttpServletRequestEntity requestEntity = new HttpServletRequestEntity(request);
+            if (info == null) {
+                writeServiceNotFound(request, response);
+                return;
+            }
+
             ServiceContext ctx = new ServiceContext(info);
+            apiTemplate = info.getHttpAPITemplate();
+
+            if (!info.isPermittedHttpMethod(method)) {
+                writeMethodNotAllowed(apiTemplate, request, response);
+                return;
+            }
+
+            HttpServletRequestEntity requestEntity = new HttpServletRequestEntity(request);
 
             ctx.addContextParam(HTTP_HEADERS, requestEntity.getHeaders());
             ctx.addContextParam(HTTP_PARAMETERS, requestEntity.getParameters());
@@ -120,12 +137,142 @@ public class HttpRequestDispatcher extends HttpServlet {
             ServiceProcessor.unfoldServices(ctx);
             log.info("[{}]The interface transaction was ended", txId);
 
-        } catch (IOException ie) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            log.error("HttpRequestHandling failed", ie);
+            Object responseBody = ctx.getContextParam(RESPONSE_BODY);
+            writeResponse(responseBody, apiTemplate, request, response);
+
+        } catch (Exception e) {
+            try {
+                writeInternalServerError(apiTemplate, request, response);
+            }catch (Exception ie) {
+                log.error("Response failed", ie);
+            }
+            log.error("HttpRequestHandling failed", e);
         }
 
+    }
 
+    private int writeServiceNotFound(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> outData = new HashMap<>();
+        Map<String, Object> inData = new HashMap<>();
+        inData.put("status", HttpServletResponse.SC_NOT_FOUND);
+        inData.put("message", "Service Not found");
+        outData.put("data", inData);
+
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        return writeResponse(outData, null, request, response);
+    }
+
+    private int writeMethodNotAllowed(HttpAPITemplate apiTemplate, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> outData = new HashMap<>();
+        Map<String, Object> inData = new HashMap<>();
+        inData.put("status", HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        inData.put("message", "Method Not Allowed");
+        outData.put("data", inData);
+
+        response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+
+        return writeResponse(outData, apiTemplate, request, response);
+    }
+
+    private int writeInternalServerError(HttpAPITemplate apiTemplate, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> outData = new HashMap<>();
+        Map<String, Object> inData = new HashMap<>();
+        inData.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        inData.put("message", "Internal Server Error");
+        outData.put("data", inData);
+
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        return writeResponse(outData, apiTemplate, request, response);
+    }
+
+    private int writeResponse(Object body, HttpAPITemplate apiTemplate, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        int len = 0;
+        String accept =  request.getHeader("accept");
+        String contentType = null;
+
+        if (apiTemplate != null) {
+
+            for (Map.Entry<String, String> entry : apiTemplate.getResponseHeaders().entrySet()) {
+                response.setHeader(entry.getKey(), entry.getValue());
+            }
+
+            //accept 의 content-type 이 HttpAPITemplate 에 존재하면 해당 api 타입으로 응답함
+            if (accept != null && apiTemplate.getContentTypes().contains(accept)) {
+                contentType = accept;
+            } else {
+                // 없다면 HttpAPITemplate에 지정된 type 중 가장 첫번째 값으로 응답함
+                contentType = apiTemplate.getPreferentialContentType();
+            }
+
+            response.setContentType(contentType);
+
+        } else {
+            if (accept != null) {
+                contentType = accept;
+            }
+        }
+
+        System.out.println("@@@ " + contentType);
+        if (body != null) {
+            byte[] byteBody = null;
+
+            if (contentType != null) {
+                if (contentType.toLowerCase().contains("json")) {
+                    if (body instanceof byte[]) {
+                        byteBody = (byte[]) body;
+                    } else if (body instanceof Map) {
+                        byteBody = MessageUtil.mapToJson((Map) body, false).getBytes();
+                    } else if (body instanceof String) {
+                        byteBody = ((String) body).getBytes();
+                    }
+                    response.setContentType("application/json");
+
+                } else if (contentType.toLowerCase().contains("xml")) {
+                    if (body instanceof byte[]) {
+                        byteBody = (byte[]) body;
+                    } else if (body instanceof Map) {
+                        byteBody = MessageUtil.mapToXml((Map) body, false).getBytes();
+                    } else if (body instanceof String) {
+                        byteBody = ((String) body).getBytes();
+                    }
+                    response.setContentType("application/xml");
+
+                } else {
+                    if (body instanceof byte[]) {
+                        byteBody = (byte[]) body;
+                    } else if (body instanceof String) {
+                        byteBody = ((String) body).getBytes();
+                    } else if (body instanceof Map) {
+                        byteBody = MessageUtil.mapToJson((Map) body, false).getBytes();
+                        response.setContentType("application/json");
+                    }
+                }
+            } else {
+                if (body instanceof byte[]) {
+                    byteBody = (byte[]) body;
+                    response.setContentType("text/plain");
+
+                } else if (body instanceof String) {
+                    byteBody = ((String) body).getBytes();
+                    response.setContentType("text/plain");
+
+                } else if (body instanceof Map) {
+                    byteBody = MessageUtil.mapToJson((Map) body, false).getBytes();
+                    response.setContentType("application/json");
+                }
+            }
+
+            response.setHeader("Server", "Indigo-API");
+
+            try (BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream())) {
+                bos.write(byteBody);
+                bos.flush();
+            }
+        }
+
+        return 0;
     }
 
 }

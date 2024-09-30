@@ -158,6 +158,51 @@
                 </bean>
             </list>
         </entry>
+
+        <entry key="HTTP_TEMPLATE_TEST">
+            <list>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="input"              value="$http_body"/>
+                </bean>
+                <bean class="mb.dnm.service.general.TransformData">
+                    <property name="input"              value="$http_body"/>
+                    <property name="inputDataType"      value="JSON"/>
+                    <property name="outputDataType"     value="MAP"/>
+                    <property name="output"             value="$http_body"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="$http_body"/>
+                    <property name="printToJsonWhenCollectionOrMap" value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+                <bean class="mb.dnm.service.crypto.Encrypt">
+                    <property name="cryptoType"         value="JASYPT"/>
+                    <property name="input"              value="$http_body"/>
+                    <property name="output"             value="enc_data"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="enc_data"/>
+                    <property name="printToJsonWhenCollectionOrMap" value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+                <bean class="mb.dnm.service.crypto.Decrypt">
+                    <property name="cryptoType"         value="JASYPT"/>
+                    <property name="input"              value="enc_data"/>
+                    <property name="output"             value="dec_data"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="dec_data"/>
+                    <property name="printToJsonWhenCollectionOrMap" value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+                <bean class="mb.dnm.service.http.SetHttpResponseBody">
+                    <property name="input"      value="dec_data"/>
+                </bean>
+            </list>
+        </entry>
+
     </util:map>
+
+
 
 </beans>
