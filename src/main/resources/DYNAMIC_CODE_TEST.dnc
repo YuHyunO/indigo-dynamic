@@ -1,1 +1,28 @@
-#code_id = DNC_@{if_id}
+#code_id: DNC_@{if_id}
+#note:{
+    주석이나 기타 기록할 사항을 남길 수 있는 부분이다.
+}
+
+#code:{
+
+    //input 파라미터를 가져온다.
+    Object inputVal = getInput(ctx, "test_input");
+    log.info("{}", inputVal);
+
+    if (inputVal == null) {
+        //output 파라미터를 지정한다.
+        setOutputValue(ctx, "test_output", "Output is null");
+    }
+
+    //File을 읽는다.
+    File file = new File("C:\\Projects\indigo-dynamic\\src\\main\\resources\\log4j.xml");
+    if (file.exist()) {
+        log.info("File content: {}", Files.readAllBytes(file.toPath()));
+    } else {
+        log.info("파일 없음");
+    }
+
+    log.info("End process");
+
+
+}
