@@ -43,11 +43,11 @@ public class DynamicCodeProvider {
 
     public void setCodeLocations(Resource[] codeLocations) throws Exception {
         if (!initialized) {
-            this.codeLocations = codeLocations;
-            if (this.codeLocations.length == 0) {
+            if (codeLocations.length == 0) {
                 log.debug("No dynamic code locations are found");
                 return;
             }
+            this.codeLocations = codeLocations;
             List<DynamicCodeInstance> dncInstances = DynamicCodeCompiler.compileAll(this.codeLocations);
             for (DynamicCodeInstance dncInstance : dncInstances) {
                 dnmCodes.put(dncInstance.getId(), dncInstance);
