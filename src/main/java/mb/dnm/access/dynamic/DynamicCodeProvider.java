@@ -46,6 +46,7 @@ public class DynamicCodeProvider {
             this.codeLocations = codeLocations;
             if (this.codeLocations.length == 0) {
                 log.debug("No dynamic code locations are found");
+                return;
             }
             List<DynamicCodeInstance> dncInstances = DynamicCodeCompiler.compileAll(this.codeLocations);
             for (DynamicCodeInstance dncInstance : dncInstances) {
