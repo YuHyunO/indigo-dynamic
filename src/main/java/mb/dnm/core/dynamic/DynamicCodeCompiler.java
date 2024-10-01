@@ -121,8 +121,6 @@ public class DynamicCodeCompiler {
             //Get namespace - end
 
             //(2) Parse codes - start
-            //Map<code_id, code source>
-            Map<String, String> codeMap = new LinkedHashMap<>();
             List<DynamicCodeHolder> dynamicCodeHolders = new ArrayList<>();
             List<String> duplicatedIdCheckList = new ArrayList<>();
             while (true) {
@@ -155,10 +153,10 @@ public class DynamicCodeCompiler {
                 if (codeId.contains("#implements")) {
                     int implIdx = codeId.indexOf("#implements ");
                     if (implIdx == -1)
-                        throw new DynamicCodeCompileException("not a statement. The implements clause is invalid. \n>" + codeId);
+                        throw new DynamicCodeCompileException("not a statement. The implements statement is invalid. \n>" + codeId);
                     int implEndIdx = codeId.indexOf(";");
                     if (implEndIdx == -1 || implIdx > implEndIdx)
-                        throw new DynamicCodeCompileException("not a statement. The end implements clause is ambiguous. It must be end with ';' \n>" + codeId);
+                        throw new DynamicCodeCompileException("not a statement. The end of implements statement is ambiguous. It must be end with ';' \n>" + codeId);
                     String wrapperClassName = codeId.substring(implIdx + "#implements".length(), implEndIdx)
                             .replace(" ", "").replace("\n", "").replace("\r", "");
 
@@ -170,7 +168,7 @@ public class DynamicCodeCompiler {
                         }
                         dnmCodeHolder.setWrapperClass((Class<? extends DynamicCode>) wrapperClass);
                     } catch (ClassNotFoundException ne) {
-                        throw new DynamicCodeCompileException("The dynamic code wrapper class '" + wrapperClassName + "' is not found.");
+                        throw new DynamicCodeCompileException("The wrapper class of the code '" + wrapperClassName + "' is not found.");
                     } catch (Exception e) {
                         throw new DynamicCodeCompileException(e.getMessage());
                     }
@@ -180,7 +178,7 @@ public class DynamicCodeCompiler {
                 }
                 //(2-1-1) Get wrapper class of this code - end
 
-                //(2-1-2) Get import classes - start
+                //(2-1-2) Get imported classes - start
                 if (codeId.contains("#import")) {
                     while (true) {
                         int importIdx = codeId.indexOf("#import");
@@ -190,21 +188,19 @@ public class DynamicCodeCompiler {
                         for (String imp : imports) {
                             imp = imp.trim();
                             if (!imp.startsWith("#import "))
-                                throw new DynamicCodeCompileException("not a statement. The import clause is invalid. \n>" + imp);
+                                throw new DynamicCodeCompileException("The import statement is invalid. \n>" + imp);
                             String importClass = imp.substring("#import ".length()).replace("\n", "").replace("\r", "");
                             try {
                                 dnmCodeHolder.addImport(Class.forName(importClass));
                             } catch (ClassNotFoundException ce) {
-                                throw new DynamicCodeCompileException("import class is not found. >" + importClass);
+                                throw new DynamicCodeCompileException("The imported class '" + importClass + "' is not found.");
                             }
                         }
                         codeId = codeId.substring(0, importIdx).trim();
                     }
                 }
-
-
-
-                //(2-1-1) Get import clause - end
+                //(2-1-1) Get imported classes - end
+                
                 if (codeId.isEmpty())
                     throw new DynamicCodeCompileException("not a statement. code id is not exist. >" + content);
                 if (codeId.contains("#") || codeId.contains(":") || codeId.contains(".") || codeId.contains("{") || codeId.contains("}"))
@@ -234,7 +230,7 @@ public class DynamicCodeCompiler {
             String rootDirName = "dnmcodes";
             for (DynamicCodeHolder holders : dynamicCodeHolders) {
                 String codeTemplate = new String(Files.readAllBytes(dynamicCodeTemplateLocations.get(holders.getWrapperClass().getName()).toPath()));
-                //Add again import clause for codeTemplate
+                //Add the import statements again for classes used in the code templates 
                 holders.addImports(ImportSupporter.retrieveAutoImportClasses(codeTemplate));
 
                 StringBuilder importsBd = new StringBuilder();
