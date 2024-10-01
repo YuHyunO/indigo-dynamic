@@ -283,6 +283,8 @@
         <bean class="mb.dnm.storage.InterfaceInfo">
             <property name="interfaceId"            value="DYNAMIC_TEST_IF"/>
             <property name="description"            value="DYNAMIC 인터페이스 테스트"/>
+            <property name="frontHttpUrl"           value="/@{if_id}"/>
+            <property name="frontHttpMethod"        value="GET, POST"/>
             <property name="dynamicCodeSequence"    value="@{if_id}.TEST1, @{if_id}.TEST2"/>
             <property name="serviceId"              value="DYNAMIC_TEST"/>
         </bean>

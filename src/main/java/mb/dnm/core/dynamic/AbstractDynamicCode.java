@@ -1,7 +1,7 @@
 package mb.dnm.core.dynamic;
 
 import mb.dnm.core.context.ServiceContext;
-import mb.dnm.storage.InterfaceInfo;
+
 
 /**
  * 모든 DynamicCode 가 상속받는 부모 추상클래스이다.
@@ -10,8 +10,9 @@ import mb.dnm.storage.InterfaceInfo;
  * @version 2024.09.30
  *
  * */
-public abstract class ExecutableDynamicCode {
+public abstract class AbstractDynamicCode implements DynamicCode {
 
+    @Override
     public abstract void execute(ServiceContext ctx) throws Throwable;
 
     /**

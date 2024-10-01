@@ -261,6 +261,13 @@
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>tools</groupId>
+            <artifactId>tools</artifactId>
+            <version>tools</version>
+            <scope>system</scope>
+            <systemPath>${java.home}/../lib/tools.jar</systemPath>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -268,7 +275,6 @@
             <version>1.18.30</version>
             <scope>compile</scope>
         </dependency>
-
 
 
         <dependency>
@@ -305,6 +311,7 @@
                         <exclude>**/*.xml</exclude>
                         <exclude>**/*.mp</exclude>
                         <exclude>**/*.txt</exclude>
+                        <exclude>**/*.dnc</exclude>
                     </excludes>
                 </configuration>
             </plugin>

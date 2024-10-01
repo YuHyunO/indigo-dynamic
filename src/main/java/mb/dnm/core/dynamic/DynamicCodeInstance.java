@@ -1,7 +1,6 @@
-package mb.dnm.access.dynamic;
+package mb.dnm.core.dynamic;
 
 import mb.dnm.core.context.ServiceContext;
-import mb.dnm.core.dynamic.ExecutableDynamicCode;
 
 import java.lang.reflect.Method;
 
@@ -14,11 +13,11 @@ import java.lang.reflect.Method;
  * */
 public class DynamicCodeInstance {
     private final String id;
-    private final Class<? extends ExecutableDynamicCode> loadedClass;
+    private final Class<? extends DynamicCode> loadedClass;
     private final Object instance;
     private final Method method;
 
-    public DynamicCodeInstance(String id, Class<? extends ExecutableDynamicCode> loadedClass, Object instance) throws Exception {
+    public DynamicCodeInstance(String id, Class<? extends DynamicCode> loadedClass, Object instance) throws Exception {
         this.id = id;
         this.loadedClass = loadedClass;
         this.instance = instance;

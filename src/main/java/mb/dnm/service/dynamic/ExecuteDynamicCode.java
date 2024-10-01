@@ -1,7 +1,7 @@
 package mb.dnm.service.dynamic;
 
 import lombok.extern.slf4j.Slf4j;
-import mb.dnm.access.dynamic.DynamicCodeInstance;
+import mb.dnm.core.dynamic.DynamicCodeInstance;
 import mb.dnm.access.dynamic.DynamicCodeProvider;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;

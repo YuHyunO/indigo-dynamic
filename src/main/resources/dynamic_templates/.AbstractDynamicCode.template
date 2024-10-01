@@ -1,9 +1,9 @@
-
-import lombok.extern.slf4j.Slf4j;
 ${import}
 
 @Slf4j
-public class ${class_name} extends ExecutableDynamicCode {
+public class ${class_name} extends AbstractDynamicCode {
+
+
     @Override
     public void execute(ServiceContext ctx) throws Exception {
         ${code}
