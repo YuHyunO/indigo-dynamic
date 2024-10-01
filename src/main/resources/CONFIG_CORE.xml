@@ -76,7 +76,7 @@
 
     <!-- ¡ØDynamicCode Repository -->
     <bean class="mb.dnm.access.dynamic.DynamicCodeProvider">
-        <property name="codeLocations"      value="SQL_*.xml"/>
+        <property name="codeLocations"      value="DYNAMIC_*.dnc"/>
     </bean>
 
     <bean class="mb.dnm.dispatcher.http.HttpDispatcherServer" init-method="start">

@@ -201,6 +201,37 @@
             </list>
         </entry>
 
+
+        <entry key="DYNAMIC_TEST">
+            <list>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="input"              value="$http_body"/>
+                </bean>
+
+                <bean class="mb.dnm.service.general.TransformData">
+                    <property name="input"              value="$http_body"/>
+                    <property name="inputDataType"      value="JSON"/>
+                    <property name="outputDataType"     value="MAP"/>
+                    <property name="output"             value="$http_body"/>
+                </bean>
+
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="$http_body"/>
+                    <property name="printToJsonWhenCollectionOrMap" value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+
+                <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode"/>
+
+                <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode"/>
+
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="dynamic_result"/>
+                    <property name="printToJsonWhenCollectionOrMap" value="true"/>
+                    <property name="indented"                       value="true"/>
+                </bean>
+            </list>
+        </entry>
     </util:map>
 
 

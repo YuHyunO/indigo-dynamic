@@ -24,6 +24,7 @@ public class KeywordValidator {
         PROHIBITED_KEYWORD.add("ProcessHandle");
         PROHIBITED_KEYWORD.add("Runtime");
         PROHIBITED_KEYWORD.add("RuntimePermission");
+        PROHIBITED_KEYWORD.add("System");
         PROHIBITED_KEYWORD.add("SecurityManager");
         PROHIBITED_KEYWORD.add("SecurityManager");
         PROHIBITED_KEYWORD.add("Readable");

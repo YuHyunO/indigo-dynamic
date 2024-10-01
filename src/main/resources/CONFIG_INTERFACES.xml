@@ -280,6 +280,13 @@
             <property name="serviceId"              value="HTTP_TEMPLATE_TEST"/>
         </bean>
 
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="DYNAMIC_TEST_IF"/>
+            <property name="description"            value="DYNAMIC 인터페이스 테스트"/>
+            <property name="dynamicCodeSequence"    value="@{if_id}.TEST1, @{if_id}.TEST2"/>
+            <property name="serviceId"              value="DYNAMIC_TEST"/>
+        </bean>
+
     </util:list>
 
 
