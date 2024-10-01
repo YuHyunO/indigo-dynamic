@@ -121,7 +121,7 @@ public class ImportSupporter {
     public static void assertProhibited(String source) {
         for (String keyword : PROHIBITED_KEYWORD) {
             if (source.contains(keyword)) {
-                throw new IllegalStateException("Do not use the prohibited keyword '" + keyword + "' in dynamic code.");
+                throw new IllegalStateException("The prohibited keyword '" + keyword + "' is detected in dynamic code.");
             }
         }
     }
