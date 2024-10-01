@@ -33,6 +33,9 @@ public class ExecuteDynamicCode extends AbstractService {
 
         String codeId = ctx.nextDynamicCodeId();
         DynamicCodeInstance dnmInstance = DynamicCodeProvider.access().getDynamicCode(codeId);
+        if (dnmInstance == null) {
+            throw new InvalidServiceConfigurationException(this.getClass(), "The dynamic code instance with id '" + codeId + "' is not exist in the DynamicCodeProvider.");
+        }
         log.info("[{}]Executing dynamic code. id:'{}', instance: {}", ctx.getTxId(), codeId, dnmInstance.getDynamicCodeClassName());
         dnmInstance.execute(ctx);
     }
