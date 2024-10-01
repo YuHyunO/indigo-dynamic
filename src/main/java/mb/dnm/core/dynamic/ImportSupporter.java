@@ -40,6 +40,7 @@ public class ImportSupporter {
         PROHIBITED_KEYWORD.add("ToolProvider");
         PROHIBITED_KEYWORD.add("exit");
         PROHIBITED_KEYWORD.add("run");
+        PROHIBITED_KEYWORD.add("start");
         PROHIBITED_KEYWORD.add("println");
         PROHIBITED_KEYWORD.add("printf");
         PROHIBITED_KEYWORD.add("print");
