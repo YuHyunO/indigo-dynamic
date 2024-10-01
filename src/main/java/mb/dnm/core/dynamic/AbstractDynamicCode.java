@@ -4,7 +4,6 @@ import mb.dnm.core.context.ServiceContext;
 
 
 /**
- * 모든 DynamicCode 가 상속받는 부모 추상클래스이다.
  *
  * @author Yuhyun O
  * @version 2024.09.30

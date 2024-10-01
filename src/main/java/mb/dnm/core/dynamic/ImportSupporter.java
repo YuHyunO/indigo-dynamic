@@ -2,6 +2,12 @@ package mb.dnm.core.dynamic;
 
 import java.util.*;
 
+/**
+ *
+ * @author Yuhyun O
+ * @version 2024.10.01
+ *
+ * */
 public class ImportSupporter {
 
     private final static Map<String, String> AUTO_IMPORT_CLASSES = new HashMap<>();
