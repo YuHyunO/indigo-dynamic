@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -126,9 +127,21 @@ public class ListFiles extends AbstractFTPService {
             session = (FTPSession) ctx.getSession(srcName);
         }
 
-        if (targetPath.contains("@{if_id}")) {
+        /*if (targetPath.contains("@{if_id}")) {
             targetPath = targetPath.replace("@{if_id}", ctx.getInterfaceId());
+        }*/
+        //PlaceHolder mapping 을 적용할 것
+        for (Map.Entry<String, Object> entry : ctx.getContextInformation().entrySet()) {
+            StringBuilder keyBd = new StringBuilder(entry.getKey());
+            String value = String.valueOf(entry.getValue());
+            keyBd.deleteCharAt(0)
+                    .insert(0, "@{")
+                    .append("}");
+            if (targetPath.contains(keyBd)) {
+                targetPath = targetPath.replace(keyBd, value);
+            }
         }
+
         targetPath = FileUtil.removeLastPathSeparator(targetPath);
 
         WildcardFileFilter filter = new WildcardFileFilter(tmpFileNamePattern);

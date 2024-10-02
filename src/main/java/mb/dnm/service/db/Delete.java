@@ -66,6 +66,7 @@ public class Delete extends ParameterAssignableService {
 
         //(4) Execute query
         List<Map<String, Object>> updateParams = new ArrayList<>();
+        Map<String, Object> ctxInfoMap = ctx.getContextInformation();
         if (inValue != null) {
             try {
                 if (inValue instanceof Map) {
@@ -79,7 +80,7 @@ public class Delete extends ParameterAssignableService {
             }
         }
 
-        updatedRows = executor.doBatchUpdate(txContext, queryMap.getQueryId(), updateParams);
+        updatedRows = executor.doBatchUpdate(txContext, queryMap.getQueryId(), updateParams, ctxInfoMap);
 
         log.info("[{}]{} rows deleted", ctx.getTxId(), updatedRows);
 

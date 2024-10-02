@@ -135,10 +135,20 @@ public class CopyFiles extends SourceAccessService {
         savePath = template.getFilePath(directoryType);
         if (savePath == null)
             throw new InvalidServiceConfigurationException(this.getClass(), "The value of " + directoryType + " of the template with name '" + srcName + "' is null");
-        if (savePath.contains("@{if_id}")) {
+        /*if (savePath.contains("@{if_id}")) {
             savePath = savePath.replace("@{if_id}", ctx.getInterfaceId());
+        }*/
+        //PlaceHolder mapping 을 적용할 것
+        for (Map.Entry<String, Object> entry : ctx.getContextInformation().entrySet()) {
+            StringBuilder keyBd = new StringBuilder(entry.getKey());
+            String value = String.valueOf(entry.getValue());
+            keyBd.deleteCharAt(0)
+                    .insert(0, "@{")
+                    .append("}");
+            if (savePath.contains(keyBd)) {
+                savePath = savePath.replace(keyBd, value);
+            }
         }
-        //### PlaceHolder mapping 을 적용할 것
 
         Path path = Paths.get(savePath);
         if (!Files.exists(path)) {

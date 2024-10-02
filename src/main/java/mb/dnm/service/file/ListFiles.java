@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 접근 가능한 디스크의 파일 또는 디렉터리 목록을 가져온다.
@@ -120,8 +121,16 @@ public class ListFiles extends SourceAccessService {
             tmpType = template.getType();
         }
 
-        if (targetPath.contains("@{if_id}")) {
-            targetPath = targetPath.replace("@{if_id}", ctx.getInterfaceId());
+        //### PlaceHolder mapping 을 적용할 것
+        for (Map.Entry<String, Object> entry : ctx.getContextInformation().entrySet()) {
+            StringBuilder keyBd = new StringBuilder(entry.getKey());
+            String value = String.valueOf(entry.getValue());
+            keyBd.deleteCharAt(0)
+                    .insert(0, "@{")
+                    .append("}");
+            if (targetPath.contains(keyBd)) {
+                targetPath = targetPath.replace(keyBd, value);
+            }
         }
 
         if (!targetPath.endsWith(File.separator)) {

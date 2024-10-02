@@ -67,12 +67,15 @@ public class Select extends ParameterAssignableService {
         //(3) Prepare object for result
         List<Map<String, Object>> selectResult = new ArrayList<>();
 
+        Map<String, Object> ctxInfoMap = ctx.getContextInformation();
+
         //(4) Execute query when parameter is not null
         if (inValue != null) {
             List<Map<String, Object>> selectParameters = new ArrayList<>();
             try {
                 if (inValue instanceof Map) {
                     Map<String, Object> param = (Map<String, Object>) inValue;
+                    param.putAll(ctxInfoMap);
                     selectParameters.add(param);
                 } else if (inValue instanceof List) {
                     selectParameters.addAll((List<Map<String, Object>>) inValue);
@@ -82,9 +85,9 @@ public class Select extends ParameterAssignableService {
             }
 
             String queryId = queryMap.getQueryId();
-            selectResult = executor.doSelects(txContext, queryId, selectParameters);
+            selectResult = executor.doSelects(txContext, queryId, selectParameters, ctxInfoMap);
         } else { //(4) Execute query when parameter is null
-            selectResult = executor.doSelect(txContext, queryMap.getQueryId(), null);
+            selectResult = executor.doSelect(txContext, queryMap.getQueryId(), ctxInfoMap);
         }
 
         log.info("[{}]{} rows selected", ctx.getTxId(), selectResult.size());

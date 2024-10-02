@@ -66,7 +66,7 @@ public class QueryExecutor {
     }
 
     public List<Map<String, Object>> doSelects(TransactionContext txCtx, String sqlId, List<Map<String, Object>> selectParam) {
-        List<Map<String, Object>> result = new ArrayList<>();
+        /*List<Map<String, Object>> result = new ArrayList<>();
         SqlSessionTemplate executor = getDefaultExecutor();
 
         if (selectParam == null || selectParam.isEmpty()) {
@@ -77,12 +77,33 @@ public class QueryExecutor {
                 List<Map<String, Object>> subResult = executor.selectList(sqlId, param);
                 result.addAll(subResult);
             }
+        }*/
+        return doSelects(txCtx, sqlId, selectParam, null);
+    }
+
+    public List<Map<String, Object>> doSelects(TransactionContext txCtx, String sqlId, List<Map<String, Object>> selectParam, Map<String, Object> commonParam) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        SqlSessionTemplate executor = getDefaultExecutor();
+
+        if (selectParam == null || selectParam.isEmpty()) {
+            List<Map<String, Object>> subResult = executor.selectList(sqlId, commonParam);
+            result.addAll(subResult);
+        } else {
+            for (Map<String, Object> param : selectParam) {
+                Map<String, Object> addParam = new HashMap<>();
+                if (commonParam != null) {
+                    addParam.putAll(commonParam);
+                }
+                addParam.putAll(param);
+                List<Map<String, Object>> subResult = executor.selectList(sqlId, addParam);
+                result.addAll(subResult);
+            }
         }
         return result;
     }
 
     public List<Map<String, Object>> doCall(TransactionContext txCtx, String sqlId, List<Map<String, Object>> callParam) {
-        List<Map<String, Object>> result = new ArrayList<>();
+        /*List<Map<String, Object>> result = new ArrayList<>();
         SqlSessionTemplate executor = getDefaultExecutor();
         if (callParam == null || callParam.isEmpty()) {
             Object obj = executor.selectList(sqlId);
@@ -91,6 +112,29 @@ public class QueryExecutor {
         } else {
             for (Map<String, Object> param : callParam) {
                 Object obj = executor.selectList(sqlId, param);
+                if (obj != null)
+                    result.addAll((List<Map<String, Object>>) obj);
+            }
+        }*/
+
+        return doCall(txCtx, sqlId, callParam, null);
+    }
+
+    public List<Map<String, Object>> doCall(TransactionContext txCtx, String sqlId, List<Map<String, Object>> callParam, Map<String, Object> commonParam) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        SqlSessionTemplate executor = getDefaultExecutor();
+        if (callParam == null || callParam.isEmpty()) {
+            Object obj = executor.selectList(sqlId, commonParam);
+            if (obj != null)
+                result = (List<Map<String, Object>>) obj;
+        } else {
+            for (Map<String, Object> param : callParam) {
+                Map<String, Object> addParam = new HashMap<>();
+                if (commonParam != null) {
+                    addParam.putAll(commonParam);
+                }
+                addParam.putAll(param);
+                Object obj = executor.selectList(sqlId, addParam);
                 if (obj != null)
                     result.addAll((List<Map<String, Object>>) obj);
             }
@@ -128,13 +172,16 @@ public class QueryExecutor {
         return getDefaultExecutor().delete(sqlId, deleteParam);
     }
 
-
     public int doBatchInsert(TransactionContext txCtx, String sqlId, List<Map<String, Object>> insertRows) {
-        return doBatchInsert(txCtx, sqlId, insertRows, defaultPatchSize);
+        return doBatchInsert(txCtx, sqlId, insertRows, null, defaultPatchSize);
+    }
+
+    public int doBatchInsert(TransactionContext txCtx, String sqlId, List<Map<String, Object>> insertRows, Map<String, Object> commonParam) {
+        return doBatchInsert(txCtx, sqlId, insertRows, commonParam, defaultPatchSize);
     }
 
     
-    public int doBatchInsert(TransactionContext txCtx, String sqlId, List<Map<String, Object>> insertRows, int patchSize) {
+    public int doBatchInsert(TransactionContext txCtx, String sqlId, List<Map<String, Object>> insertRows, Map<String, Object> commonParam, int patchSize) {
         SqlSessionTemplate session = getBatchExecutor();
         int insertCount = 0;
 
@@ -144,13 +191,23 @@ public class QueryExecutor {
 
         if (patchSize <= 0) {
             for (Map<String, Object> row : insertRows) {
-                session.insert(sqlId, row);
+                Map<String, Object> addParam = new HashMap<>();
+                if (commonParam != null) {
+                    addParam.putAll(commonParam);
+                }
+                addParam.putAll(row);
+                session.insert(sqlId, addParam);
             }
             insertCount = getBatchResultCount(session.flushStatements());
         } else {
             int count = 0;
             for (Map<String, Object> row : insertRows) {
-                session.insert(sqlId, row);
+                Map<String, Object> addParam = new HashMap<>();
+                if (commonParam != null) {
+                    addParam.putAll(commonParam);
+                }
+                addParam.putAll(row);
+                session.insert(sqlId, addParam);
                 ++count;
                 if (count % patchSize == 0) {
                     insertCount += getBatchResultCount(session.flushStatements());
@@ -164,29 +221,41 @@ public class QueryExecutor {
         return insertCount;
     }
 
-    
     public int doBatchUpdate(TransactionContext txCtx, String sqlId, List<Map<String, Object>> updateParams) {
-        return doBatchUpdate(txCtx, sqlId, updateParams, defaultPatchSize);
+        return doBatchUpdate(txCtx, sqlId, updateParams, null, defaultPatchSize);
     }
 
+    public int doBatchUpdate(TransactionContext txCtx, String sqlId, List<Map<String, Object>> updateParams, Map<String, Object> commonParam) {
+        return doBatchUpdate(txCtx, sqlId, updateParams, commonParam, defaultPatchSize);
+    }
 
-    public int doBatchUpdate(TransactionContext txCtx, String sqlId, List<Map<String, Object>> updateParams, int patchSize) {
+    public int doBatchUpdate(TransactionContext txCtx, String sqlId, List<Map<String, Object>> updateParams, Map<String, Object> commonParam, int patchSize) {
         SqlSessionTemplate session = getBatchExecutor();
         int updateCount = 0;
 
         if (updateParams == null || updateParams.isEmpty()) {
-            return doUpdate(txCtx, sqlId, null);
+            return doUpdate(txCtx, sqlId, commonParam);
         }
 
         if (patchSize <= 0) {
             for (Map<String, Object> param : updateParams) {
-                session.update(sqlId, param);
+                Map<String, Object> addParam = new HashMap<>();
+                if (commonParam != null) {
+                    addParam.putAll(commonParam);
+                }
+                addParam.putAll(param);
+                session.update(sqlId, addParam);
             }
             updateCount = getBatchResultCount(session.flushStatements());
         } else {
             int count = 0;
             for (Map<String, Object> param : updateParams) {
-                session.update(sqlId, param);
+                Map<String, Object> addParam = new HashMap<>();
+                if (commonParam != null) {
+                    addParam.putAll(commonParam);
+                }
+                addParam.putAll(param);
+                session.update(sqlId, addParam);
                 ++count;
                 if (count % patchSize == 0) {
                     updateCount += getBatchResultCount(session.flushStatements());

@@ -62,6 +62,7 @@ public class CallProcedure extends ParameterAssignableService {
 
         //(3) Prepare object for result
         List<Map<String, Object>> callResult = new ArrayList<>();
+        Map<String, Object> ctxInfoMap = ctx.getContextInformation();
 
         //(4) Execute query when parameter is not null
         if (inValue != null) {
@@ -77,9 +78,9 @@ public class CallProcedure extends ParameterAssignableService {
                 throw new IllegalArgumentException("The type of input parameter is invalid: " + inValue.getClass());
             }
 
-            callResult = executor.doCall(txContext, queryMap.getQueryId(), callParameters);
+            callResult = executor.doCall(txContext, queryMap.getQueryId(), callParameters, ctxInfoMap);
         } else { //(4) Execute query when parameter is null
-            callResult = executor.doCall(txContext, queryMap.getQueryId(), null);
+            callResult = executor.doCall(txContext, queryMap.getQueryId(), null, ctxInfoMap);
         }
 
         log.info("[{}]{} rows selected", ctx.getTxId(), callResult.size());

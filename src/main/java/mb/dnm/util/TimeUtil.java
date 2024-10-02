@@ -20,6 +20,9 @@ public class TimeUtil {
     private TimeUtil(){}
 
     public static String getFormattedTime(Date date, String format) {
+        if (date == null) {
+            return null;
+        }
         SimpleDateFormat formatter = new SimpleDateFormat(format);
         return formatter.format(date);
     }

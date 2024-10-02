@@ -66,6 +66,8 @@ public class Update extends ParameterAssignableService {
 
         //(4) Execute query
         List<Map<String, Object>> updateParams = new ArrayList<>();
+        Map<String, Object> ctxInfoMap = ctx.getContextInformation();
+
         if (inValue != null) {
             try {
                 if (inValue instanceof Map) {
@@ -79,7 +81,7 @@ public class Update extends ParameterAssignableService {
             }
         }
 
-        updatedRows = executor.doBatchUpdate(txContext, queryMap.getQueryId(), updateParams);
+        updatedRows = executor.doBatchUpdate(txContext, queryMap.getQueryId(), updateParams, ctxInfoMap);
 
         log.info("[{}]{} rows updated", ctx.getTxId(), updatedRows);
 

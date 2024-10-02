@@ -146,6 +146,16 @@ public class MoveFiles extends AbstractFTPService {
             savePath = savePath.replace("@{if_id}", ctx.getInterfaceId());
         }
         //PlaceHolder mapping 을 적용할 것
+        for (Map.Entry<String, Object> entry : ctx.getContextInformation().entrySet()) {
+            StringBuilder keyBd = new StringBuilder(entry.getKey());
+            String value = String.valueOf(entry.getValue());
+            keyBd.deleteCharAt(0)
+                    .insert(0, "@{")
+                    .append("}");
+            if (savePath.contains(keyBd)) {
+                savePath = savePath.replace(keyBd, value);
+            }
+        }
 
         if (!savePath.endsWith(pathSeparator)) {
             savePath = savePath + pathSeparator;

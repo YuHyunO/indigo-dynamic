@@ -6,6 +6,7 @@ import mb.dnm.code.ProcessCode;
 import mb.dnm.core.Service;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
+import mb.dnm.util.TimeUtil;
 import mb.dnm.util.TxIdGenerator;
 import lombok.Getter;
 import lombok.Setter;
@@ -290,5 +291,18 @@ public class ServiceContext {
         return msg.toString();
     }
 
+    public Map<String, Object> getContextInformation() {
+        Map<String, Object> infoMap = new HashMap<>();
+        infoMap.put("$tx_id", txId);
+        infoMap.put("$if_id", getInterfaceId());
+        infoMap.put("$process_status", processStatus.getProcessCode());
+        infoMap.put("$start_time_timestamp", TimeUtil.getFormattedTime(startTime, TimeUtil.TIMESTAMP_FORMAT));
+        infoMap.put("$end_time_timestamp", TimeUtil.getFormattedTime(endTime, TimeUtil.TIMESTAMP_FORMAT));
+        infoMap.put("$YYYY", TimeUtil.curDate(TimeUtil.YYYY));
+        infoMap.put("$YYYYMM", TimeUtil.curDate(TimeUtil.YYYYMM));
+        infoMap.put("$YYYYMMDD", TimeUtil.curDate(TimeUtil.YYYYMMDD));
+        infoMap.put("$YYYYMMDDHHMMSS", TimeUtil.curDate(TimeUtil.YYYYMMDDHHMMSS));
+        return infoMap;
+    }
 
 }

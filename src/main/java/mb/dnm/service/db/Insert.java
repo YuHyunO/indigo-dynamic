@@ -65,6 +65,7 @@ public class Insert extends ParameterAssignableService {
 
         //(4) Execute query
         List<Map<String, Object>> insertParams = new ArrayList<>();
+        Map<String, Object> ctxInfoMap = ctx.getContextInformation();
         if (inValue != null) {
             try {
                 if (inValue instanceof Map) {
@@ -78,7 +79,7 @@ public class Insert extends ParameterAssignableService {
             }
         }
 
-        insertedRows = executor.doBatchInsert(txContext, queryMap.getQueryId(), insertParams);
+        insertedRows = executor.doBatchInsert(txContext, queryMap.getQueryId(), insertParams, ctxInfoMap);
 
         log.info("[{}]{} rows inserted", ctx.getTxId(), insertedRows);
 

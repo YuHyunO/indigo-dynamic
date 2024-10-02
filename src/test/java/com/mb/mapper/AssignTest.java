@@ -2,11 +2,14 @@ package com.mb.mapper;
 
 import lombok.Getter;
 import lombok.Setter;
+import mb.dnm.core.context.ServiceContext;
+import mb.dnm.storage.InterfaceInfo;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AssignTest {
 
@@ -20,6 +23,22 @@ public class AssignTest {
             this.size = file.length();
         }
 
+    }
+
+    @Test
+    public void ctx_info_test() {
+        InterfaceInfo info = new InterfaceInfo();
+        info.setInterfaceId("IF001");
+
+        ServiceContext ctx = new ServiceContext(info);
+        for (Map.Entry<String, String> entry : ctx.getContextInformation().entrySet()) {
+            StringBuilder keyBd = new StringBuilder(entry.getKey());
+            String value = entry.getValue();
+            keyBd.deleteCharAt(0)
+                    .insert(0, "@{")
+                    .append("}");
+            System.out.println(keyBd.toString());
+        }
     }
 
     @Test
