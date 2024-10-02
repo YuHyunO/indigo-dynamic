@@ -289,6 +289,14 @@
             <property name="serviceId"              value="DYNAMIC_TEST"/>
         </bean>
 
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="INTERFACE_ACTIVATION"/>
+            <property name="description"            value="인터페이스 컨트롤 테스트"/>
+            <property name="frontHttpUrl"           value="/@{if_id}"/>
+            <property name="frontHttpMethod"        value="POST"/>
+            <property name="serviceId"              value="INTERFACE_ACTIVATION"/>
+        </bean>
+
     </util:list>
 
 

@@ -232,6 +232,47 @@
                 </bean>
             </list>
         </entry>
+
+
+        <entry key="CRYPTO_GEN">
+            <list>
+                <bean class="mb.dnm.service.general.OutputCustomData">
+                    <property name="customData" value="5uIW8zL0AmVQN9xdP7GoWPlsl7115asdqwDWEHd3RsT2fDA1yNcG4AyBbKdJMiC"/>
+                    <property name="output"         value="data"/>
+                </bean>
+                <bean class="mb.dnm.service.crypto.Encrypt">
+                    <property name="input"  value="data"/>
+                    <property name="output"  value="encrypted"/>
+                </bean>
+                <bean class="mb.dnm.service.general.TransformData">
+                    <property name="input"              value="encrypted"/>
+                    <property name="inputDataType"      value="BYTE_ARRAY"/>
+                    <property name="outputDataType"     value="STRING"/>
+                    <property name="output"             value="key"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="input"                          value="key"/>
+                </bean>
+            </list>
+        </entry>
+
+        <entry key="INTERFACE_ACTIVATION">
+            <list>
+                <bean class="mb.dnm.service.general.TransformData">
+                    <property name="input"              value="$http_body"/>
+                    <property name="inputDataType"      value="JSON"/>
+                    <property name="outputDataType"     value="MAP"/>
+                    <property name="output"             value="$http_body"/>
+                </bean>
+                <bean class="mb.dnm.service.general.ControlInterfaceActivation">
+                    <property name="input"              value="$http_body"/>
+                </bean>
+                <bean class="mb.dnm.service.http.SetHttpResponseBody">
+                    <property name="input"      value="$$COMMAND_RESULT"/>
+                </bean>
+            </list>
+        </entry>
+
     </util:map>
 
 
