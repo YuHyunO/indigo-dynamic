@@ -29,4 +29,9 @@ public class CastTest {
         Object[] o = (Object[]) ss;
         log.info("len: {}", o.length);
     }
+
+    @Test
+    public void cast_test2() {
+        log.info("{}", Object.class == Object.class);
+    }
 }

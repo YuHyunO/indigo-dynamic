@@ -1,14 +1,18 @@
 package mb.dnm.core.dynamic;
 
+import com.mb.indigo2.springsupport.AdaptorConfig;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.core.context.ServiceContext;
-import org.springframework.core.io.ClassPathResource;
+import mb.dnm.core.dynamic.adaptersupport.ClassPathFactory;
+import mb.dnm.util.IOUtil;
 import org.springframework.core.io.Resource;
 
 import javax.tools.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -17,7 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * DynamicCode를 컴파일하는 클래스이다.
@@ -37,40 +44,68 @@ public class DynamicCodeCompiler {
     /**
      * Key: Full class name, Value: Template file location
      * */
-    private static Map<String, File> dynamicCodeTemplateLocations = new HashMap<>();
+    private static Map<String, String> dynamicCodeTemplates = new HashMap<>();
     private static final List<Path> GENERATED_CLASS_FILES = new ArrayList<>();
+    private static String javacToolsPath = System.getProperty("java.home") + File.separator + ".." + File.separator + "bin" + File.separator + "java";
+    private static DynamicCodeCompiler instance;
+    @Setter @Getter
+    private boolean standaloneMode = false;
+    @Setter @Getter
+    private String classpathType = "AD";
+    @Setter @Getter
+    private String classpath = System.getProperty("java.class.path");
+    private static boolean initialized = false;
+    private static ClassLoader classLoader;
 
-    static {
-        init();
+    public static DynamicCodeCompiler getInstance() {
+        if (instance == null) {
+            new DynamicCodeCompiler();
+        }
+        return instance;
     }
 
-    private static void init() {
-        try {
-            dynamicCodeTemplateLocations.put("mb.dnm.core.dynamic.AbstractDynamicCode", new ClassPathResource("dynamic_templates" + File.separator + ".AbstractDynamicCode.template").getFile());
-            Runtime runtime = Runtime.getRuntime();
-            runtime.addShutdownHook(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for (Path path : GENERATED_CLASS_FILES) {
-                        try {
-                            Files.deleteIfExists(path);
-                            log.info("Deleted generated class file \"{}\"", path);
-                        } catch (Exception e) {
-                            log.error("", e);
+    public static void init() {
+        if (!initialized) {
+            if (instance == null) {
+                getInstance();
+            }
+            try {
+                classLoader = Thread.currentThread().getContextClassLoader();
+                InputStream is = classLoader.getResourceAsStream("dynamic_templates/.AbstractDynamicCode.template");
+
+                String template = new String(IOUtil.getAllBytes(is));
+                dynamicCodeTemplates.put(AbstractDynamicCode.class.getName(), template);
+
+                Runtime runtime = Runtime.getRuntime();
+                runtime.addShutdownHook(new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (Path path : GENERATED_CLASS_FILES) {
+                            try {
+                                Files.deleteIfExists(path);
+                                log.info("Deleted generated class file \"{}\"", path);
+                            } catch (Exception e) {
+                                log.error("", e);
+                            }
                         }
                     }
+                }));
+                if (!instance.standaloneMode) {
+                    String filePath = ".." + File.separator + ".." + File.separator + ".classpath";
+                    instance.classpath = ClassPathFactory.makeClassPath(filePath, "AD");
                 }
-            }));
-
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            System.exit(-1);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                System.exit(-1);
+            }
+            initialized = true;
         }
+
     }
 
-
-
-    private DynamicCodeCompiler() {}
+    private DynamicCodeCompiler() {
+        instance = this;
+    }
 
     public static List<DynamicCodeInstance> compileAll(Resource[] resources) throws Exception {
         List<DynamicCodeInstance> instances = new ArrayList<>();
@@ -91,6 +126,9 @@ public class DynamicCodeCompiler {
     }
 
     public static List<DynamicCodeInstance> compile(Resource resource) throws Exception {
+        if (!resource.getFilename().endsWith(".dnc"))
+            throw new DynamicCodeCompileException("Can not load '.dnc(dynamic code)' file. file name: " + resource.getFilename());
+
         StandardJavaFileManager fileManager = null;
         List<DynamicCodeInstance> instances = new ArrayList<>();
 
@@ -228,8 +266,12 @@ public class DynamicCodeCompiler {
             //Parse codes - end
 
             String rootDirName = "dnmcodes";
+            if (!instance.standaloneMode) {
+                rootDirName = ".." + File.separator + "configure" + File.separator + AdaptorConfig.getInstance().getAdaptorName() + File.separator + "dnmcodes";
+            }
+
             for (DynamicCodeHolder holders : dynamicCodeHolders) {
-                String codeTemplate = new String(Files.readAllBytes(dynamicCodeTemplateLocations.get(holders.getWrapperClass().getName()).toPath()));
+                String codeTemplate = dynamicCodeTemplates.get(holders.getWrapperClass().getName());
                 //Add the import statements again for classes used in the code templates 
                 holders.addImports(ImportSupporter.retrieveAutoImportClasses(codeTemplate));
 
@@ -254,17 +296,20 @@ public class DynamicCodeCompiler {
 
                     List<String> optionList = new ArrayList<>();
                     optionList.add("-classpath");
-                    optionList.add(System.getProperty("java.class.path"));
+                    optionList.add(instance.classpath + File.pathSeparator + javacToolsPath);
 
                     Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjects(javaPath.toFile());
                     JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, optionList, null, compilationUnits);
 
                     if (task.call()) {
-                        URLClassLoader loader = new URLClassLoader(
-                                new URL[]{new File("." + File.separator + rootDirName).toURI().toURL()});
+                        log.info("The class '{}' is generated by DynamicCodeCompiler. ", className);
+                        holders.getWrapperClass();
+                        URLClassLoader loader = null;
+                        String generatedClassPath = "." + File.separator + rootDirName;
+                        loader = new URLClassLoader(new URL[]{new File(generatedClassPath).toURI().toURL()}, classLoader);
+
                         Class<? extends DynamicCode> loadedClass = (Class<? extends DynamicCode>) loader.loadClass(className);
-                        Object classInstance = loadedClass.newInstance();
-                        instances.add(new DynamicCodeInstance(holders.getUniqueId(), loadedClass, classInstance));
+                        instances.add(new DynamicCodeInstance(holders.getUniqueId(), loadedClass));
                         GENERATED_CLASS_FILES.add(Paths.get("." + File.separator + rootDirName + File.separator + className + ".class"));
                     } else {
                         StringBuilder cause = new StringBuilder();
@@ -294,6 +339,9 @@ public class DynamicCodeCompiler {
                 } catch (DynamicCodeCompileException de) {
                     throw de;
 
+                } catch (Throwable t) {
+                    log.error("", t);
+                    throw  t;
                 } finally {
                     Files.deleteIfExists(javaPath);
                 }
@@ -341,9 +389,12 @@ public class DynamicCodeCompiler {
                 throw new FileNotFoundException(templateFile.getAbsolutePath());
 
 
-            dynamicCodeTemplateLocations.put(classFullName, templateFile);
+            dynamicCodeTemplates.put(classFullName, new String(Files.readAllBytes(templateFile.toPath())));
         }
     }
 
+    public static void setJavacToolsPaths(String javacToolsPath0) throws Exception {
+        javacToolsPath = javacToolsPath0;
+    }
 
 }

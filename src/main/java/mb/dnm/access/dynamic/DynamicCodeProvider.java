@@ -6,6 +6,7 @@ import mb.dnm.core.dynamic.DynamicCodeInstance;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ public class DynamicCodeProvider {
     private boolean initialized = false;
     private Resource[] codeLocations;
     private Map<String, DynamicCodeInstance> dnmCodes;
+    private String javacToolsPath = System.getProperty("java.home") + File.separator + "..//bin/java";
+    private boolean standaloneMode = false;
 
     /*
      * Spring version 만 맞다면 private 으로 변경해도 bean으로 등록 가능함
@@ -48,10 +51,11 @@ public class DynamicCodeProvider {
                 return;
             }
             this.codeLocations = codeLocations;
+            DynamicCodeCompiler.init();
             List<DynamicCodeInstance> dncInstances = DynamicCodeCompiler.compileAll(this.codeLocations);
             for (DynamicCodeInstance dncInstance : dncInstances) {
                 dnmCodes.put(dncInstance.getId(), dncInstance);
-                log.info("Loaded dynamic code instance '{}' with id '{}.class'", dncInstance.getDynamicCodeClassName(), dncInstance.getId());
+                log.info("Loaded dynamic code instance '{}.class' with id '{}'", dncInstance.getDynamicCodeClassName(), dncInstance.getId());
             }
             initialized = true;
             return;
@@ -59,8 +63,18 @@ public class DynamicCodeProvider {
         throw new IllegalStateException("DynamicCodeProvider is already initialized");
     }
 
+    public void setJavacToolsPaths(String javacToolsPath) {
+
+        this.javacToolsPath = javacToolsPath;
+    }
+
     public DynamicCodeInstance getDynamicCode(String dnm) {
         return dnmCodes.get(dnm);
+    }
+
+    public void setStandaloneMode(boolean standaloneMode) throws Exception {
+        this.standaloneMode = standaloneMode;
+        DynamicCodeCompiler.getInstance().setStandaloneMode(standaloneMode);
     }
 
 }

@@ -5,7 +5,7 @@ public class ${class_name} extends AbstractDynamicCode {
 
 
     @Override
-    public void execute(ServiceContext ctx) throws Exception {
+    public void execute(ServiceContext ctx) throws Throwable {
         ${code}
     }
 }

@@ -1,9 +1,6 @@
 package mb.dnm.mapper.function;
 
-import lombok.val;
 import org.apache.commons.lang3.StringUtils;
-
-import java.lang.reflect.Method;
 
 public class StringFunction {
 

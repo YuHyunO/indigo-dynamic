@@ -1,5 +1,6 @@
 package mb.dnm.core.dynamic;
 
+import lombok.extern.slf4j.Slf4j;
 import mb.dnm.core.context.ServiceContext;
 
 import java.lang.reflect.Method;
@@ -11,16 +12,17 @@ import java.lang.reflect.Method;
  * @version 2024.09.30
  *
  * */
+@Slf4j
 public class DynamicCodeInstance {
     private final String id;
     private final Class<? extends DynamicCode> loadedClass;
-    private final Object instance;
+    private Object instance;
     private final Method method;
 
-    public DynamicCodeInstance(String id, Class<? extends DynamicCode> loadedClass, Object instance) throws Exception {
+    public DynamicCodeInstance(String id, Class<? extends DynamicCode> loadedClass) throws Exception {
         this.id = id;
         this.loadedClass = loadedClass;
-        this.instance = instance;
+        this.instance = loadedClass.newInstance();
         this.method = loadedClass.getMethod("execute", ServiceContext.class);
     }
 

@@ -71,7 +71,7 @@ public class ImportSupporter {
         AUTO_IMPORT_CLASSES.put("Properties", "java.util.Properties");
         AUTO_IMPORT_CLASSES.put("UUID", "java.util.UUID");
 
-        AUTO_IMPORT_CLASSES.put("MessageUtil", " mb.dnm.util.MessageUtil");
+        AUTO_IMPORT_CLASSES.put("MessageUtil", "mb.dnm.util.MessageUtil");
         AUTO_IMPORT_CLASSES.put("ServiceContext", "mb.dnm.core.context.ServiceContext");
         AUTO_IMPORT_CLASSES.put("AbstractDynamicCode", "mb.dnm.core.dynamic.AbstractDynamicCode");
         AUTO_IMPORT_CLASSES.put("Logger", "org.slf4j.Logger");
@@ -97,20 +97,8 @@ public class ImportSupporter {
         AUTO_IMPORT_CLASSES.put("Files", "java.nio.file.Files");
         AUTO_IMPORT_CLASSES.put("Path", "java.nio.file.Path");
         AUTO_IMPORT_CLASSES.put("Paths", "java.nio.file.Paths");
-        //AUTO_IMPORT_CLASSES.put("FileStore", "java.nio.file.FileStore");
-        //AUTO_IMPORT_CLASSES.put("FileSystem", "java.nio.file.FileSystem");
-        //AUTO_IMPORT_CLASSES.put("PathMatcher", "java.nio.file.PathMatcher");
-        //AUTO_IMPORT_CLASSES.put("FileStoreAttributeView", "java.nio.file.attribute.FileStoreAttributeView");
-        //AUTO_IMPORT_CLASSES.put("FileTime", "java.nio.file.attribute.FileTime");
-        //AUTO_IMPORT_CLASSES.put("UserPrincipal", "java.nio.file.attribute.UserPrincipal");
-        //AUTO_IMPORT_CLASSES.put("UserPrincipalLookupService", "java.nio.file.attribute.UserPrincipalLookupService");
-        //AUTO_IMPORT_CLASSES.put("GroupPrincipal", "java.nio.file.attribute.GroupPrincipal");
-        //AUTO_IMPORT_CLASSES.put("PosixFilePermission", "java.nio.file.attribute.PosixFilePermission");
-        //AUTO_IMPORT_CLASSES.put("BasicFileAttributes", "java.nio.file.attribute.BasicFileAttributes");
         AUTO_IMPORT_CLASSES.put("StandardCopyOption", "java.nio.file.StandardCopyOption");
         AUTO_IMPORT_CLASSES.put("StandardOpenOption", "java.nio.file.StandardOpenOption");
-        //AUTO_IMPORT_CLASSES.put("DirectoryStream", "java.nio.file.DirectoryStream");
-        //AUTO_IMPORT_CLASSES.put("SeekableByteChannel", "java.nio.channels.SeekableByteChannel");
 
 
 

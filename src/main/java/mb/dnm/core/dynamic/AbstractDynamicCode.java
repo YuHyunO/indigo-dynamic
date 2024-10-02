@@ -28,4 +28,8 @@ public abstract class AbstractDynamicCode implements DynamicCode {
         ctx.addContextParam(outputName, outputValue);
     }
 
+    protected void stopService(ServiceContext ctx) {
+        ctx.setProcessOn(false);
+    }
+
 }
