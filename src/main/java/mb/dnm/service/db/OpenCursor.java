@@ -60,4 +60,10 @@ public class OpenCursor extends ParameterAssignableService {
         log.info("[{}]Cursor opened", ctx.getTxId());
 
     }
+
+    @Override
+    public void setExceptionHandlingMode(boolean exceptionHandlingMode) {
+        this.errorQueryMode = exceptionHandlingMode;
+        this.exceptionHandlingMode = exceptionHandlingMode;
+    }
 }

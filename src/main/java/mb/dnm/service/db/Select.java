@@ -96,4 +96,10 @@ public class Select extends ParameterAssignableService {
             setOutputValue(ctx, selectResult);
         }
     }
+
+    @Override
+    public void setExceptionHandlingMode(boolean exceptionHandlingMode) {
+        this.errorQueryMode = exceptionHandlingMode;
+        this.exceptionHandlingMode = exceptionHandlingMode;
+    }
 }

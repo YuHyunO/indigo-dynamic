@@ -117,6 +117,11 @@ public class HttpRequestDispatcher extends HttpServlet {
                 return;
             }
 
+            if (!info.isActivated()) {
+                writeServiceNotFound(request, response);
+                return;
+            }
+
             ServiceContext ctx = new ServiceContext(info);
             apiTemplate = info.getHttpAPITemplate();
 

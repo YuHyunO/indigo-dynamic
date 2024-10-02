@@ -89,4 +89,10 @@ public class CallProcedure extends ParameterAssignableService {
             setOutputValue(ctx, callResult);
         }
     }
+
+    @Override
+    public void setExceptionHandlingMode(boolean exceptionHandlingMode) {
+        this.errorQueryMode = exceptionHandlingMode;
+        this.exceptionHandlingMode = exceptionHandlingMode;
+    }
 }

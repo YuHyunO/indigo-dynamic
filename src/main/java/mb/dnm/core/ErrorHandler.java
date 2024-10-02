@@ -6,7 +6,7 @@ public interface ErrorHandler {
 
     public boolean isTriggered(Class<? extends Throwable> clazz);
 
-    public void handleError(ServiceContext ctx);
+    public void handleError(ServiceContext ctx) throws Throwable;
 
 
 

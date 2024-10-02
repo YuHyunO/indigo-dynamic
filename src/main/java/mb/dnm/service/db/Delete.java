@@ -89,4 +89,10 @@ public class Delete extends ParameterAssignableService {
         }
     }
 
+    @Override
+    public void setExceptionHandlingMode(boolean exceptionHandlingMode) {
+        this.errorQueryMode = exceptionHandlingMode;
+        this.exceptionHandlingMode = exceptionHandlingMode;
+    }
+
 }

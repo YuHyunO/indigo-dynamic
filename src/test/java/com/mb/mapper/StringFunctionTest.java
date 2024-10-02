@@ -1,6 +1,6 @@
 package com.mb.mapper;
 
-import mb.dnm.mapper.function.StringFunction;
+import mb.dnm.util.StringFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package mb.dnm.mapper.function;
+package mb.dnm.util;
 
 import org.apache.commons.lang3.StringUtils;
 

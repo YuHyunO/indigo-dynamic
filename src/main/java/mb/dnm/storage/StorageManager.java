@@ -16,6 +16,7 @@ public class StorageManager {
     private Map<String, List<ErrorHandler>> errorHandlerRegistry;
     private Map<String, String> httpRequestMappingRegistry;
     private boolean httpInterfaceEnabled = true;
+    private boolean defaultInterfaceEnabled = true;
 
     public StorageManager() {
         if (StorageManager.instance == null) {
@@ -37,6 +38,11 @@ public class StorageManager {
     public void setInterfaceRegistry(List<InterfaceInfo> interfaceInfos){
         for(InterfaceInfo info : interfaceInfos){
             String ifId = info.getInterfaceId();
+
+            if (!defaultInterfaceEnabled) {
+                info.setActivated(false);
+            }
+
             this.interfaceRegistry.put(ifId, info);
             if (httpInterfaceEnabled) {
                 String frontUrl = info.getFrontHttpUrl();
@@ -150,6 +156,7 @@ public class StorageManager {
         }
     }
 
-
-
+    public void setDefaultInterfaceEnabled(boolean defaultInterfaceEnabled) {
+        this.defaultInterfaceEnabled = defaultInterfaceEnabled;
+    }
 }
