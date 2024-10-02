@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 public class DynamicCodeInstance {
     private final String id;
     private final Class<? extends DynamicCode> loadedClass;
-    private Object instance;
+    private final Object instance;
     private final Method method;
 
     public DynamicCodeInstance(String id, Class<? extends DynamicCode> loadedClass) throws Exception {
