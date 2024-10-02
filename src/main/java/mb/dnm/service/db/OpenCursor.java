@@ -1,5 +1,6 @@
 package mb.dnm.service.db;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.access.db.DataSourceProvider;
 import mb.dnm.access.db.QueryExecutor;
@@ -29,18 +30,28 @@ import mb.dnm.service.ParameterAssignableService;
  * */
 
 @Slf4j
+@Setter
 public class OpenCursor extends ParameterAssignableService {
-
+    private boolean errorQueryMode = false;
 
     @Override
     public void process(ServiceContext ctx) {
 
-        if (!ctx.hasMoreQueryMaps()) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "No more query found in the query sequence queue");
+        //(1) Get QueryMap and QueryExecutor.
+        QueryMap queryMap = null;
+
+        if (errorQueryMode) {
+            if (!ctx.hasMoreErrorQueryMaps()) {
+                throw new InvalidServiceConfigurationException(this.getClass(), "No more error query found in the query sequence queue");
+            }
+            queryMap = ctx.nextErrorQueryMap();
+        } else {
+            if (!ctx.hasMoreQueryMaps()) {
+                throw new InvalidServiceConfigurationException(this.getClass(), "No more query found in the query sequence queue");
+            }
+            queryMap = ctx.nextQueryMap();
         }
 
-        //(1) Get QueryMap and QueryExecutor.
-        QueryMap queryMap = ctx.nextQueryMap();
         TransactionContext txContext = ctx.getTransactionContext(queryMap);
         QueryExecutor executor = DataSourceProvider.access().getExecutor(queryMap.getExecutorName());
 
