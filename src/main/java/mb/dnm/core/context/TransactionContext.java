@@ -39,7 +39,7 @@ public class TransactionContext {
         StringBuilder msg = new StringBuilder();
         int i = 1;
         for (StringBuilder queryId : queryHistory) {
-            msg.append("(").append(i).append("):").append(queryId).append(",").append(" ");
+            msg.append("(").append(i).append(")").append(queryId).append(",").append(" ");
             ++i;
         }
         if (msg.length() > 0) {

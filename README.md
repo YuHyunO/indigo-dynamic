@@ -26,9 +26,9 @@
     <div>◈ IterationGroup에서 반복문 수행 시 DB관련 서비스를 사용할 때 쿼리 시퀀스가 매번의 반복문에서 소진되지 않도록 개발 완료 ▶<i>[완료여부: O]</i></div>
     <div>◈ QueryExecutor#doCall 메소드 완성하기 ▶<i>[완료여부: O]</i></div>     
     <div>◈ 암호화 서비스 추가 ▶<i>[완료여부: O]</i></div>
-    <div>◎ Compiler 기능을 활용하여 Mapper 개발 ▶<i>[완료여부: O]</i></div>
-    <div>◎ DB CRUD 시 Mybatis 로 전달되는 파라미터에 if_id, tx_id, 프로세스 코드 등이 기본으로 포함되도록 설정 ▶<i>[완료여부: O]</i></div>
-    <div>◎ 운영전환 시 동일한 어댑터에 속한 인터페이스이더라도 순차전환 할 수 있도록 인터페이스 활성화/비활성화 기능 필요.<br>→ 각 어댑터에서 암호화된 HTTP 요청을 받아서 처리 ▶<i>[완료여부: O]</i> </div>
+    <div>◈ Compiler 기능을 활용하여 Mapper 개발 ▶<i>[완료여부: O]</i></div>
+    <div>◈ DB CRUD 시 Mybatis 로 전달되는 파라미터에 if_id, tx_id, 프로세스 코드 등이 기본으로 포함되도록 설정 ▶<i>[완료여부: O]</i></div>
+    <div>◈ 운영전환 시 동일한 어댑터에 속한 인터페이스이더라도 순차전환 할 수 있도록 인터페이스 활성화/비활성화 기능 필요.<br>→ 각 어댑터에서 암호화된 HTTP 요청을 받아서 처리 ▶<i>[완료여부: O]</i> </div>
     <br>
     <div>◎ 최종 배포 시 logging level 조정, 불필요 로그 제거 및 주석 처리 작업 선행 ▶<i>[완료여부: X]</i></div>
     <div>◎ PlaceHolderMapper 기능 추가(후순위) ▶<i>[완료여부: X]</i></div>

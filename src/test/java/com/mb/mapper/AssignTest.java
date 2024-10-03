@@ -31,9 +31,9 @@ public class AssignTest {
         info.setInterfaceId("IF001");
 
         ServiceContext ctx = new ServiceContext(info);
-        for (Map.Entry<String, String> entry : ctx.getContextInformation().entrySet()) {
+        for (Map.Entry<String, Object> entry : ctx.getContextInformation().entrySet()) {
             StringBuilder keyBd = new StringBuilder(entry.getKey());
-            String value = entry.getValue();
+            String value = String.valueOf(entry.getValue());
             keyBd.deleteCharAt(0)
                     .insert(0, "@{")
                     .append("}");
