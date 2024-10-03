@@ -129,7 +129,7 @@ public class StorageManager {
     /**
      * @return The result of activation. It returns false when an InterfaceInfo is not exist.
      * */
-    public boolean activateInterface(String interfaceId) {
+    public synchronized boolean activateInterface(String interfaceId) {
         if (interfaceId == null)
             return false;
         getInterfaceInfo(interfaceId).setActivated(true);
@@ -139,7 +139,7 @@ public class StorageManager {
     /**
      * @return The result of activation. It returns false when an InterfaceInfo is not exist.
      * */
-    public boolean inactivateInterface(String interfaceId) {
+    public synchronized boolean inactivateInterface(String interfaceId) {
         if (interfaceId == null)
             return false;
         getInterfaceInfo(interfaceId).setActivated(false);
