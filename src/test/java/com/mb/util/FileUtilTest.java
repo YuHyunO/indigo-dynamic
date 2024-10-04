@@ -1,5 +1,6 @@
 package com.mb.util;
 
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.util.FileUtil;
 import org.junit.Test;
