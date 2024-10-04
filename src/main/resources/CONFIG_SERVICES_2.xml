@@ -186,6 +186,7 @@
                     <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.crypto.Decrypt">
+                    <property name="description"        value="로그로 적재할 데이터를 복호화"/>
                     <property name="cryptoType"         value="JASYPT"/>
                     <property name="input"              value="enc_data"/>
                     <property name="output"             value="dec_data"/>
@@ -273,6 +274,33 @@
             </list>
         </entry>
 
+        <entry key="DB_SERVICE_SAMPLE">
+            <list>
+                <bean class="mb.dnm.service.db.StartTransaction"/>
+                <bean class="mb.dnm.service.db.Update">
+                    <property name="description"     value="DB의 데이터를 먼저 UPDATE 한다."/>
+                </bean>
+                <bean class="mb.dnm.service.db.Select">
+                    <property name="description"     value="UPDATE 한 데이터를 SELECT 한다."/>
+                    <property name="output"          value="select_result"/>
+                </bean>
+                <bean class="mb.dnm.service.general.GetSize">
+                    <property name="description"     value="SELECT 한 데이터의 크기를 구한다."/>
+                    <property name="input"      value="select_result"/>
+                    <property name="output"     value="tx_count"/>
+                </bean>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="description"     value="SELECT 결과가 없으면 프로세스를 종료한다.."/>
+                    <property name="input"              value="tx_count"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <property name="description"    value="SELECT 결과를 출력한다."/>
+                    <property name="input"                          value="select_result"/>
+                    <property name="printToXmlWhenCollectionOrMap"  value="true"/>
+                </bean>
+                <bean class="mb.dnm.service.db.EndTransaction"/>
+            </list>
+        </entry>
     </util:map>
 
 

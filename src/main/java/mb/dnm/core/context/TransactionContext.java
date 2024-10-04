@@ -11,7 +11,7 @@ public class TransactionContext {
     private boolean groupTxEnabled = false;
     private TransactionStatus txStatus;
     private int timeoutSecond = -1;
-    private List<StringBuilder> queryHistory;
+    private List<String> queryHistory;
     private Throwable error;
 
     TransactionContext(String name) {
@@ -20,17 +20,13 @@ public class TransactionContext {
     }
 
     public void addQueryHistory(String queryId) {
-        queryHistory.add(new StringBuilder(queryId));
-    }
-
-    public void addQueryHistory(StringBuilder queryId) {
         queryHistory.add(queryId);
     }
 
     public List<String> getQueryHistory() {
         List<String> result = new ArrayList<>();
-        for (StringBuilder queryId : queryHistory) {
-            result.add(queryId.toString());
+        for (String queryId : queryHistory) {
+            result.add(queryId);
         }
         return result;
     }
@@ -38,7 +34,7 @@ public class TransactionContext {
     public String getQueryHistoryMsg() {
         StringBuilder msg = new StringBuilder();
         int i = 1;
-        for (StringBuilder queryId : queryHistory) {
+        for (String queryId : queryHistory) {
             msg.append("(").append(i).append(")").append(queryId).append(",").append(" ");
             ++i;
         }

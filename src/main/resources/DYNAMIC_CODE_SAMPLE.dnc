@@ -23,8 +23,8 @@
     }
 
     //File을 읽는다.
-    File file = new File("C:\\Projects\\indigo-dynamic\\src\\main\\resources\\log4j.xml");
-    if (file.exists()) {
+    File file = new File("C:\\Projects\\indigo-dynamic\\src\\main\\resources\\log4js.xml");
+    if (!file.exists()) {
         log.info("File content: \n{}", new String(Files.readAllBytes(file.toPath())));
     } else {
         log.info("파일 없음");

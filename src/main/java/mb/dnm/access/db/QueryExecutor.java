@@ -159,17 +159,35 @@ public class QueryExecutor {
     }
 
     public int doInsert(TransactionContext txCtx, String sqlId, Map<String, Object> insertRow) {
-        return getDefaultExecutor().insert(sqlId, insertRow);
+        if (defaultExecutorType == ExecutorType.BATCH) {
+            SqlSessionTemplate session = getDefaultExecutor();
+            session.insert(sqlId, insertRow);
+            return getBatchResultCount(session.flushStatements());
+        } else {
+            return getDefaultExecutor().insert(sqlId, insertRow);
+        }
     }
 
     
     public int doUpdate(TransactionContext txCtx, String sqlId, Map<String, Object> updateParam) {
-        return getDefaultExecutor().update(sqlId, updateParam);
+        if (defaultExecutorType == ExecutorType.BATCH) {
+            SqlSessionTemplate session = getDefaultExecutor();
+            session.update(sqlId, updateParam);
+            return getBatchResultCount(session.flushStatements());
+        } else {
+            return getDefaultExecutor().update(sqlId, updateParam);
+        }
     }
 
     
     public int doDelete(TransactionContext txCtx, String sqlId, Map<String, Object> deleteParam) {
-        return getDefaultExecutor().delete(sqlId, deleteParam);
+        if (defaultExecutorType == ExecutorType.BATCH) {
+            SqlSessionTemplate session = getDefaultExecutor();
+            session.delete(sqlId, deleteParam);
+            return getBatchResultCount(session.flushStatements());
+        } else {
+            return getDefaultExecutor().delete(sqlId, deleteParam);
+        }
     }
 
     public int doBatchInsert(TransactionContext txCtx, String sqlId, List<Map<String, Object>> insertRows) {

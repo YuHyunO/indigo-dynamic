@@ -5,6 +5,7 @@ import mb.dnm.core.callback.AfterProcessCallback;
 import mb.dnm.core.callback.SessionCleanupCallback;
 import mb.dnm.core.callback.TransactionCleanupCallback;
 import mb.dnm.core.context.ServiceContext;
+import mb.dnm.exeption.ErrorTrace;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.storage.StorageManager;
 import mb.dnm.util.MessageUtil;
@@ -107,6 +108,13 @@ public class ServiceProcessor {
                 } catch (Throwable t0) {
                     ctx.setProcessStatus(ProcessCode.FAILURE);
                     ctx.addErrorTrace(serviceClass, t0);
+                    String description = service.getDescription();
+                    StringBuilder msg = new StringBuilder("An error occurred at the service '" + serviceClass + "'");
+                    if (description != null) {
+                        msg.append(" (").append(description).append(")");
+                    }
+                    ctx.setMsg(msg);
+
                     if (service.isIgnoreError()) {
                         log.warn("[{}]An error occurred at the service '{}' but ignored.({}/{}). Error:{}", txId, serviceClass, cnt1, serviceCount, MessageUtil.toString(t0));
                         continue;

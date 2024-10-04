@@ -10,4 +10,8 @@ public interface Service {
 
     public boolean isIgnoreError();
 
+    public void setDescription(String description);
+
+    public String getDescription();
+
 }

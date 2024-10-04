@@ -89,7 +89,6 @@ public class TransactionProxyInterceptor implements MethodInterceptor {
                 txManager.rollback(txStatus);
                 log.warn("[TX]Rollback completed. Executor name: {}", txCtx.getName());
                 txCtx.setError(t);
-                log.error("", t);
             }
             throw t;
         }

@@ -219,7 +219,6 @@ public class HttpRequestDispatcher extends HttpServlet {
             }
         }
 
-        System.out.println("@@@ " + contentType);
         if (body != null) {
             byte[] byteBody = null;
 

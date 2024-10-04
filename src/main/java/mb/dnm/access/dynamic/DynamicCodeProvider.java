@@ -3,7 +3,6 @@ package mb.dnm.access.dynamic;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.core.dynamic.DynamicCodeCompiler;
 import mb.dnm.core.dynamic.DynamicCodeInstance;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
 import java.io.File;

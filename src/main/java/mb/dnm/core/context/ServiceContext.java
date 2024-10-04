@@ -1,9 +1,11 @@
 package mb.dnm.core.context;
 
+import lombok.extern.slf4j.Slf4j;
 import mb.dnm.access.ClosableStreamWrapper;
 import mb.dnm.access.db.QueryMap;
 import mb.dnm.code.ProcessCode;
 import mb.dnm.core.Service;
+import mb.dnm.exeption.ErrorTrace;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 import mb.dnm.util.TimeUtil;
@@ -13,6 +15,7 @@ import lombok.Setter;
 
 import java.util.*;
 
+@Slf4j
 @Getter
 public class ServiceContext {
     private String txId;
@@ -22,7 +25,7 @@ public class ServiceContext {
     @Setter
     private boolean processOn = true;
     private List<Class<? extends Service>> serviceTrace;
-    private Map<Class<? extends Service>, Throwable> errorTrace;
+    private Map<Class<? extends Service>, ErrorTrace> errorTrace;
     private Map<String, Object> contextParams;
     private Map<String, TransactionContext> txContextMap;
     private Map<String, ClosableStreamWrapper> sessionMap;
@@ -56,20 +59,8 @@ public class ServiceContext {
     }
 
     public String getServiceTraceMessage() {
-        Map<String, Object> msgMap = new LinkedHashMap<>();
-
-        int i = 1;
-        Map<String, Object> innerMap = new LinkedHashMap<>();
-        for (Class<? extends Service> serviceClass : serviceTrace) {
-            innerMap.put(String.valueOf(i), serviceClass);
-            ++i;
-        }
-
-        if (!innerMap.isEmpty()) {
-            msgMap.put("service_trace", innerMap);
-        }
-
         String msg = "";
+        Map<String, Object> msgMap = getServiceTraceMap();
         if (!msgMap.isEmpty()) {
             try {
                 msg = MessageUtil.mapToJson(msgMap, true);
@@ -79,35 +70,58 @@ public class ServiceContext {
         return msg;
     }
 
+    public Map<String, Object> getServiceTraceMap() {
+        Map<String, Object> traceMap = new LinkedHashMap<>();
+
+        int i = 1;
+        Map<String, Object> innerMap = new LinkedHashMap<>();
+        for (Class<? extends Service> serviceClass : serviceTrace) {
+            innerMap.put(String.valueOf(i), serviceClass);
+            ++i;
+        }
+
+        if (!innerMap.isEmpty()) {
+            traceMap.put("service_trace", innerMap);
+        }
+        return traceMap;
+    }
+
     public void addErrorTrace(Class<? extends Service> service, Throwable throwable) {
-        errorTrace.put(service, throwable);
+        errorTrace.put(service, new ErrorTrace(throwable));
     }
 
 
     public String getErrorTraceMessage() {
-        Map<String, Object> msgMap = new LinkedHashMap<>();
-        msgMap.put("tx_id", txId);
-        msgMap.put("if_id", getInterfaceId());
-        msgMap.put("start_time", startTime);
-        msgMap.put("end_time", endTime);
-        msgMap.put("service_trace", serviceTrace);
-        msgMap.put("error_trace", errorTrace);
+        Map<String, Object> traceMap = getErrorTraceMap();
+        String msg = "";
+        try {
+           msg = MessageUtil.mapToJson(traceMap, true);
+        } catch (Exception e) {
+            log.error("Exception occurred at getErrorTraceMessage:", e);
+        }
+        return msg;
+    }
+
+    public Map<String, Object> getErrorTraceMap() {
+        Map<String, Object> traceMap = new LinkedHashMap<>();
+        traceMap.put("tx_id", txId);
+        traceMap.put("if_id", getInterfaceId());
+        traceMap.put("start_time", startTime);
+        traceMap.put("end_time", endTime);
+        traceMap.put("service_trace", serviceTrace);
+        traceMap.put("error_trace", errorTrace);
         Map<String, Object> queryHistories = null;
         if (txContextMap.size() > 0) {
             queryHistories = new LinkedHashMap<>();
             for (Map.Entry<String, TransactionContext> entry : txContextMap.entrySet()) {
-                queryHistories.put(entry.getKey(), entry.getValue());
+                TransactionContext txCtx = entry.getValue();
+                queryHistories.put(entry.getKey(), txCtx.getQueryHistory());
             }
         }
         if (queryHistories != null) {
-            msgMap.put("query_histories", queryHistories);
+            traceMap.put("query_histories", queryHistories);
         }
-        String msg = "";
-        try {
-           msg = MessageUtil.mapToJson(msgMap, true);
-        } catch (Exception e) {
-        }
-        return msg;
+        return traceMap;
     }
 
     public String getInterfaceId() {
@@ -283,11 +297,16 @@ public class ServiceContext {
         return false;
     }
 
-    public void setMsg(String msg) {
+    public void setMsg(StringBuilder msg) {
         this.msg = new StringBuilder(msg);
     }
 
+
+
     public String getMsg() {
+        if (msg == null) {
+            return null;
+        }
         return msg.toString();
     }
 

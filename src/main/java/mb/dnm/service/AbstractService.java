@@ -6,10 +6,12 @@ public abstract class AbstractService implements Service {
     protected boolean exceptionHandlingMode = false;
     protected String description;
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
