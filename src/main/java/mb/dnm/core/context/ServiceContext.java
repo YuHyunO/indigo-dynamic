@@ -137,8 +137,7 @@ public class ServiceContext {
         traceMap.put("if_id", getInterfaceId());
         traceMap.put("start_time", startTime);
         traceMap.put("end_time", endTime);
-        traceMap.put("service_trace", getServiceTraceMap());
-        traceMap.put("error_trace", errorTrace);
+        traceMap.putAll(getServiceTraceMap());
         Map<String, Object> queryHistories = null;
         if (txContextMap.size() > 0) {
             queryHistories = new LinkedHashMap<>();
@@ -150,6 +149,7 @@ public class ServiceContext {
         if (queryHistories != null) {
             traceMap.put("query_histories", queryHistories);
         }
+        traceMap.put("error_trace", errorTrace);
         return traceMap;
     }
 
