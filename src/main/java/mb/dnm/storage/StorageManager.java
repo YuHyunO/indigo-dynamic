@@ -39,7 +39,7 @@ public class StorageManager {
         for(InterfaceInfo info : interfaceInfos){
             String ifId = info.getInterfaceId();
 
-            if (!defaultInterfaceEnabled) {
+            if (!defaultInterfaceEnabled && !info.isControllerInterface()) {
                 info.setActivated(false);
             }
 

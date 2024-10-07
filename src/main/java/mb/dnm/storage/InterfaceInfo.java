@@ -12,6 +12,7 @@ import java.util.*;
 public class InterfaceInfo {
     //Common properties
     protected boolean activated = true;
+    protected boolean controllerInterface = false;
     protected String interfaceId;
     protected String interfaceName;
     protected String description;

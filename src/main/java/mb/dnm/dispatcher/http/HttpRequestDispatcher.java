@@ -227,7 +227,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                     if (body instanceof byte[]) {
                         byteBody = (byte[]) body;
                     } else if (body instanceof Map) {
-                        byteBody = MessageUtil.mapToJson((Map) body, false).getBytes();
+                        byteBody = MessageUtil.mapToJson((Map) body, true).getBytes();
                     } else if (body instanceof String) {
                         byteBody = ((String) body).getBytes();
                     }
@@ -237,7 +237,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                     if (body instanceof byte[]) {
                         byteBody = (byte[]) body;
                     } else if (body instanceof Map) {
-                        byteBody = MessageUtil.mapToXml((Map) body, false).getBytes();
+                        byteBody = MessageUtil.mapToXml((Map) body, true).getBytes();
                     } else if (body instanceof String) {
                         byteBody = ((String) body).getBytes();
                     }
@@ -249,7 +249,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                     } else if (body instanceof String) {
                         byteBody = ((String) body).getBytes();
                     } else if (body instanceof Map) {
-                        byteBody = MessageUtil.mapToJson((Map) body, false).getBytes();
+                        byteBody = MessageUtil.mapToJson((Map) body, true).getBytes();
                         response.setContentType("application/json");
                     }
                 }
@@ -263,7 +263,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                     response.setContentType("text/plain");
 
                 } else if (body instanceof Map) {
-                    byteBody = MessageUtil.mapToJson((Map) body, false).getBytes();
+                    byteBody = MessageUtil.mapToJson((Map) body, true).getBytes();
                     response.setContentType("application/json");
                 }
             }

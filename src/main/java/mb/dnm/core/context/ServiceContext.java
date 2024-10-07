@@ -6,6 +6,7 @@ import mb.dnm.access.db.QueryMap;
 import mb.dnm.code.ProcessCode;
 import mb.dnm.core.Service;
 import mb.dnm.exeption.ErrorTrace;
+import mb.dnm.service.general.IterationGroup;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 import mb.dnm.util.TimeUtil;
@@ -25,6 +26,7 @@ public class ServiceContext {
     @Setter
     private boolean processOn = true;
     private List<Class<? extends Service>> serviceTrace;
+    private Map<Integer, InnerServiceTrace> innerServiceTraces;
     private Map<Class<? extends Service>, ErrorTrace> errorTrace;
     private Map<String, Object> contextParams;
     private Map<String, TransactionContext> txContextMap;
@@ -48,6 +50,7 @@ public class ServiceContext {
         startTime = new Date();
         txId = TxIdGenerator.generateTxId(info.getInterfaceId(), startTime);
         serviceTrace = new ArrayList<>();
+        innerServiceTraces = new LinkedHashMap<>();
         errorTrace = new LinkedHashMap<>();
         contextParams = new HashMap<>();
         txContextMap = new HashMap<>();
@@ -70,13 +73,28 @@ public class ServiceContext {
         return msg;
     }
 
+
     public Map<String, Object> getServiceTraceMap() {
         Map<String, Object> traceMap = new LinkedHashMap<>();
 
         int i = 1;
         Map<String, Object> innerMap = new LinkedHashMap<>();
         for (Class<? extends Service> serviceClass : serviceTrace) {
-            innerMap.put(String.valueOf(i), serviceClass);
+            InnerServiceTrace innerTrace = innerServiceTraces.get(i);
+            if (innerTrace != null) {
+                innerMap.put(String.valueOf(i), serviceClass);
+                Map<Integer, InnerServiceTracePair> innerTraceMap = innerTrace.getTraceMap();
+                for (Map.Entry<Integer, InnerServiceTracePair> entry : innerTraceMap.entrySet()) {
+                    int innerIdx = entry.getKey();
+                    InnerServiceTracePair innerTracePair = entry.getValue();
+                    innerMap.put(String.valueOf(i) + "-" + innerIdx,
+                            "iteration count:" + innerTracePair.getIterationCount()
+                                    + ", inner service: " + innerTracePair.getInnerServiceClass());
+                }
+            } else {
+                innerMap.put(String.valueOf(i), serviceClass);
+            }
+
             ++i;
         }
 
@@ -84,6 +102,17 @@ public class ServiceContext {
             traceMap.put("service_trace", innerMap);
         }
         return traceMap;
+    }
+
+    public void addInnerServiceTrace(int externalServiceIdx, int innerServiceIdx, Class<? extends Service> service) {
+        InnerServiceTrace innerTrace = innerServiceTraces.get(externalServiceIdx);
+        if (innerTrace == null) {
+            innerTrace = new InnerServiceTrace();
+            innerTrace.addTrace(innerServiceIdx, service);
+            innerServiceTraces.put(externalServiceIdx, innerTrace);
+        } else {
+            innerTrace.addTrace(innerServiceIdx, service);
+        }
     }
 
     public void addErrorTrace(Class<? extends Service> service, Throwable throwable) {
@@ -108,7 +137,7 @@ public class ServiceContext {
         traceMap.put("if_id", getInterfaceId());
         traceMap.put("start_time", startTime);
         traceMap.put("end_time", endTime);
-        traceMap.put("service_trace", serviceTrace);
+        traceMap.put("service_trace", getServiceTraceMap());
         traceMap.put("error_trace", errorTrace);
         Map<String, Object> queryHistories = null;
         if (txContextMap.size() > 0) {
@@ -322,6 +351,49 @@ public class ServiceContext {
         infoMap.put("$YYYYMMDD", TimeUtil.curDate(TimeUtil.YYYYMMDD));
         infoMap.put("$YYYYMMDDHHMMSS", TimeUtil.curDate(TimeUtil.YYYYMMDDHHMMSS));
         return infoMap;
+    }
+
+    public class InnerServiceTrace {
+        @Getter
+        private Map<Integer, InnerServiceTracePair> traceMap;
+
+        public InnerServiceTrace() {
+            traceMap = new LinkedHashMap<>();
+        }
+
+        public void addTrace(int innerServiceIdx, Class<? extends Service> serviceClass) {
+            InnerServiceTracePair tracePair = traceMap.get(innerServiceIdx);
+            if (tracePair == null) {
+                tracePair = new InnerServiceTracePair(serviceClass);
+                tracePair.stampTrace(serviceClass);
+                traceMap.put(innerServiceIdx, tracePair);
+            } else {
+                tracePair.stampTrace(serviceClass);
+                //traceMap.put(innerServiceIdx, tracePair);
+            }
+        }
+
+        public InnerServiceTracePair getInnerServiceTrace(int innerServiceIdx) {
+            return traceMap.get(innerServiceIdx);
+        }
+
+    }
+
+    @Getter
+    public class InnerServiceTracePair {
+        private final Class<? extends Service> innerServiceClass;
+        private int iterationCount = 0;
+
+        public InnerServiceTracePair(Class<? extends Service> innerServiceClass) {
+            this.innerServiceClass = innerServiceClass;
+        }
+
+        public void stampTrace(Class<? extends Service> innerServiceClass) {
+            if (this.innerServiceClass == innerServiceClass) {
+                ++iterationCount;
+            }
+        }
+
     }
 
 }

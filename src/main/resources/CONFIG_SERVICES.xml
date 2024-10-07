@@ -441,11 +441,6 @@
                     <property name="createNewContextEachLoop"   value="false"/>
                     <property name="services">
                         <list>
-                            <!--<bean class="mb.dnm.service.general.PrintInput">
-                                <property name="input"                          value="data"/>
-                                <property name="printToXmlWhenCollectionOrMap"       value="true"/>
-                                <property name="indented"                       value="true"/>
-                            </bean>-->
                             <bean class="mb.dnm.service.db.Select">
                                 <property name="input"     value="data"/>
                                 <property name="output"     value="last_selected"/>
@@ -494,4 +489,26 @@
 
     </util:map>
 
+
+    <bean class="mb.dnm.service.general.IterationGroup">
+        <property name="input"                      value="data_list"/>
+        <property name="iterationInputName"         value="data"/>
+        <property name="fetchSize"                  value="3"/>
+        <property name="createNewContextEachLoop"   value="false"/>
+        <property name="services">
+            <list>
+            </list>
+        </property>
+        <property name="errorHandlers">
+            <list>
+            </list>
+        </property>
+        <property name="output" value="last_selected"/>
+    </bean>
+
+    <bean class="mb.dnm.service.file.ReadFile">
+        <property name="sourceAlias"    value="SRC"/>
+        <property name="input"          value="file_loc"/>
+        <property name="output"         value="file_data"/>
+    </bean>
 </beans>

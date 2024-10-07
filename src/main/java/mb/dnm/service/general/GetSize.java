@@ -1,6 +1,7 @@
 package mb.dnm.service.general;
 
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.access.SizeCheckable;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.ParameterAssignableService;
 
@@ -68,6 +69,9 @@ public class GetSize extends ParameterAssignableService {
 
                 } else if (Number.class.isAssignableFrom(type)) {
                     size = inputVal;
+
+                } else if (SizeCheckable.class.isAssignableFrom(type)) {
+                    size = ((SizeCheckable) inputVal).getSize();
 
                 } else {
                     couldnt = true;

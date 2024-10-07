@@ -6,6 +6,31 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
     <util:map id="errorHandlers">
+        <entry key="DEFAULT_ERR_HANDLING">
+            <list>
+                <bean class="mb.dnm.exeption.handler.ExecuteServiceErrorHandler">
+                    <property name="service">
+                        <bean class="mb.dnm.service.db.Rollback">
+                            <property name="description"    value="에러가 발생한 인터페이스의 트랜잭션을 롤백한다."/>
+                        </bean>
+                    </property>
+                </bean>
+                <bean class="mb.dnm.exeption.handler.ExecuteServiceErrorHandler">
+                    <property name="service">
+                        <bean class="mb.dnm.service.ftp.MoveFiles">
+                            <property name="description"    value="FPT 서버의 에러경로로 파일을 이동한다."/>
+                            <property name="input"          value="remote_file_list"/>
+                            <property name="sourceAlias"    value="SRC"/>
+                            <property name="directoryType"  value="REMOTE_ERROR"/>
+                        </bean>
+                    </property>
+                </bean>
+                <bean class="mb.dnm.service.file.DeleteFiles">
+                    <property name="description"     	value="파일을 연계서버(로컬)에서 삭제한다."/>
+                    <property name="input"              value="local_file_list"/>
+                </bean>
+            </list>
+        </entry>
     </util:map>
 
 </beans>

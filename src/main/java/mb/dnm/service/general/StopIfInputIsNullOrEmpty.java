@@ -2,11 +2,8 @@ package mb.dnm.service.general;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import mb.dnm.access.EmptyCheckable;
-import mb.dnm.access.db.DataSourceProvider;
-import mb.dnm.access.db.QueryExecutor;
+import mb.dnm.access.SizeCheckable;
 import mb.dnm.core.context.ServiceContext;
-import mb.dnm.core.context.TransactionContext;
 import mb.dnm.service.ParameterAssignableService;
 
 import java.util.Collection;
@@ -20,7 +17,7 @@ import java.util.Map;
  * @version 2024.09.26
  *
  * @Input Null 또는 Empty 를 체크할 input의 이름
- * @InputType <code>Map</code> or <code>Collection</code> or <code>EmptyCheckable</code>
+ * @InputType <code>Map</code> or <code>Collection</code> or <code>SizeCheckable</code>
  * @Output 프로세스를 중단하고 나서 Callback 프로세스 등에서 사용할 목적으로 중단에 대한 정보를 담고 있는 변수가 필요한 경우 output 할 변수의 이름
  * @OutputValue output이 지정된 경우 output 할 변수의 값
  * @OutputType <code>Object</code>
@@ -75,8 +72,8 @@ public class StopIfInputIsNullOrEmpty extends ParameterAssignableService {
                 stop = true;
             }
 
-        } else if (inputVal instanceof EmptyCheckable) {
-            if (((EmptyCheckable) inputVal).isEmpty()) {
+        } else if (inputVal instanceof SizeCheckable) {
+            if (((SizeCheckable) inputVal).isEmpty()) {
                 ctx.setProcessOn(false);
                 stop = true;
             }

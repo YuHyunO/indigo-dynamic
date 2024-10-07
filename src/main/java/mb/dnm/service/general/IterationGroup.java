@@ -12,10 +12,7 @@ import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Input 파라미터로 Iterable 객체를 전달받아 <code>fetchSize</code> 만큼 반복하며 등록된 <code>List<Service> services</code>를 수행한다.<br>
@@ -95,6 +92,7 @@ public class IterationGroup extends ParameterAssignableService {
         InterfaceInfo info = ctx.getInfo();
         String interfaceId = info.getInterfaceId();
         String txId = ctx.getTxId();
+        int curServiceIdx = ctx.getServiceTrace().size();
 
         //반복문 수행 시 query sequence가 매번 초기화 되어야 하므로 반복문을 수행하기 전의 query order 를 미리 저장한다.
         int currentQueryOrder = ctx.getCurrentQueryOrder();
@@ -135,7 +133,11 @@ public class IterationGroup extends ParameterAssignableService {
                     log.info("[{}]Iteration-Group: Unfold the services", innerTxId);
                     for (Service service : services) {
                         Class serviceClass = service.getClass();
-                        innerCtx.addServiceTrace(serviceClass);
+                        if (!createNewContextEachLoop) {
+                            innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
+                        } else {
+                            innerCtx.addServiceTrace(serviceClass);
+                        }
                         try {
                             if (innerCtx.isProcessOn()) {
                                 ++cnt1;
@@ -274,7 +276,11 @@ public class IterationGroup extends ParameterAssignableService {
                     log.info("[{}]Iteration-Group: Unfold the services", innerTxId);
                     for (Service service : services) {
                         Class serviceClass = service.getClass();
-                        innerCtx.addServiceTrace(serviceClass);
+                        if (!createNewContextEachLoop) {
+                            innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
+                        } else {
+                            innerCtx.addServiceTrace(serviceClass);
+                        }
                         try {
                             if (innerCtx.isProcessOn()) {
                                 ++cnt1;
@@ -363,5 +369,9 @@ public class IterationGroup extends ParameterAssignableService {
 
     private void SetInitialCheck(boolean initialCheck) {
         this.initialCheck = initialCheck;
+    }
+
+    private void addInnerServiceTrace(Class<? extends Service> serviceClass) {
+
     }
 }

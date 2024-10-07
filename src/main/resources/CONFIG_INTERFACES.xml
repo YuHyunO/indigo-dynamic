@@ -42,9 +42,12 @@
                         <property name="fileNamePattern"        value="*.x*"/>
                     </bean>
                     <bean class="mb.dnm.access.file.FileTemplate">
-                        <property name="templateName"        value="FTP2"/>
-                        <property name="remoteReceiveDir"    value="/ftp/files/recv/@{if_id}"/>
+                        <property name="templateName"           value="FTP2"/>
+                        <property name="remoteReceiveDir"       value="/ftp/files/recv/@{if_id}"/>
                         <property name="localReceiveDir"        value="C:\FTPdownload\@{if_id}"/>
+                        <property name="remoteErrorDir"         value=""/>
+                        <property name="dataType"               value="STRING"/>
+                        <property name="charset"                value=""/>
                     </bean>
                 </list>
             </property>
@@ -196,6 +199,7 @@
                         <property name="templateName"           value="LOCAL_DISK"/>
                         <property name="charset"                value="UTF-8"/>
                         <property name="dataType"               value="PARSED_TEXT"/>
+                        <property name="type"                   value="FILE"/>
                     </bean>
                 </list>
             </property>
@@ -287,16 +291,37 @@
             <property name="frontHttpMethod"        value="GET, POST"/>
             <property name="dynamicCodeSequence"    value="@{if_id}.TEST1, @{if_id}.TEST2"/>
             <property name="serviceId"              value="DYNAMIC_TEST"/>
+            <property name="errorHandlerId"         value=""/>
         </bean>
 
         <bean class="mb.dnm.storage.InterfaceInfo">
-            <property name="interfaceId"            value="INTERFACE_ACTIVATION"/>
-            <property name="description"            value="인터페이스 컨트롤 테스트"/>
+            <property name="interfaceId"            value="INTERFACE_CONTROLLER"/>
+            <property name="controllerInterface"    value="true"/>
             <property name="frontHttpUrl"           value="/@{if_id}"/>
             <property name="frontHttpMethod"        value="POST"/>
+            <property name="loggingWhenNormal"      value="false"/>
+            <property name="loggingWhenError"       value="false"/>
             <property name="serviceId"              value="INTERFACE_ACTIVATION"/>
         </bean>
 
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="FILE_MOVEMENT"/>
+            <property name="description"            value="FTP 인터페이스 테스트"/>
+            <property name="serviceId"              value="FILE_MOVEMENT"/>
+            <property name="sourceAliases"          value="SRC:SRC, TGT:FTP2"/>
+            <property name="fileTemplates">
+                <list>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"        value="SRC"/>
+                        <property name="localSendDir"        value="E:\"/>
+                        <property name="localSuccessDir"     value="D:\백업\SD카드백업"/>
+
+                        <property name="fileNamePattern"     value="202408*"/>
+                        <property name="type"                value="DIRECTORY"/>
+                    </bean>
+                </list>
+            </property>
+        </bean>
     </util:list>
 
 

@@ -2,9 +2,8 @@ package mb.dnm.access.file;
 
 import lombok.Getter;
 import lombok.Setter;
-import mb.dnm.access.EmptyCheckable;
+import mb.dnm.access.SizeCheckable;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import java.util.List;
  *
  * */
 @Setter @Getter
-public class FileList implements EmptyCheckable {
+public class FileList implements SizeCheckable {
     private String baseDirectory;
     private List<String> fileList;
 
@@ -67,5 +66,10 @@ public class FileList implements EmptyCheckable {
     @Override
     public boolean isEmpty() {
         return fileList == null || fileList.isEmpty();
+    }
+
+    @Override
+    public int getSize() {
+        return fileList == null ? 0 : fileList.size();
     }
 }

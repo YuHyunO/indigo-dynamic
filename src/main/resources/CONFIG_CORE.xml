@@ -11,6 +11,7 @@
         <property name="interfaceRegistry" ref="interfaces"/>
         <property name="serviceRegistry" ref="serviceStrategies"/>
         <property name="errorHandlerRegistry" ref="errorHandlers"/>
+        <property name="defaultInterfaceEnabled" value="true"/>
     </bean>
 
     <!-- ¡ØDB Access Component -->
@@ -56,6 +57,7 @@
                     <property name="password"                   value="ftpuser123"/>
                     <property name="controlEncoding"            value="UTF-8"/>
                     <property name="debugCommandAndReply"       value="false"/>
+                    <!--property name="serverKey"                  value="WINDOWS"/-->
                 </bean>
             </list>
         </property>
