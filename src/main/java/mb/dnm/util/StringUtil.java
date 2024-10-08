@@ -2,7 +2,7 @@ package mb.dnm.util;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class StringFunction {
+public class StringUtil {
 
     public static String substring(String val, int startIdx) {
         return val.substring(startIdx);
@@ -18,6 +18,9 @@ public class StringFunction {
 
     public static String build(String delimiter, Object ...vals) {
         StringBuilder sb = new StringBuilder();
+        if (vals == null) {
+            return "";
+        }
         for (Object val : vals) {
             sb.append(val);
             sb.append(delimiter);
@@ -29,18 +32,26 @@ public class StringFunction {
     }
 
     public static String toUpperCase(String val) {
+        if (val == null)
+            return null;
         return val.toUpperCase();
     }
 
     public static String toLowerCase(String val) {
+        if (val == null)
+            return null;
         return val.toLowerCase();
     }
 
     public static String trim(String val) {
+        if (val == null)
+            return null;
         return val.trim();
     }
 
     public static String ltrim(String val) {
+        if (val == null)
+            return null;
         char[] chars = val.toCharArray();
         int ltrimIdx = 0;
         for (int i = 0; i < chars.length; i++) {
@@ -54,6 +65,8 @@ public class StringFunction {
     }
 
     public static String rtrim(String val) {
+        if (val == null)
+            return null;
         char[] chars = val.toCharArray();
         int rtrimIdx = chars.length - 1;
         for (int i = chars.length - 1; i >= 0; i--) {
@@ -67,18 +80,26 @@ public class StringFunction {
     }
 
     public static String lpad(String val, int len) {
+        if (val == null)
+            return null;
         return StringUtils.leftPad(val, len);
     }
 
     public static String lpad(String val, int len, String pad) {
+        if (val == null)
+            return null;
         return StringUtils.leftPad(val, len, pad);
     }
 
     public static String rpad(String val, int len, String pad) {
+        if (val == null)
+            return null;
         return StringUtils.rightPad(val, len, pad);
     }
 
     public static String rpad(String val, int len) {
+        if (val == null)
+            return null;
         return StringUtils.rightPad(val, len);
     }
 

@@ -1,6 +1,6 @@
 package com.mb.mapper;
 
-import mb.dnm.util.StringFunction;
+import mb.dnm.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -10,14 +10,14 @@ public class StringFunctionTest {
     @Test
     public void substring_test() {
         String test = "abcdefg& 100092";
-        String result = new StringFunction().substring(test, 2, 5);
+        String result = new StringUtil().substring(test, 2, 5);
         log.info(">>{}", result);
     }
 
     @Test
     public void length_test() {
         String test = "abc";
-        int result = new StringFunction().length(test);
+        int result = new StringUtil().length(test);
         log.info(">>{}", result);
     }
 
@@ -34,7 +34,7 @@ public class StringFunctionTest {
     @Test
     public void build_test() {
         String delimiter = "$";
-        String result = new StringFunction().build(delimiter, "ABC", "가나다", "1239999", 111222);
+        String result = new StringUtil().build(delimiter, "ABC", "가나다", "1239999", 111222);
 
         log.info("{}", result);
     }
@@ -45,7 +45,7 @@ public class StringFunctionTest {
         String test = space + "abcsss   ";
         log.info("space length: {}", space.length());
         log.info("test length: {}", test.length());
-        String result = new StringFunction().ltrim(test);
+        String result = new StringUtil().ltrim(test);
         log.info("{}", result);
         log.info("result length: {}", result.length());
     }
@@ -56,7 +56,7 @@ public class StringFunctionTest {
         String test = space + "abcsss     ";
         log.info("space length: {}", space.length());
         log.info("test length: {}", test.length());
-        String result = new StringFunction().rtrim(test);
+        String result = new StringUtil().rtrim(test);
         log.info("{}", result);
         log.info("result length: {}", result.length());
     }
@@ -66,14 +66,14 @@ public class StringFunctionTest {
         String test = "abc";
 
         log.info("original: {}, len: {}", test, test.length());
-        log.info("rpad(test, 7, \"*\"): {}, len: {}", new StringFunction().rpad(test, 7, "*"), new StringFunction().rpad(test, 7, "*").length());
-        log.info("rpad(test, 7): {}, len: {}", new StringFunction().rpad(test, 7), new StringFunction().rpad(test, 7, "*").length());
+        log.info("rpad(test, 7, \"*\"): {}, len: {}", new StringUtil().rpad(test, 7, "*"), new StringUtil().rpad(test, 7, "*").length());
+        log.info("rpad(test, 7): {}, len: {}", new StringUtil().rpad(test, 7), new StringUtil().rpad(test, 7, "*").length());
     }
 
     @Test
     public void lpad() {
         String test = "abc";
-        log.info("test: {}", new StringFunction().lpad(test, 7, "*"));
-        log.info("test: {}", new StringFunction().lpad(test, 7));
+        log.info("test: {}", new StringUtil().lpad(test, 7, "*"));
+        log.info("test: {}", new StringUtil().lpad(test, 7));
     }
 }
