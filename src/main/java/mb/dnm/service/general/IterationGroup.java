@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import mb.dnm.code.ProcessCode;
 import mb.dnm.core.ErrorHandler;
 import mb.dnm.core.Service;
+import mb.dnm.core.callback.AfterProcessCallback;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
@@ -42,6 +43,10 @@ public class IterationGroup extends ParameterAssignableService {
      * */
     private List<ErrorHandler> errorHandlers;
     /**
+     * 각각의 Iteration 이 종료될 때 마다 수행할 callbacks
+     * */
+    private static List<AfterProcessCallback> callbacks;
+    /**
      * 각각의 Iteration 에서 service strategies 의 Input 매개변수로 전달될 요소명<br>
      * */
     private String iterationInputName;
@@ -63,6 +68,13 @@ public class IterationGroup extends ParameterAssignableService {
      * 각각의 Iteration 에서 매번 새로운 ServiceContext를 생성할 지에 대한 설정
      * */
     private boolean createNewContextEachLoop = false;
+    /**
+     * 기본값: false<br>
+     * createNewContextEachLoop 속성이 true 인 경우 Input 으로 전달된 Iterable 객체가 가지고 있는 element 의 수만큼 ServiceContext 가 새로 생성된다.
+     * 이때 continueNextContextWhenErrorOccurred 속성을 true 로 지정하면 Iterable 객체의 특정 element 의 프로세스를 수행하는 도중 에러가 발생하더라도
+     * IterationGroup 전체를 throw Exception 하여 종료시키지 않고 다음 element 의 프로세스를 진행하게된다.
+     * */
+    private boolean continueNextContextWhenErrorOccurred = false;
 
     private boolean initialCheck = false;
 
@@ -181,7 +193,7 @@ public class IterationGroup extends ParameterAssignableService {
                             continue;
                         Class errorHandlerClass = errorHandler.getClass();
                         try {
-                            log.warn("[{}]Start the error handler '{}'({}/{})", innerTxId, errorHandlerClass, cnt2, handlerCount);
+                            log.warn("[{}]Iteration-Group: Start the error handler '{}'({}/{})", innerTxId, errorHandlerClass, cnt2, handlerCount);
                             errorHandler.handleError(innerCtx);
                         } catch (Throwable t2) {
                             log.error("[" + innerTxId + "]Iteration-Group: An error occurred when handling error.(" + cnt2 + "/" + handlerCount
@@ -190,10 +202,28 @@ public class IterationGroup extends ParameterAssignableService {
                         } finally {
                             //* Set the end time at each end of error handler
                             innerCtx.stampEndTime();
-                            log.debug("[{}]End the error handler '{}'", innerTxId, errorHandlerClass);
+                            log.debug("[{}]Iteration-Group: End the error handler '{}'", innerTxId, errorHandlerClass);
                         }
                     }
+
+                    if (!createNewContextEachLoop && !continueNextContextWhenErrorOccurred) {
+                        throw t1;
+                    }
                 } finally {
+
+                    if (callbacks != null && !callbacks.isEmpty()) {
+                        //Processing callbacks
+                        for (AfterProcessCallback callback : callbacks) {
+                            try {
+                                log.debug("[{}]Iteration-Group: Processing callback: {}", txId, callback.getClass());
+                                callback.afterProcess(ctx);
+                            } catch (Throwable t) {
+                                log.error("[" + txId + "]Iteration-Group: Callback " + callback.getClass() + " process failed. Cause: ", t);
+                            }
+                        }
+
+                    }
+
                     if (breaked) {
                         break;
                     }
@@ -206,12 +236,12 @@ public class IterationGroup extends ParameterAssignableService {
         } else {
             Object inputVal = getInputValue(ctx);
             if (inputVal == null) {
-                log.debug("[{}]The value of input '{}' is not found. No file paths to read found in context data.", txId, getInput());
+                log.debug("[{}]Iteration-Group: The value of input '{}' is not found. No file paths to read found in context data.", txId, getInput());
                 return;
             }
 
             if (services == null || services.isEmpty()) {
-                log.warn("[{}]No services are found for this iterationGroup", txId);
+                log.warn("[{}]Iteration-Group: No services are found for this iterationGroup", txId);
             }
             int serviceCount = services.size();
 
@@ -318,7 +348,7 @@ public class IterationGroup extends ParameterAssignableService {
                             continue;
                         Class errorHandlerClass = errorHandler.getClass();
                         try {
-                            log.warn("[{}]Start the error handler '{}'({}/{})", innerTxId, errorHandlerClass, cnt2, handlerCount);
+                            log.warn("[{}]Iteration-Group: Start the error handler '{}'({}/{})", innerTxId, errorHandlerClass, cnt2, handlerCount);
                             errorHandler.handleError(innerCtx);
                         } catch (Throwable t2) {
                             log.error("[" + innerTxId + "]Iteration-Group: An error occurred when handling error.(" + cnt2 + "/" + handlerCount
@@ -327,8 +357,24 @@ public class IterationGroup extends ParameterAssignableService {
                         } finally {
                             //* Set the end time at each end of error handler
                             innerCtx.stampEndTime();
-                            log.debug("[{}]End the error handler '{}'", innerTxId, errorHandlerClass);
+                            log.debug("[{}]Iteration-Group: End the error handler '{}'", innerTxId, errorHandlerClass);
                         }
+                    }
+                    if (!createNewContextEachLoop && !continueNextContextWhenErrorOccurred) {
+                        throw t1;
+                    }
+                } finally {
+                    if (callbacks != null && !callbacks.isEmpty()) {
+                        //Processing callbacks
+                        for (AfterProcessCallback callback : callbacks) {
+                            try {
+                                log.debug("[{}]Iteration-Group: Processing callback: {}", txId, callback.getClass());
+                                callback.afterProcess(ctx);
+                            } catch (Throwable t) {
+                                log.error("[" + txId + "]Iteration-Group: Callback " + callback.getClass() + " process failed. Cause: ", t);
+                            }
+                        }
+
                     }
                 }
             }
