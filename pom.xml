@@ -247,6 +247,11 @@
             <version>1.12</version>
         </dependency>
         <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.4</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.mwiede</groupId>
             <artifactId>jsch</artifactId>
             <version>0.2.19</version>
@@ -318,6 +323,7 @@
                         <exclude>**/*.mp</exclude>
                         <exclude>**/*.txt</exclude>
                         <exclude>**/*.dnc</exclude>
+                        <exclude>**/config_*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
