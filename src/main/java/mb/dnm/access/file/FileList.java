@@ -5,6 +5,7 @@ import lombok.Setter;
 import mb.dnm.access.SizeCheckable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ import java.util.List;
  *
  * */
 @Setter @Getter
-public class FileList implements SizeCheckable {
+public class FileList implements SizeCheckable, Iterable {
     private String baseDirectory;
     private List<String> fileList;
 
@@ -71,5 +72,10 @@ public class FileList implements SizeCheckable {
     @Override
     public int getSize() {
         return fileList == null ? 0 : fileList.size();
+    }
+
+    @Override
+    public Iterator iterator() {
+        return getFullFileList().iterator();
     }
 }
