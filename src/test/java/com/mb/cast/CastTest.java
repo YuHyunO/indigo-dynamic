@@ -1,6 +1,8 @@
 package com.mb.cast;
 
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.service.general.OutputCustomData;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.junit.Test;
 
 import java.util.*;
@@ -31,7 +33,13 @@ public class CastTest {
     }
 
     @Test
-    public void cast_test2() {
-        log.info("{}", Object.class == Object.class);
+    public void cast_test2() throws Exception {
+        Object strInt = "7";
+        /*Number num = (Number)(ConvertUtils.convert(strInt, Integer.class));
+        log.info("num: {}", num);*/
+
+        OutputCustomData service = new OutputCustomData();
+        service.setCastType("int");
+        service.setCustomData("7");
     }
 }
