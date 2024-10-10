@@ -77,6 +77,16 @@ public class IterationGroup extends ParameterAssignableService {
     private boolean continueDespiteError = false;
 
     private boolean initialCheck = false;
+    /**
+     * 기본값: false<br>
+     * createNewContextEachLoop 속성이 true 인 경우 각 반복에서 새로운 ServiceContext 에 Transaction context 를 공유한다. 
+     * */
+    private boolean passTransactionToContexts = false;
+    /**
+     * 기본값: false<br>
+     * createNewContextEachLoop 속성이 true 인 경우 각 반복에서 새로운 ServiceContext 에 ClosableStreamWrapper session 을 공유한다.
+     * */
+    private boolean passSessionToContexts = false;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
@@ -149,6 +159,12 @@ public class IterationGroup extends ParameterAssignableService {
                             innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
                         } else {
                             innerCtx.addServiceTrace(serviceClass);
+                            if (passTransactionToContexts) {
+                                innerCtx.setTxContextMap(ctx.getTxContextMap());
+                            }
+                            if (passSessionToContexts) {
+                                innerCtx.setSessionMap(ctx.getSessionMap());
+                            }
                         }
                         try {
                             if (innerCtx.isProcessOn()) {
@@ -208,6 +224,15 @@ public class IterationGroup extends ParameterAssignableService {
 
                     if (!createNewContextEachLoop && !continueDespiteError) {
                         throw t1;
+                    }
+                    // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passTransactionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
+                    if (passTransactionToContexts) {
+                        log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passTransactionToContexts' is also true.", innerTxId);
+                        throw t1;
+                    }
+                    // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passSessionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
+                    if (passSessionToContexts) {
+                        log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passSessionToContexts' is also true.", innerTxId);
                     }
                 } finally {
 
@@ -310,6 +335,12 @@ public class IterationGroup extends ParameterAssignableService {
                             innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
                         } else {
                             innerCtx.addServiceTrace(serviceClass);
+                            if (passTransactionToContexts) {
+                                innerCtx.setTxContextMap(ctx.getTxContextMap());
+                            }
+                            if (passSessionToContexts) {
+                                innerCtx.setSessionMap(ctx.getSessionMap());
+                            }
                         }
                         try {
                             if (innerCtx.isProcessOn()) {
@@ -363,6 +394,17 @@ public class IterationGroup extends ParameterAssignableService {
                     if (!createNewContextEachLoop && !continueDespiteError) {
                         throw t1;
                     }
+
+                    // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passTransactionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
+                    if (passTransactionToContexts) {
+                        log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passTransactionToContexts' is also true.", innerTxId);
+                        throw t1;
+                    }
+                    // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passSessionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
+                    if (passSessionToContexts) {
+                        log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passSessionToContexts' is also true.", innerTxId);
+                    }
+
                 } finally {
                     if (callbacks != null && !callbacks.isEmpty()) {
                         //Processing callbacks
