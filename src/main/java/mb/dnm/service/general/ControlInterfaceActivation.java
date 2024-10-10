@@ -8,8 +8,7 @@ import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.storage.StorageManager;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -61,52 +60,96 @@ public class ControlInterfaceActivation extends ParameterAssignableService {
                     return;
                 }
 
+                List<InterfaceInfo> interfaceInfoList = null;
                 if (ifId.equals("null")) {
                     response.put("message", "The interfaceId is null");
                     setOutputValue(ctx, response);
                     return;
-                }
-
-                InterfaceInfo info = StorageManager.access().getInterfaceInfo(ifId);
-                if (info == null) {
-                    response.put("message", "There is no interface with id '" + ifId + "'");
-                    setOutputValue(ctx, response);
-                    log.info("[{}]No interface with id '{}' found", ctx.getTxId(), ifId);
-                    return;
-                }
-
-                if (ifId.equals(ctx.getInterfaceId())) {
-                    response.put("message", "There is no interface with id '" + ifId + "'");
-                    setOutputValue(ctx, response);
-                    log.info("[{}]Prohibited command detected. requested interface id '{}' is same with this context", ctx.getTxId(), ifId);
-                    return;
-                }
-
-                if (command.equals("ACTIVE")) {
-                    if (info.isActivated()) {
-                        response.put("message", "The interface '" + ifId + "' is already activated");
+                } else if (ifId.equals("%ALL%")) {
+                    interfaceInfoList = StorageManager.access().getInterfaceInfos();
+                    if (interfaceInfoList.isEmpty()|| (interfaceInfoList.size() == 1 && interfaceInfoList.get(0).isControllerInterface())) {
+                        response.put("message", "There is no interfaces");
                         setOutputValue(ctx, response);
+                        log.info("[{}]No interfaces exist", ctx.getTxId());
                         return;
                     }
-                    StorageManager.access().activateInterface(ifId);
-                    response.put("message", "The interface '" + ifId + "' is activated");
-                    setOutputValue(ctx, response);
-                    log.info("[{}]The interface '{}' is activated", ctx.getTxId(), info.getInterfaceId());
-                } else if (command.equals("INACTIVE")) {
-                    if (!info.isActivated()) {
-                        response.put("message", "The interface '" + ifId + "' is already inactivated");
-                        setOutputValue(ctx, response);
-                        return;
+
+                    Map<String, String> messageMap = new LinkedHashMap<>();
+                    for (InterfaceInfo info : interfaceInfoList) {
+                        if (info.isControllerInterface()) {
+                            continue;
+                        }
+                        String infoIfId = info.getInterfaceId();
+                        if (command.equals("ACTIVE")) {
+                            if (info.isActivated()) {
+                                messageMap.put(infoIfId, "The interface '" + infoIfId + "' is already activated");
+                                continue;
+                            }
+                            StorageManager.access().activateInterface(infoIfId);
+                            messageMap.put(infoIfId, "The interface '" + infoIfId + "' is activated");
+
+                            log.info("[{}]The interface '{}' is activated", ctx.getTxId(), info.getInterfaceId());
+                        } else if (command.equals("INACTIVE")) {
+                            if (!info.isActivated()) {
+                                messageMap.put(infoIfId, "The interface '" + infoIfId + "' is already inactivated");
+                                continue;
+                            }
+                            StorageManager.access().inactivateInterface(infoIfId);
+                            messageMap.put(infoIfId, "The interface '" + infoIfId + "' is inactivated");
+                            log.info("[{}]The interface '{}' is inactivated", ctx.getTxId(), info.getInterfaceId());
+                        } else {
+                            response.put("message", "The command '" + command + "' is unknown");
+                            log.info("[{}]The command '" + command + "' is unknown", ctx.getTxId());
+                            setOutputValue(ctx, response);
+                            return;
+                        }
                     }
-                    StorageManager.access().inactivateInterface(ifId);
-                    response.put("message", "The interface '" + ifId + "' is inactivated");
+                    response.put("message", messageMap);
                     setOutputValue(ctx, response);
-                    log.info("[{}]The interface '{}' is inactivated", ctx.getTxId(), info.getInterfaceId());
+
                 } else {
-                    response.put("message", "The command '" + command + "' is unknown");
-                    setOutputValue(ctx, response);
-                    log.info("[{}]The command '" + command + "' is unknown", ctx.getTxId());
+                    InterfaceInfo info = StorageManager.access().getInterfaceInfo(ifId);
+                    if (info == null) {
+                        response.put("message", "There is no interface with id '" + ifId + "'");
+                        setOutputValue(ctx, response);
+                        log.info("[{}]No interface with id '{}' found", ctx.getTxId(), ifId);
+                        return;
+                    }
+                    if (ifId.equals(ctx.getInterfaceId())) {
+                        response.put("message", "There is no interface with id '" + ifId + "'");
+                        setOutputValue(ctx, response);
+                        log.info("[{}]Prohibited command detected. requested interface id '{}' is same with this context", ctx.getTxId(), ifId);
+                        return;
+                    }
+                    if (command.equals("ACTIVE")) {
+                        if (info.isActivated()) {
+                            response.put("message", "The interface '" + ifId + "' is already activated");
+                            setOutputValue(ctx, response);
+                            return;
+                        }
+                        StorageManager.access().activateInterface(ifId);
+                        response.put("message", "The interface '" + ifId + "' is activated");
+                        setOutputValue(ctx, response);
+                        log.info("[{}]The interface '{}' is activated", ctx.getTxId(), info.getInterfaceId());
+                    } else if (command.equals("INACTIVE")) {
+                        if (!info.isActivated()) {
+                            response.put("message", "The interface '" + ifId + "' is already inactivated");
+                            setOutputValue(ctx, response);
+                            return;
+                        }
+                        StorageManager.access().inactivateInterface(ifId);
+                        response.put("message", "The interface '" + ifId + "' is inactivated");
+                        setOutputValue(ctx, response);
+                        log.info("[{}]The interface '{}' is inactivated", ctx.getTxId(), info.getInterfaceId());
+                    } else {
+                        response.put("message", "The command '" + command + "' is unknown");
+                        setOutputValue(ctx, response);
+                        log.info("[{}]The command '" + command + "' is unknown", ctx.getTxId());
+                    }
                 }
+
+
+
 
             } else {
                 log.warn("[{}]Invalid command parameter type. Has no effect", ctx.getTxId());
