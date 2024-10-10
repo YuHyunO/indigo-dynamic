@@ -17,7 +17,6 @@ public class OutputCustomData extends ParameterAssignableService {
     public void setCustomData(Object customData) {
         if (castType != null) {
             this.customData = ConvertUtils.convert(customData, castType);
-            casted = true;
         } else {
             this.customData = customData;
         }
