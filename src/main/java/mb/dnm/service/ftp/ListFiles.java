@@ -144,7 +144,7 @@ public class ListFiles extends AbstractFTPService {
 
         targetPath = FileUtil.removeLastPathSeparator(targetPath);
 
-        WildcardFileFilter filter = new WildcardFileFilter(tmpFileNamePattern);
+
         FTPClient ftp = session.getFTPClient();
         String pathSeparator = String.valueOf(ftp.printWorkingDirectory().charAt(0));
         if (pathSeparator.equals("null")) {
@@ -181,6 +181,7 @@ public class ListFiles extends AbstractFTPService {
             workingDir += pathSeparator;
         }
         fileList.setBaseDirectory(workingDir);
+        WildcardFileFilter filter = new WildcardFileFilter(tmpFileNamePattern);
 
         for (FTPFile file : files) {
             String fileName = file.getName();
