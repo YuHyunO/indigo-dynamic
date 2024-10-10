@@ -45,7 +45,7 @@ public class IterationGroup extends ParameterAssignableService {
     /**
      * 각각의 Iteration 이 종료될 때 마다 수행할 callbacks
      * */
-    private static List<AfterProcessCallback> callbacks;
+    private List<AfterProcessCallback> callbacks;
     /**
      * 각각의 Iteration 에서 service strategies 의 Input 매개변수로 전달될 요소명<br>
      * */
@@ -71,10 +71,10 @@ public class IterationGroup extends ParameterAssignableService {
     /**
      * 기본값: false<br>
      * createNewContextEachLoop 속성이 true 인 경우 Input 으로 전달된 Iterable 객체가 가지고 있는 element 의 수만큼 ServiceContext 가 새로 생성된다.
-     * 이때 continueNextContextWhenErrorOccurred 속성을 true 로 지정하면 Iterable 객체의 특정 element 의 프로세스를 수행하는 도중 에러가 발생하더라도
+     * 이때 continueDespiteError 속성을 true 로 지정하면 Iterable 객체의 특정 element 의 프로세스를 수행하는 도중 에러가 발생하더라도
      * IterationGroup 전체를 throw Exception 하여 종료시키지 않고 다음 element 의 프로세스를 진행하게된다.
      * */
-    private boolean continueNextContextWhenErrorOccurred = false;
+    private boolean continueDespiteError = false;
 
     private boolean initialCheck = false;
 
@@ -206,7 +206,7 @@ public class IterationGroup extends ParameterAssignableService {
                         }
                     }
 
-                    if (!createNewContextEachLoop && !continueNextContextWhenErrorOccurred) {
+                    if (!createNewContextEachLoop && !continueDespiteError) {
                         throw t1;
                     }
                 } finally {
@@ -360,7 +360,7 @@ public class IterationGroup extends ParameterAssignableService {
                             log.debug("[{}]Iteration-Group: End the error handler '{}'", innerTxId, errorHandlerClass);
                         }
                     }
-                    if (!createNewContextEachLoop && !continueNextContextWhenErrorOccurred) {
+                    if (!createNewContextEachLoop && !continueDespiteError) {
                         throw t1;
                     }
                 } finally {
