@@ -4,6 +4,7 @@ import mb.dnm.core.ErrorHandler;
 import mb.dnm.core.Service;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,5 +159,11 @@ public class StorageManager {
 
     public void setDefaultInterfaceEnabled(boolean defaultInterfaceEnabled) {
         this.defaultInterfaceEnabled = defaultInterfaceEnabled;
+    }
+
+    public List<InterfaceInfo> getInterfaceInfos() {
+        List<InterfaceInfo> interfaceInfos = new ArrayList<>();
+        interfaceInfos.addAll(instance.interfaceRegistry.values());
+        return interfaceInfos;
     }
 }
