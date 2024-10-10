@@ -29,7 +29,9 @@ public class ServiceContext {
     private Map<Integer, InnerServiceTrace> innerServiceTraces;
     private Map<Class<? extends Service>, ErrorTrace> errorTrace;
     private Map<String, Object> contextParams;
+    @Setter
     private Map<String, TransactionContext> txContextMap;
+    @Setter
     private Map<String, ClosableStreamWrapper> sessionMap;
     private StringBuilder msg;
     @Setter
