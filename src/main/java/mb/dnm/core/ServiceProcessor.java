@@ -100,9 +100,10 @@ public class ServiceProcessor {
                         ++cnt1;
                         log.debug("[{}]Start the service '{}'({}/{})", txId, serviceClass, cnt1, serviceCount);
                         service.process(ctx);
-                    } else {
-                        log.warn("[{}]Service chain is broken. An error may be exist.({}/{})\nService trace: {}", txId, cnt1, serviceCount, ctx.getServiceTraceMessage());
-                        break;
+                        if (!ctx.isProcessOn()) {
+                            log.warn("[{}]Service chain is broken. An error may be exist.({}/{})\nService trace: {}", txId, cnt1, serviceCount, ctx.getServiceTraceMessage());
+                            break;
+                        }
                     }
                     ctx.setProcessStatus(ProcessCode.SUCCESS);
                 } catch (Throwable t0) {
