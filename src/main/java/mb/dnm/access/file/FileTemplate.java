@@ -123,5 +123,6 @@ public class FileTemplate {
         if (fileNamePattern == null) {
             throw new NullPointerException("fileNamePattern is null");
         }
+        this.fileNamePattern = fileNamePattern;
     }
 }
