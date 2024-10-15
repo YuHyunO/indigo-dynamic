@@ -120,6 +120,7 @@ public class IterationGroup extends ParameterAssignableService {
         int currentQueryOrder = ctx.getCurrentQueryOrder();
         int currentErrorQueryOrder = ctx.getCurrentErrorQueryOrder();
         int currentDynamicCodeOrder = ctx.getCurrentDynamicCodeOrder();
+        int currentErrorDynamicCodeOrder = ctx.getCurrentErrorDynamicCodeOrder();
 
 
         // 우선 iterateUntilBreak 조건에 따라 로직을 나눔 (코드정리 작업은 나중에 수행)
@@ -147,6 +148,7 @@ public class IterationGroup extends ParameterAssignableService {
                 innerCtx.setCurrentQueryOrder(currentQueryOrder);
                 innerCtx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
                 innerCtx.setCurrentDynamicCodeOrder(currentDynamicCodeOrder);
+                innerCtx.setCurrentErrorDynamicCodeOrder(currentErrorDynamicCodeOrder);
 
                 int cnt1 = 0;
                 try {
@@ -316,6 +318,7 @@ public class IterationGroup extends ParameterAssignableService {
                 innerCtx.setCurrentQueryOrder(currentQueryOrder);
                 innerCtx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
                 innerCtx.setCurrentDynamicCodeOrder(currentDynamicCodeOrder);
+                innerCtx.setCurrentErrorDynamicCodeOrder(currentErrorDynamicCodeOrder);
 
                 /*Inner Processing services 에서는 이 서비스에 등록된 iterationInputName 으로 input 을 파라미터로 받을 수 있다.
                   지금 이 코드는 ParameterAssignableService#setOutputValue(ServiceContext ctx, Object outputValue); 와 같은 효과를 가진다.
@@ -425,6 +428,7 @@ public class IterationGroup extends ParameterAssignableService {
             ctx.setCurrentQueryOrder(currentQueryOrder);
             ctx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
             ctx.setCurrentDynamicCodeOrder(currentDynamicCodeOrder);
+            ctx.setCurrentErrorDynamicCodeOrder(currentErrorDynamicCodeOrder);
 
             log.debug("[{}]Iteration-Group: Total iteration count: {}", txId, iterCnt);
         }
