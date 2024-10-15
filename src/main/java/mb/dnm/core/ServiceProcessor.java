@@ -107,7 +107,7 @@ public class ServiceProcessor {
                     }
                     ctx.setProcessStatus(ProcessCode.SUCCESS);
                 } catch (Throwable t0) {
-                    ctx.setProcessStatus(ProcessCode.FAILURE);
+
                     ctx.addErrorTrace(serviceClass, t0);
                     String description = service.getDescription();
                     StringBuilder msg = new StringBuilder("An error occurred at the service '" + serviceClass + "'");
@@ -120,6 +120,7 @@ public class ServiceProcessor {
                         log.warn("[{}]An error occurred at the service '{}' but ignored.({}/{}). Error:{}", txId, serviceClass, cnt1, serviceCount, MessageUtil.toString(t0));
                         continue;
                     }
+                    ctx.setProcessStatus(ProcessCode.FAILURE);
                     log.error("[" + txId + "]Service chain is broken. An error occurred at the service '" + serviceClass + "'", t0);
                     throw t0;
                 } finally {
