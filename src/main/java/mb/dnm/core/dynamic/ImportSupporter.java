@@ -14,7 +14,7 @@ public class ImportSupporter {
     private final static List<String> PROHIBITED_KEYWORD = new ArrayList<>();
 
     static {
-        PROHIBITED_KEYWORD.add("Tread");
+        /*PROHIBITED_KEYWORD.add("Tread");
         PROHIBITED_KEYWORD.add("ThreadGroup");
         PROHIBITED_KEYWORD.add("ThreadLocal");
         PROHIBITED_KEYWORD.add("Runnable");
@@ -44,7 +44,7 @@ public class ImportSupporter {
         PROHIBITED_KEYWORD.add("println");
         PROHIBITED_KEYWORD.add("printf");
         PROHIBITED_KEYWORD.add("print");
-        PROHIBITED_KEYWORD.add("ServiceProcessor");
+        PROHIBITED_KEYWORD.add("ServiceProcessor");*/
 
         AUTO_IMPORT_CLASSES.put("Collection", "java.util.Collection");
         AUTO_IMPORT_CLASSES.put("List", "java.util.List");
@@ -73,6 +73,7 @@ public class ImportSupporter {
 
         AUTO_IMPORT_CLASSES.put("MessageUtil", "mb.dnm.util.MessageUtil");
         AUTO_IMPORT_CLASSES.put("StringUtil", "mb.dnm.util.StringUtil");
+        AUTO_IMPORT_CLASSES.put("TimeUtil", "mb.dnm.util.TimeUtil");
         AUTO_IMPORT_CLASSES.put("ServiceContext", "mb.dnm.core.context.ServiceContext");
         AUTO_IMPORT_CLASSES.put("AbstractDynamicCode", "mb.dnm.core.dynamic.AbstractDynamicCode");
         AUTO_IMPORT_CLASSES.put("Logger", "org.slf4j.Logger");
