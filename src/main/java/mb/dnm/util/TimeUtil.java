@@ -6,14 +6,16 @@ import java.util.Date;
 public class TimeUtil {
     public static final String YYYY = "yyyy";
     public static final String MMDD = "MMdd";
+    public static final String HHmm = "HHmm";
+    public static final String mmss = "mmss";
     public static final String YYYYMM = "yyyyMM";
     public static final String YYYYMMDD = "yyyyMMdd";
-    public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
-    public static final String YYYYMMDDHHMMSSFFF = "yyyyMMddHHmmssSSS";
+    public static final String YYYYMMDDHHmmss = "yyyyMMddHHmmss";
+    public static final String YYYYMMDDHHmmssSSS = "yyyyMMddHHmmssSSS";
     public static final String TIMESTAMP_FORMAT = "yyyyMMddHHmmssSSS";
     public static final String DATETIME_FORMAT = "yyyyMMddHHmmss";
     public static final String DATE_FORMAT = "yyyyMMdd";
-    public static final String TIME_FORMAT = "HHmmss";
+    public static final String HHmmss = "HHmmss";
     public static final String JDBC_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:sss.SSSSSSSSS";
     public static final String JDBC_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
