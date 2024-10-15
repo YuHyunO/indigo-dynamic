@@ -38,6 +38,7 @@ public class InterfaceInfo {
 
     //Property for mapping
     protected String[] dynamicCodeSequenceArr;
+    protected String[] errorDynamicCodeSequenceArr;
 
     //Properties for logging
     protected boolean loggingWhenNormal = true;
@@ -56,8 +57,16 @@ public class InterfaceInfo {
         this.dynamicCodeSequenceArr = parseDynamicCodeSequence(dynamicCodeSequence);
     }
 
+    public void setErrorDynamicCodeSequence(String errorDynamicCodeSequence) {
+        this.errorDynamicCodeSequenceArr = parseDynamicCodeSequence(errorDynamicCodeSequence);
+    }
+
     public String[] getDynamicCodeSequence() {
         return dynamicCodeSequenceArr;
+    }
+
+    public String[] getErrorDynamicCodeSequence() {
+        return errorDynamicCodeSequenceArr;
     }
 
     private String[] parseQuerySequence(String querySequence) {
