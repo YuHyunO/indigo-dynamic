@@ -27,8 +27,6 @@ public class DefaultPlaceHolderParamResolver implements PlaceHolderParamResolver
         PARAM_MAPPER.put("@{tx_end_time_jdbc_date}", "getEndTimeDateForJdbc");
         PARAM_MAPPER.put("@{tx_process_status}", "getProcessStatus");
         PARAM_MAPPER.put("@{tx_msg}", "getMsg");
-        PARAM_MAPPER.put("@{tx_msg}", "getMsg");
-        PARAM_MAPPER.put("@{tx_msg}", "getMsg");
         PARAM_MAPPER.put("@{cur_date}", null);
         PARAM_MAPPER.put("@{cur_time}", null);
         PARAM_MAPPER.put("@{cur_datetime}", null);
@@ -68,7 +66,7 @@ public class DefaultPlaceHolderParamResolver implements PlaceHolderParamResolver
             } else if (expression.equals("@{cur_datetime}")) {
                 return TimeUtil.curDate(TimeUtil.DATETIME_FORMAT);
             } else if (expression.equals("@{cur_time}")) {
-                return TimeUtil.curDate(TimeUtil.TIME_FORMAT);
+                return TimeUtil.curDate(TimeUtil.HHmmss);
             } else if (expression.equals("@{cur_timestamp}")) {
                 return TimeUtil.curTimeStamp();
             } else if (expression.startsWith("@{custom_status_msg}:{")) {
