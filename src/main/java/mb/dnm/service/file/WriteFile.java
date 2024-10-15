@@ -202,6 +202,13 @@ public class WriteFile extends SourceAccessService {
     private String filenameSuffix = null;
 
     /**
+     * 파일명을 FileTemplate 이 아닌 ServiceContext 의 특정 값을 가져오고자 할 때
+     * ServiceContext 에 output 된 파라미터 명을 지정해주면 그 값으로 파일명을 사용하게 된다.
+     * 이 설정을 사용하는 경우 filenamePrefix 속성과 filenameSuffix 속성은 무효하다.
+     * */
+    private String filenameInput = null;
+
+    /**
      * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 생성한 파일의 저장 경로로써 사용할 지 결정된다.<br><br>
      * -기본값: <code>LOCAL_WRITE</code><br>
      * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
@@ -254,12 +261,21 @@ public class WriteFile extends SourceAccessService {
 
         // outPutDataType 이 dataTypeDataType.FILE 인 경우 InterfaceInfo에서 FileTemplate을 가져와 directoryType 과 일치하는 경로에 파일을 저장함
         FileTemplate template = info.getFileTemplate(srcName);
-        String filename = template.getFileName(ctx);
-        if (filenamePrefix != null && !filenamePrefix.isEmpty()) {
-            filename = filenamePrefix + filename;
-        }
-        if (filenameSuffix != null && !filenameSuffix.isEmpty()) {
-            filename += filenameSuffix;
+        String filename = null;
+
+        if (filenameInput != null) {
+            filename = template.getFileName(ctx);
+            if (filenamePrefix != null && !filenamePrefix.isEmpty()) {
+                filename = filenamePrefix + filename;
+            }
+            if (filenameSuffix != null && !filenameSuffix.isEmpty()) {
+                filename += filenameSuffix;
+            }
+        } else {
+            Object filenameInputVal = ctx.getContextParam(filenameInput);
+            if (filenameInputVal == null)
+                throw new InvalidServiceConfigurationException(this.getClass(), "The property filenameInput is exist but there is no value with name '" + filenameInput + "' in the context");
+            filename = filenameInputVal.toString();
         }
 
         Charset charset = null;
