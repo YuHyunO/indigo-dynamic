@@ -15,7 +15,9 @@ import mb.dnm.storage.InterfaceInfo;
  *
  * @see InterfaceInfo#getDynamicCodeSequence()
  * @see ServiceContext#hasMoreDynamicCodes()
- * @see ServiceContext#getCurrentDynamicCodeOrder()
+ * @see ServiceContext#nextDynamicCodeId()
+ * @see ServiceContext#hasMoreErrorDynamicCodes()
+ * @see ServiceContext#nextErrorDynamicCodeId() 
  *
  * @author Yuhyun O
  * @version 2024.09.30
@@ -28,10 +30,17 @@ public class ExecuteDynamicCode extends AbstractService {
     @Override
     public void process(ServiceContext ctx) throws Throwable {
 
-        if (!ctx.hasMoreDynamicCodes())
-            throw new InvalidServiceConfigurationException(this.getClass(), "No more dynamic code found in the dynamic code sequence queue");
+        String codeId = null;
+        if (exceptionHandlingMode) {
+            if (!ctx.hasMoreErrorDynamicCodes())
+                throw new InvalidServiceConfigurationException(this.getClass(), "No more errorDynamic code found in the dynamic code sequence queue");
+            codeId = ctx.nextErrorDynamicCodeId();
+        } else {
+            if (!ctx.hasMoreDynamicCodes())
+                throw new InvalidServiceConfigurationException(this.getClass(), "No more dynamic code found in the dynamic code sequence queue");
+            codeId = ctx.nextDynamicCodeId();
+        }
 
-        String codeId = ctx.nextDynamicCodeId();
         DynamicCodeInstance dnmInstance = DynamicCodeProvider.access().getDynamicCode(codeId);
         if (dnmInstance == null) {
             throw new InvalidServiceConfigurationException(this.getClass(), "The dynamic code instance with id '" + codeId + "' is not exist in the DynamicCodeProvider.");
