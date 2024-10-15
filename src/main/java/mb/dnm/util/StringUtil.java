@@ -31,27 +31,28 @@ public class StringUtil {
         return sb.toString();
     }
 
-    public static String toUpperCase(String val) {
-        if (val == null)
+    public static String toUpperCase(Object valObj) {
+        if (valObj == null)
             return null;
-        return val.toUpperCase();
+        return String.valueOf(valObj).toUpperCase();
     }
 
-    public static String toLowerCase(String val) {
-        if (val == null)
+    public static String toLowerCase(Object valObj) {
+        if (valObj == null)
             return null;
-        return val.toLowerCase();
+        return String.valueOf(valObj).toLowerCase();
     }
 
-    public static String trim(String val) {
-        if (val == null)
+    public static String trim(Object valObj) {
+        if (valObj == null)
             return null;
-        return val.trim();
+        return String.valueOf(valObj).trim();
     }
 
-    public static String ltrim(String val) {
-        if (val == null)
+    public static String ltrim(Object valObj) {
+        if (valObj == null)
             return null;
+        String val = String.valueOf(valObj);
         char[] chars = val.toCharArray();
         int ltrimIdx = 0;
         for (int i = 0; i < chars.length; i++) {
@@ -64,9 +65,10 @@ public class StringUtil {
         return ltrimIdx != 0 ? val.substring(ltrimIdx) : val;
     }
 
-    public static String rtrim(String val) {
-        if (val == null)
+    public static String rtrim(Object valObj) {
+        if (valObj == null)
             return null;
+        String val = String.valueOf(valObj);
         char[] chars = val.toCharArray();
         int rtrimIdx = chars.length - 1;
         for (int i = chars.length - 1; i >= 0; i--) {
@@ -79,28 +81,32 @@ public class StringUtil {
         return rtrimIdx != chars.length ? val.substring(0, rtrimIdx + 1) : val;
     }
 
-    public static String lpad(String val, int len) {
-        if (val == null)
+    public static String lpad(Object valObj, int len) {
+        if (valObj == null)
             return null;
-        return StringUtils.leftPad(val, len);
+        return StringUtils.leftPad(String.valueOf(valObj), len);
     }
 
-    public static String lpad(String val, int len, String pad) {
-        if (val == null)
+    public static String lpad(Object valObj, int len, Object pad) {
+        if (valObj == null)
             return null;
-        return StringUtils.leftPad(val, len, pad);
+        if (pad == null)
+            return StringUtils.leftPad(String.valueOf(valObj), len);
+        return StringUtils.leftPad(String.valueOf(valObj), len, String.valueOf(pad));
     }
 
-    public static String rpad(String val, int len, String pad) {
-        if (val == null)
+    public static String rpad(Object valObj, int len, Object pad) {
+        if (valObj == null)
             return null;
-        return StringUtils.rightPad(val, len, pad);
+        if (pad == null)
+            return StringUtils.leftPad(String.valueOf(valObj), len);
+        return StringUtils.rightPad(String.valueOf(valObj), len, String.valueOf(pad));
     }
 
-    public static String rpad(String val, int len) {
-        if (val == null)
+    public static String rpad(Object valObj, int len) {
+        if (valObj == null)
             return null;
-        return StringUtils.rightPad(val, len);
+        return StringUtils.rightPad(String.valueOf(valObj), len);
     }
 
 
