@@ -1,6 +1,7 @@
 package com.mb.ftp;
 
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.core.context.ServiceContext;
 import mb.dnm.util.FileUtil;
 import org.junit.Test;
 
@@ -22,4 +23,5 @@ public class FilePathTest {
         log.info("Ends with: {}", parentDir.toString().endsWith("\\"));
 
     }
+
 }

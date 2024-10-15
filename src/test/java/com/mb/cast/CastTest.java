@@ -30,6 +30,9 @@ public class CastTest {
         String[] ss = {"a", "b", "c", "d"};
         Object[] o = (Object[]) ss;
         log.info("len: {}", o.length);
+        Iterator<String> iter = Arrays.asList(ss).iterator();
+        iter.hasNext();
+        String dd = iter.next();
     }
 
     @Test
@@ -38,8 +41,16 @@ public class CastTest {
         /*Number num = (Number)(ConvertUtils.convert(strInt, Integer.class));
         log.info("num: {}", num);*/
 
+        strInt = strInt != null ? strInt.toString() : null;
+
         OutputCustomData service = new OutputCustomData();
         service.setCastType("int");
         service.setCustomData("7");
+    }
+
+    @Test
+    public void castInt_test() {
+        String intStr = "0000000";
+        Integer.parseInt(intStr);
     }
 }
