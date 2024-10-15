@@ -6,7 +6,6 @@ import mb.dnm.access.db.QueryMap;
 import mb.dnm.code.ProcessCode;
 import mb.dnm.core.Service;
 import mb.dnm.exeption.ErrorTrace;
-import mb.dnm.service.general.IterationGroup;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 import mb.dnm.util.TimeUtil;
@@ -40,6 +39,8 @@ public class ServiceContext {
     private int currentErrorQueryOrder = 0;
     @Setter
     private int currentDynamicCodeOrder = 0;
+    @Setter
+    private int currentErrorDynamicCodeOrder = 0;
     @Setter @Getter
     private ProcessCode processStatus = ProcessCode.NOT_STARTED;
 
@@ -186,7 +187,7 @@ public class ServiceContext {
         }
         int seqSize = codeSequence.length;
         if (currentDynamicCodeOrder > seqSize)
-            throw new NoSuchElementException("Query sequence reached to the last");
+            throw new NoSuchElementException("DynamicCode sequence reached to the last");
         String code = codeSequence[currentDynamicCodeOrder];
         ++currentDynamicCodeOrder;
         return code;
@@ -196,6 +197,27 @@ public class ServiceContext {
         String[] codeSequence = info.getDynamicCodeSequence();
         int seqSize = codeSequence.length;
         if (currentDynamicCodeOrder <= seqSize)
+            return true;
+        return false;
+    }
+
+    public String nextErrorDynamicCodeId() {
+        String[] codeSequence = info.getErrorDynamicCodeSequence();
+        if (codeSequence == null) {
+            throw new NoSuchElementException("ErrorDynamicCode sequence is null");
+        }
+        int seqSize = codeSequence.length;
+        if (currentErrorDynamicCodeOrder > seqSize)
+            throw new NoSuchElementException("ErrorDynamicCode sequence reached to the last");
+        String code = codeSequence[currentErrorDynamicCodeOrder];
+        ++currentErrorDynamicCodeOrder;
+        return code;
+    }
+
+    public boolean hasMoreErrorDynamicCodes() {
+        String[] codeSequence = info.getErrorDynamicCodeSequence();
+        int seqSize = codeSequence.length;
+        if (currentErrorDynamicCodeOrder <= seqSize)
             return true;
         return false;
     }
@@ -347,11 +369,13 @@ public class ServiceContext {
         infoMap.put("$if_id", getInterfaceId());
         infoMap.put("$process_status", processStatus.getProcessCode());
         infoMap.put("$start_time_timestamp", TimeUtil.getFormattedTime(startTime, TimeUtil.TIMESTAMP_FORMAT));
+        infoMap.put("$start_time_date", TimeUtil.getFormattedTime(startTime, TimeUtil.DATETIME_FORMAT));
         infoMap.put("$end_time_timestamp", TimeUtil.getFormattedTime(endTime, TimeUtil.TIMESTAMP_FORMAT));
+        infoMap.put("$end_time_date", TimeUtil.getFormattedTime(endTime, TimeUtil.DATETIME_FORMAT));
         infoMap.put("$YYYY", TimeUtil.curDate(TimeUtil.YYYY));
         infoMap.put("$YYYYMM", TimeUtil.curDate(TimeUtil.YYYYMM));
         infoMap.put("$YYYYMMDD", TimeUtil.curDate(TimeUtil.YYYYMMDD));
-        infoMap.put("$YYYYMMDDHHMMSS", TimeUtil.curDate(TimeUtil.YYYYMMDDHHMMSS));
+        infoMap.put("$YYYYMMDDHHmmss", TimeUtil.curDate(TimeUtil.YYYYMMDDHHmmss));
         return infoMap;
     }
 
