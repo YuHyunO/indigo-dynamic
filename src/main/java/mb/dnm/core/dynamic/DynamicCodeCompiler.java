@@ -139,7 +139,7 @@ public class DynamicCodeCompiler {
             //(1) Get namespace - start : dnc 파일의 namespace를 가져온다.
             String namespace = null;
             if (!content.startsWith("#namespace"))
-                throw new DynamicCodeCompileException(1, "namespace is not exist");
+                throw new DynamicCodeCompileException(1, "namespace is not exist. resource name: " + resource.getFilename());
 
 
             namespace = content.substring("#namespace".length()).trim();
