@@ -36,9 +36,9 @@ class DynamicCodeHolder {
         StringBuilder className = new StringBuilder();
         className.append(wrapperClass.getSimpleName());
         className.append('$');
-        className.append(namespace);
+        className.append(namespace.replace('-', '_'));
         className.append('$');
-        className.append(codeId);
+        className.append(codeId.replace('-', '_'));
 
         return className.toString();
     }
