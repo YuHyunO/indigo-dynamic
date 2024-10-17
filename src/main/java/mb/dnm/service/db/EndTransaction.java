@@ -58,6 +58,11 @@ public class EndTransaction extends ParameterAssignableService {
             if (txStatus == null) {
                 continue;
             }
+            if (txStatus.isCompleted()) {
+                log.warn("[{}]Can not end the transaction. The transaction named '{}' is already completed.", txId, executorName);
+                continue;
+            }
+
             DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
             try {
                 if (errorOccurred) {

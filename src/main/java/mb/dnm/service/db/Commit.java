@@ -55,6 +55,10 @@ public class Commit extends ParameterAssignableService {
             if (txStatus == null) {
                 continue;
             }
+            if (txStatus.isCompleted()) {
+                log.warn("[{}]Can not commit. The transaction named '{}' is already completed.", txId, executorName);
+                continue;
+            }
             DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
             try {
                 log.info("[{}]Committing transaction. executor: {}", txId, executorName);

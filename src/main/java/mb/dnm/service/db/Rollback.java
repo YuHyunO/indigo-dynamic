@@ -55,6 +55,11 @@ public class Rollback extends ParameterAssignableService {
             if (txStatus == null) {
                 continue;
             }
+            if (txStatus.isCompleted()) {
+                log.warn("[{}]Can not rollback. The transaction named '{}' is already completed.", txId, executorName);
+                continue;
+            }
+
             DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
             try {
                 log.info("[{}]Rollback transaction. executor: {}", txId, executorName);
