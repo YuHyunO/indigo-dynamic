@@ -42,11 +42,18 @@ public class EndTransaction extends ParameterAssignableService {
         }
 
         Map<String, TransactionContext> txContextMap = ctx.getTxContextMap();
+        if (txContextMap == null) {
+            log.warn("[{}]The transaction contexts do not exist for termination. It may have already been terminated or not created.", txId);
+            return;
+        }
 
         boolean errorOccurred = ctx.isErrorExist();
-        Throwable error = null;
         for (String executorName : executorNames) {
             TransactionContext txContext = txContextMap.get(executorName);
+            if (txContext == null) {
+                log.warn("[{}]The transaction context named '{}' does not exist for termination. It may have already been terminated or not created.", txId, executorName);
+                continue;
+            }
             TransactionStatus txStatus = txContext.getTransactionStatus();
             if (txStatus == null) {
                 continue;
@@ -61,17 +68,12 @@ public class EndTransaction extends ParameterAssignableService {
                 txManager.commit(txStatus);
                 log.info("[{}]Transaction committed for executor: {}", txId, executorName);
             } catch (Throwable t) {
-                error = t;
-                errorOccurred = true;
                 txManager.rollback(txStatus);
                 log.error("[" + txId + "]Commit failed. Processed rollback for executor: " + executorName + ". Cause: ", t);
+                throw t;
             } finally {
                 txContextMap.remove(executorName); //Commit 이나 Rollback 처리를 한 뒤 항상 작업한 DataSource와 관련된 TransactionContext 객체를 지워줌
             }
-        }
-
-        if (errorOccurred) {
-            throw error;
         }
     }
 }
