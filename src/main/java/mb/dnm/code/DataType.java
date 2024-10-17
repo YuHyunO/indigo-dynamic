@@ -5,6 +5,7 @@ public enum DataType {
     STRING,
     PARSED_TEXT,
     FILE,
+    FILES,
     JSON,
     XML,
     MAP;
