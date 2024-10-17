@@ -129,6 +129,14 @@ public class UploadFiles extends AbstractFTPService {
         }
 
         FTPSession session = getFTPSession(ctx, srcName);
+        if (session == null) {
+            new FTPLogin(getSourceAlias()).process(ctx);
+            session = (FTPSession) ctx.getSession(srcName);
+        }
+        if (!session.isConnected()) {
+            new FTPLogin(getSourceAlias()).process(ctx);
+            session = (FTPSession) ctx.getSession(srcName);
+        }
         FTPClient ftp = session.getFTPClient();
         String ftpPathSeparator = String.valueOf(ftp.printWorkingDirectory().charAt(0)).trim();
         if (ftpPathSeparator.equals("null") || ftpPathSeparator.isEmpty()) {

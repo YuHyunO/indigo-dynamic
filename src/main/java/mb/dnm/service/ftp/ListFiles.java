@@ -126,6 +126,10 @@ public class ListFiles extends AbstractFTPService {
             new FTPLogin(getSourceAlias()).process(ctx);
             session = (FTPSession) ctx.getSession(srcName);
         }
+        if (!session.isConnected()) {
+            new FTPLogin(getSourceAlias()).process(ctx);
+            session = (FTPSession) ctx.getSession(srcName);
+        }
 
         /*if (targetPath.contains("@{if_id}")) {
             targetPath = targetPath.replace("@{if_id}", ctx.getInterfaceId());

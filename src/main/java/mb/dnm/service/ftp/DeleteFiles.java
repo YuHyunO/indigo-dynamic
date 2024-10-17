@@ -87,6 +87,14 @@ public class DeleteFiles extends AbstractFTPService {
         }
 
         FTPSession session = getFTPSession(ctx, srcName);
+        if (session == null) {
+            new FTPLogin(getSourceAlias()).process(ctx);
+            session = (FTPSession) ctx.getSession(srcName);
+        }
+        if (!session.isConnected()) {
+            new FTPLogin(getSourceAlias()).process(ctx);
+            session = (FTPSession) ctx.getSession(srcName);
+        }
         FTPClient ftp = session.getFTPClient();
 
         // 파일 삭제 중 에러가 나는 경우 그 파일의 FTP 경로가 담길 리스트를 생성

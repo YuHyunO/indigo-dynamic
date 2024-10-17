@@ -164,6 +164,15 @@ public class DownloadFiles extends AbstractFTPService {
         }
 
         FTPSession session = getFTPSession(ctx, srcName);
+        if (session == null) {
+            new FTPLogin(getSourceAlias()).process(ctx);
+            session = (FTPSession) ctx.getSession(srcName);
+        }
+        if (!session.isConnected()) {
+            new FTPLogin(getSourceAlias()).process(ctx);
+            session = (FTPSession) ctx.getSession(srcName);
+        }
+
         FTPClient ftp = session.getFTPClient();
         String pathSeparator = String.valueOf(ftp.printWorkingDirectory().charAt(0)).trim();
         if (pathSeparator.equals("null") || pathSeparator.isEmpty()) {
