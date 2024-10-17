@@ -183,6 +183,13 @@ public class MoveFiles extends AbstractFTPService {
                 if (targetFile.endsWith(pathSeparator)) {
                     tmpTargetFile = targetFile.substring(0, targetFile.length() - 1);
                     tmpTargetFile = tmpTargetFile.substring(tmpTargetFile.lastIndexOf(pathSeparator) + 1);
+                } else {
+                    int lastPathSepIdx = targetFile.lastIndexOf(pathSeparator);
+                    if (lastPathSepIdx != -1) {
+                        tmpTargetFile = targetFile.substring(lastPathSepIdx + 1);
+                    } else {
+                        tmpTargetFile = targetFile;
+                    }
                 }
                 oldPath = targetFile;
                 newPath = savePath + tmpTargetFile;
