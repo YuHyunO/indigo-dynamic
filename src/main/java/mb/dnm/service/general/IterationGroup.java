@@ -6,6 +6,8 @@ import mb.dnm.code.ProcessCode;
 import mb.dnm.core.ErrorHandler;
 import mb.dnm.core.Service;
 import mb.dnm.core.callback.AfterProcessCallback;
+import mb.dnm.core.callback.SessionCleanupCallback;
+import mb.dnm.core.callback.TransactionCleanupCallback;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
@@ -87,6 +89,12 @@ public class IterationGroup extends ParameterAssignableService {
      * createNewContextEachLoop 속성이 true 인 경우 각 반복에서 새로운 ServiceContext 에 ClosableStreamWrapper session 을 공유한다.
      * */
     private boolean passSessionToContexts = false;
+
+    public IterationGroup() {
+        this.callbacks = new ArrayList<>();
+        callbacks.add(new TransactionCleanupCallback());
+        callbacks.add(new SessionCleanupCallback());
+    }
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
@@ -225,16 +233,15 @@ public class IterationGroup extends ParameterAssignableService {
                     }
 
                     if (!createNewContextEachLoop && !continueDespiteError) {
+                        // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passTransactionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
+                        if (passTransactionToContexts) {
+                            log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passTransactionToContexts' is also true.", innerTxId);
+                        }
+                        // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passSessionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
+                        if (passSessionToContexts) {
+                            log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passSessionToContexts' is also true.", innerTxId);
+                        }
                         throw t1;
-                    }
-                    // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passTransactionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
-                    if (passTransactionToContexts) {
-                        log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passTransactionToContexts' is also true.", innerTxId);
-                        throw t1;
-                    }
-                    // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passSessionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
-                    if (passSessionToContexts) {
-                        log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passSessionToContexts' is also true.", innerTxId);
                     }
                 } finally {
 
@@ -242,13 +249,27 @@ public class IterationGroup extends ParameterAssignableService {
                         //Processing callbacks
                         for (AfterProcessCallback callback : callbacks) {
                             try {
+                                if (createNewContextEachLoop) {
+                                    /*
+                                    * 매 반복문에서 새로운 ServiceContext 를 생성하면서 DB 트랜잭션 또는 세션을 공유하는 경우
+                                    * IterationGroup의 기본 callback 으로 등록되어 있는 TransactionCleanupCallback 또는 SessionCleanupCallback 이 실행되지 않도록 해야한다.
+                                    * 그 외의 경우에는 종료되지 않는 트랜잭션 또는 세션이 없도록 관리해주어야 함
+                                    * */
+                                    Class callbackClass = callback.getClass();
+                                    if (passTransactionToContexts && callbackClass == TransactionCleanupCallback.class) {
+                                        continue;
+                                    }
+                                    if (passSessionToContexts && callbackClass == SessionCleanupCallback.class) {
+                                        continue;
+                                    }
+                                }
+
                                 log.debug("[{}]Iteration-Group: Processing callback: {}", txId, callback.getClass());
                                 callback.afterProcess(ctx);
                             } catch (Throwable t) {
                                 log.error("[" + txId + "]Iteration-Group: Callback " + callback.getClass() + " process failed. Cause: ", t);
                             }
                         }
-
                     }
 
                     if (breaked) {
@@ -399,14 +420,18 @@ public class IterationGroup extends ParameterAssignableService {
                         throw t1;
                     }
 
-                    // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passTransactionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
-                    if (passTransactionToContexts) {
-                        log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passTransactionToContexts' is also true.", innerTxId);
-                        throw t1;
-                    }
-                    // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passSessionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
-                    if (passSessionToContexts) {
-                        log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passSessionToContexts' is also true.", innerTxId);
+                    if (createNewContextEachLoop && continueDespiteError) {
+                        // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passTransactionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
+                        if (passTransactionToContexts) {
+                            log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passTransactionToContexts' is also true.", innerTxId);
+                            throw t1;
+                        }
+
+                        // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passSessionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
+                        if (passSessionToContexts) {
+                            log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passSessionToContexts' is also true.", innerTxId);
+                            throw t1;
+                        }
                     }
 
                 } finally {
@@ -414,6 +439,20 @@ public class IterationGroup extends ParameterAssignableService {
                         //Processing callbacks
                         for (AfterProcessCallback callback : callbacks) {
                             try {
+                                if (createNewContextEachLoop) {
+                                    /*
+                                     * 매 반복문에서 새로운 ServiceContext 를 생성하면서 DB 트랜잭션 또는 세션을 공유하는 경우
+                                     * IterationGroup의 기본 callback 으로 등록되어 있는 TransactionCleanupCallback 또는 SessionCleanupCallback 이 실행되지 않도록 해야한다.
+                                     * 그 외의 경우에는 종료되지 않는 트랜잭션 또는 세션이 없도록 관리해주어야 함
+                                     * */
+                                    Class callbackClass = callback.getClass();
+                                    if (passTransactionToContexts && callbackClass == TransactionCleanupCallback.class) {
+                                        continue;
+                                    }
+                                    if (passSessionToContexts && callbackClass == SessionCleanupCallback.class) {
+                                        continue;
+                                    }
+                                }
                                 log.debug("[{}]Iteration-Group: Processing callback: {}", txId, callback.getClass());
                                 callback.afterProcess(ctx);
                             } catch (Throwable t) {
@@ -464,7 +503,14 @@ public class IterationGroup extends ParameterAssignableService {
         this.initialCheck = initialCheck;
     }
 
-    private void addInnerServiceTrace(Class<? extends Service> serviceClass) {
-
+    public void setCallbacks(List<AfterProcessCallback> callbacks) {
+        for (AfterProcessCallback callback : callbacks) {
+            if (callback instanceof TransactionCleanupCallback
+            || callback instanceof SessionCleanupCallback) {
+                continue;
+            }
+            this.callbacks.add(callback);
+        }
     }
+
 }
