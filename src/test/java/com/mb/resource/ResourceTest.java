@@ -23,4 +23,10 @@ public class ResourceTest {
             log.info("@@ = {}", file);
         }*/
     }
+
+    @Test
+    public void d_test() throws Exception {
+        String t = "}";
+
+    }
 }
