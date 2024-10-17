@@ -197,7 +197,7 @@ public class ReadFile extends SourceAccessService {
                 throw new ClassCastException();
             }
         } catch (ClassCastException ce) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not contained in [String, byte[], Map<String, Object>, List<Map<String, Object>>]. Inputted value's type: " + inputVal.getClass().getName());
+            throw new InvalidServiceConfigurationException(this.getClass(), "The type of the input parameter value is not contained in [String, Path, File]. Inputted value's type: " + inputVal.getClass().getName());
         }
 
         if (!Files.exists(readFilePath)) {
