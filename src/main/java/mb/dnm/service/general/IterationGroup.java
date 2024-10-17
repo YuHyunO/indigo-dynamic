@@ -378,6 +378,7 @@ public class IterationGroup extends ParameterAssignableService {
                     int handlerCount = errorHandlers.size();
                     int cnt2 = 0;
                     for (ErrorHandler errorHandler : errorHandlers) {
+                        ++cnt2;
                         if (!errorHandler.isTriggered(t1.getClass()))
                             continue;
                         Class errorHandlerClass = errorHandler.getClass();
