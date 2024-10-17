@@ -184,6 +184,7 @@ public class DynamicCodeCompiler {
                     throw new DynamicCodeCompileException("not a statement. code block is not exist. \n>" + content);
                 int codeBlockEndIdx = content.indexOf("}#");
 
+
                 //(2-1) Get code id - start
                 codeId = content.substring(1, codeBlockStartIdx).trim();
 
