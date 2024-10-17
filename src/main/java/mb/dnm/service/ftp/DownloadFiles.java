@@ -25,8 +25,9 @@ import java.util.*;
 
 /**
  * Input으로 전달받은 파일 경로로부터 파일의 데이터를 다운로드한다.<br>
- * dataType 속성이 FILE인 경우, 지정된 경로로 파일이 저장되며 다운로드 받은 File이 저장된 경로가 리스트로 output 된다.(지정된 저장 경로가 존재하지 않는 경우 새로 생성함)<br> dataType 속성이 BYTE_ARRAY 인 경우,
- * 파일명과 파일의 데이터가 <code>Map&lt;String, byte[]&gt;</code> 형태로 담긴 리스트가 output 된다.<br>
+ * dataType 속성이 FILE 또는 FILES 인 경우, 지정된 경로로 파일이 저장되며 다운로드 받은 File이 저장된 경로가 String 또는 List로 output 된다.(지정된 저장 경로가 존재하지 않는 경우 새로 생성함)<br>
+ * downloadType 속성이 FILE 일 때 output 되는 데이터의 타입은 <code>String</code> 이며 FILES 일 때는 <code>List&lt;String&gt;</code> 으로 output 된다.<br>
+ * dataType 속성이 BYTE_ARRAY 인 경우, 파일명과 파일의 데이터가 <code>Map&lt;String, byte[]&gt;</code> 형태로 담긴 리스트가 output 된다.<br>
  * FTP 파일의 데이터가 파일로 저장되도록 설정된 경우, 어느 경로에 파일을 저장할 지에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.<br>
  * <p><i>
  * 파일을 다운로드 하는 도중 에러가 발생하는 경우에 다음과 같이 처리하도록 설정할 수 있다.<br><br>
@@ -54,9 +55,10 @@ import java.util.*;
  *
  * @Input 다운로드 받을 파일의 FTP서버 경로
  * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code>
- * @Output downloadType 속성이 FILE인 경우, 지정된 경로로 파일이 저장되며 다운로드 받은 File이 저장된 경로가 리스트로 output 된다.<br> outPutDataType 속성이 BYTE_ARRAY 인 경우,
- * 파일명과 파일의 데이터가 <code>Map&lt;String, byte[]&gt;</code> 형태로 담긴 리스트가 output 된다.
- * @OutputType dataType(FILE): <code>List&lt;String&gt;</code>, dataType(BYTE_ARRAY): <code>List&lt;Map&lt;String, byte[]&gt;&gt;</code>
+ * @Output downloadType 속성이 FILE 또는 FILES 인 경우, 지정된 경로로 파일이 저장되며 다운로드 받은 File이 저장된 경로가 output 된다.<br>
+ * downloadType 속성이 FILE 일 때는 output 되는 데이터 타입은 <code>String</code> 이며 FILES 일 때는 <code>List&lt;String&gt;</code> 으로 output 된다.<br>
+ * downloadType 속성이 BYTE_ARRAY 인 경우, 파일명과 파일의 데이터가 <code>Map&lt;String, byte[]&gt;</code> 형태로 담긴 리스트가 output 된다.
+ * @OutputType dataType(FILE): <code>String</code>, dataType(FILES): <code>List&lt;String&gt;</code>, dataType(BYTE_ARRAY): <code>List&lt;Map&lt;String, byte[]&gt;&gt;</code>
  * @ErrorOutput 파일을 다운로드 하는 중 에러가 발생하여 다운로드에 실패하는 경우 에러가 발생한 파일의 FTP서버 경로
  * @ErrorOutputType <code>List&lt;String&gt;</code>
  * */
@@ -175,7 +177,7 @@ public class DownloadFiles extends AbstractFTPService {
         int successCount = 0;
 
 
-        if (downloadType == DataType.FILE) {
+        if (downloadType == DataType.FILE || downloadType == DataType.FILES) {
             // outPutDataType 이 dataTypeDataType.FILE 인 경우 InterfaceInfo에서 FileTemplate을 가져와 directoryType 과 일치하는 경로에 파일을 저장함
             FileTemplate template = info.getFileTemplate(srcName);
             String savePath = null;
@@ -286,11 +288,27 @@ public class DownloadFiles extends AbstractFTPService {
             }
 
             if (getOutput() != null) {
-                setOutputValue(ctx, localSavedPaths);
+                if (downloadType == DataType.FILE) {
+                    if (localSavedPaths.size() == 1) {
+                        setOutputValue(ctx, localSavedPaths.get(0));
+                    } else {
+                        setOutputValue(ctx, localSavedPaths);
+                    }
+                } else if (downloadType == DataType.FILES) {
+                    setOutputValue(ctx, localSavedPaths);
+                }
             }
             if (getErrorOutput() != null) {
                 if (!errorFilePaths.isEmpty()) {
-                    setErrorOutputValue(ctx, errorFilePaths);
+                    if (downloadType == DataType.FILE) {
+                        if (errorFilePaths.size() == 1) {
+                            setErrorOutputValue(ctx, errorFilePaths.get(0));
+                        } else {
+                            setErrorOutputValue(ctx, errorFilePaths);
+                        }
+                    } else if (downloadType == DataType.FILES) {
+                        setErrorOutputValue(ctx, errorFilePaths);
+                    }
                 }
             }
 
