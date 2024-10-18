@@ -182,7 +182,9 @@ public class DynamicCodeCompiler {
                 int codeBlockStartIdx = content.indexOf("#{");
                 if (codeBlockStartIdx == -1)
                     throw new DynamicCodeCompileException("not a statement. code block is not exist. \n>" + content);
-                int codeBlockEndIdx = content.indexOf("}#");
+                int codeBlockEndIdx = content.indexOf("\n}#");
+                if (codeBlockEndIdx == -1)
+                    throw new DynamicCodeCompileException("not a statement. code block end character is not exist. \n>" + content);
 
 
                 //(2-1) Get code id - start

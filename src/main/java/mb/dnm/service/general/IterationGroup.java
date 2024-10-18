@@ -265,7 +265,7 @@ public class IterationGroup extends ParameterAssignableService {
                                 }
 
                                 log.debug("[{}]Iteration-Group: Processing callback: {}", txId, callback.getClass());
-                                callback.afterProcess(ctx);
+                                callback.afterProcess(innerCtx);
                             } catch (Throwable t) {
                                 log.error("[" + txId + "]Iteration-Group: Callback " + callback.getClass() + " process failed. Cause: ", t);
                             }
@@ -454,7 +454,7 @@ public class IterationGroup extends ParameterAssignableService {
                                     }
                                 }
                                 log.debug("[{}]Iteration-Group: Processing callback: {}", txId, callback.getClass());
-                                callback.afterProcess(ctx);
+                                callback.afterProcess(innerCtx);
                             } catch (Throwable t) {
                                 log.error("[" + txId + "]Iteration-Group: Callback " + callback.getClass() + " process failed. Cause: ", t);
                             }
