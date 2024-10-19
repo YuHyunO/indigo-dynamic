@@ -110,19 +110,19 @@ public class WriteFile extends SourceAccessService {
      * */
     private String replacementOfEmptyValue = "";
     /**
-     * 기본값: &cr;<br>
+     * 기본값: &lf;<br>
      * 파일의 데이터에 Line Feed (\n) 가 존재하는 경우 대체할 문자에 대한 설정이다.<br><br>
      * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
-    private String replacementOfLineFeed = "&cr;";
+    private String replacementOfLineFeed = "&lf;";
     /**
-     * 기본값: &lf;<br>
+     * 기본값: &cr;<br>
      * 파일의 데이터에 Carriage return (\r) 이 존재하는 경우 대체할 문자에 대한 설정이다.<br><br>
      * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
      * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
      * */
-    private String replacementOfCarriageReturn = "&lf;";
+    private String replacementOfCarriageReturn = "&cr;";
     /**
      * 기본값: true<br>
      * 파일의 상단에 컬럼명을 기입할 지에 대한 설정이다.(단 addMetadata = true 인 경우 그 하단에 기입됨)<br>
