@@ -73,6 +73,11 @@ public class MoveFiles extends AbstractFTPService {
      * */
     private boolean ignoreErrorFile = false;
     private boolean debuggingWhenMoved = true;
+    /**
+     * 기본값: true<br>
+     * 이동하려는 FTP 서버 경로에 파일이 이미 존재하는 경우 덮어쓰기를 한다.
+     * */
+    private boolean overwrite = true;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
@@ -203,9 +208,33 @@ public class MoveFiles extends AbstractFTPService {
                 newPath = savePath + tmpTargetFile;
             }
 
+            String originalNewPath = newPath;
+            boolean overwritten = false;
+            boolean moved = false;
             try {
-                boolean moved = ftp.rename(oldPath, newPath);
+                int i = 0;
+                while (true) {
+                    //파일 덮어쓰기 옵션이 true인 경우 파일을 이동할 때 복사본을 먼저 만든다.
+                    if (FTPUtil.isFileExists(ftp, newPath)) {
+                        if (overwrite) {
+                            log.info("[{}]Overwriting file '{}'...", txId, newPath);
+                            //ftp.deleteFile(newPath);
+                            newPath = "(" + (++i) + ")" + newPath;
+                            overwritten = true;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                moved = ftp.rename(oldPath, newPath);
                 if (moved) {
+                    if (overwritten) {
+                        ftp.deleteFile(originalNewPath);
+                        ftp.rename(newPath, originalNewPath);
+                    }
                     ++successCount;
                     movedFileList.add(newPath);
                     if (debuggingWhenMoved) {
@@ -214,6 +243,7 @@ public class MoveFiles extends AbstractFTPService {
                 } else {
                     String reply = ftp.getReplyString();
                     log.debug("[{}]Could not move the file '{}' to '{}'. Reply: {}", txId, oldPath, newPath, reply);
+                    throw new IllegalStateException("Could not move the file '" + oldPath + "' to '" + newPath + "'. Reply: " + reply);
                 }
             } catch (Throwable t) {
                 if (ignoreErrorFile) {
