@@ -34,19 +34,31 @@ public class StringUtil {
     public static String toUpperCase(Object valObj) {
         if (valObj == null)
             return null;
-        return String.valueOf(valObj).toUpperCase();
+        if (valObj instanceof String) {
+            return new String(valObj.toString()).toUpperCase();
+        } else {
+            return String.valueOf(valObj).toUpperCase();
+        }
     }
 
     public static String toLowerCase(Object valObj) {
         if (valObj == null)
             return null;
-        return String.valueOf(valObj).toLowerCase();
+        if (valObj instanceof String) {
+            return new String(valObj.toString()).toLowerCase();
+        } else {
+            return String.valueOf(valObj).toLowerCase();
+        }
     }
 
     public static String trim(Object valObj) {
         if (valObj == null)
             return null;
-        return String.valueOf(valObj).trim();
+        if (valObj instanceof String) {
+            return new String(valObj.toString()).trim();
+        } else {
+            return String.valueOf(valObj).trim();
+        }
     }
 
     public static String ltrim(Object valObj) {
