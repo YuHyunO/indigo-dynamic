@@ -36,9 +36,9 @@ class DynamicCodeHolder {
         StringBuilder className = new StringBuilder();
         className.append(wrapperClass.getSimpleName());
         className.append('$');
-        className.append(namespace.replace('-', '_'));
+        className.append(hashString(namespace));
         className.append('$');
-        className.append(codeId.replace('-', '_'));
+        className.append(hashString(codeId));
 
         return className.toString();
     }
@@ -87,5 +87,14 @@ class DynamicCodeHolder {
         }
         addImport(wrapperClass.getClass());
         this.wrapperClass = (Class<? extends DynamicCode>) wrapperClass;
+    }
+
+    private String hashString(String s) {
+        int hash = s.hashCode();
+        if (hash < 0) {
+            return String.valueOf("m" + -hash);
+        } else {
+            return String.valueOf(hash);
+        }
     }
 }
