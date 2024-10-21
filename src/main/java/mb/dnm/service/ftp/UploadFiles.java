@@ -75,6 +75,11 @@ public class UploadFiles extends AbstractFTPService {
     private boolean ignoreErrorFile = false;
     private boolean debuggingWhenUploaded = true;
     /**
+     * 기본값: true<br>
+     * 업로드하려는 파일이 이미 존재하는 경우 덮어쓰기를 한다.
+     * */
+    private boolean overwrite = true;
+    /**
      * 기본값: true
      * 파일 업로드 중 에러가 발생하는 경우 업로드한 파일을 모두 삭제한다. ignoreErrorFile 속성이 false인 경우에만 유효하다.
      * */
@@ -225,20 +230,44 @@ public class UploadFiles extends AbstractFTPService {
             }
 
             InputStream is = null;
+            String existRemotePath = remotePath;
+            boolean overwritten = false;
+            boolean existFileDeleted = false;
             try {
                 Path path = Paths.get(localPath);
                 if (Files.isDirectory(path)) {
-                    if (ftp.makeDirectory(remotePath.toString())) {
-                        uploadedFileList.add(remotePath.toString());
+                    if (ftp.makeDirectory(remotePath)) {
+                        uploadedFileList.add(remotePath);
                         ++dirCount;
                         ++successCount;
                     }
                     continue;
                 }
+                int i = 0;
+                while (true) {
+                    //파일 덮어쓰기 옵션이 true인 경우 파일을 이동할 때 복사본을 먼저 만든다.
+                    if (FTPUtil.isFileExists(ftp, remotePath)) {
+                        if (overwrite) {
+                            log.info("[{}]Overwriting file '{}'...", txId, remotePath);
+                            remotePath = "(" + (++i) + ")" + remotePath;
+                            overwritten = true;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
                 is = Files.newInputStream(path);
-                boolean uploaded = ftp.storeFile(remotePath.toString(), is);
+                boolean uploaded = ftp.storeFile(remotePath, is);
                 if (uploaded) {
-                    uploadedFileList.add(remotePath.toString());
+                    if (overwritten) {
+                        ftp.deleteFile(existRemotePath);
+                        ftp.rename(remotePath, existRemotePath);
+                    }
+
+                    uploadedFileList.add(remotePath);
                     ++fileCount;
                     ++successCount;
                     if (debuggingWhenUploaded) {
