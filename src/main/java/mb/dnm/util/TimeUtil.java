@@ -10,6 +10,8 @@ public class TimeUtil {
     public static final String mmss = "mmss";
     public static final String YYYYMM = "yyyyMM";
     public static final String YYYYMMDD = "yyyyMMdd";
+    public static final String YYYYMMDDHH = "yyyyMMddHH";
+    public static final String YYYYMMDDHHmm = "yyyyMMddHHmm";
     public static final String YYYYMMDDHHmmss = "yyyyMMddHHmmss";
     public static final String YYYYMMDDHHmmssSSS = "yyyyMMddHHmmssSSS";
     public static final String TIMESTAMP_FORMAT = "yyyyMMddHHmmssSSS";
