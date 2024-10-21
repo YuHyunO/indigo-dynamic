@@ -263,8 +263,10 @@ public class WriteFile extends SourceAccessService {
         FileTemplate template = info.getFileTemplate(srcName);
         String filename = null;
 
-        if (filenameInput != null) {
+        if (filenameInput == null) {
             filename = template.getFileName(ctx);
+            if (filename == null)
+                throw new InvalidServiceConfigurationException(this.getClass(), "The FileTemplate's filename configuration is null. interface id: " + info.getInterfaceId());
             if (filenamePrefix != null && !filenamePrefix.isEmpty()) {
                 filename = filenamePrefix + filename;
             }
