@@ -62,6 +62,8 @@ public class FileTemplate {
     private DataType dataType = DataType.BYTE_ARRAY;
 
     public String getFileName(ServiceContext ctx) {
+        if (fileName == null)
+            return null;
         String tmpFileName = fileName.replace("@{if_id}", ctx.getInterfaceId());
         //PlaceHolderMapper를 적용
 
