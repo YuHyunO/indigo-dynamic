@@ -1,10 +1,14 @@
 package mb.dnm.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTPClient;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
+@Slf4j
 public class FTPUtil {
     private FTPUtil() {}
 
@@ -20,12 +24,35 @@ public class FTPUtil {
     }
 
     public static boolean isFileExists(FTPClient ftp, String filePath) throws IOException {
-        InputStream inputStream = ftp.retrieveFileStream(filePath);
-        int returnCode = ftp.getReplyCode();
-        if (inputStream == null || returnCode == 550) {
+        if (isDirectoryExists(ftp, filePath)) {
+            return true;
+        }
+        File file = new File(filePath);
+        String dirPath = file.getParent();
+        if (!isDirectoryExists(ftp, dirPath)) {
             return false;
         }
-        return true;
+
+        String[] remoteNames = ftp.listNames(dirPath);
+        if (remoteNames.length == 0) {
+            return false;
+        }
+
+        String filaName = file.getName();
+        for (String remoteName : remoteNames) {
+            int idx = remoteName.lastIndexOf("/");
+            if (idx == -1) {
+                if (filaName.equals(remoteName)) {
+                    return true;
+                }
+            } else {
+                if (filaName.equals(remoteName.substring(idx + 1))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
     }
 
 }
