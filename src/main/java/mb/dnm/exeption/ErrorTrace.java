@@ -2,10 +2,11 @@ package mb.dnm.exeption;
 
 import mb.dnm.util.MessageUtil;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ErrorTrace {
+public class ErrorTrace implements Serializable {
     private String message;
     private String localizedMessage;
     private StringBuffer traceBuffer;
