@@ -13,11 +13,12 @@ import mb.dnm.util.TxIdGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Slf4j
 @Getter
-public class ServiceContext {
+public class ServiceContext implements Serializable {
     private String txId;
     private InterfaceInfo info;
     private Date startTime;
