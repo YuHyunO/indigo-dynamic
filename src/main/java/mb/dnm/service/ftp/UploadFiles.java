@@ -248,8 +248,7 @@ public class UploadFiles extends AbstractFTPService {
                     //파일 덮어쓰기 옵션이 true인 경우 파일을 이동할 때 복사본을 먼저 만든다.
                     if (FTPUtil.isFileExists(ftp, remotePath)) {
                         if (overwrite) {
-                            log.info("[{}]Overwriting file '{}'...", txId, remotePath);
-                            remotePath = "(" + (++i) + ")" + remotePath;
+                            remotePath = remotePath + "(" + (++i) + ")";
                             overwritten = true;
                         } else {
                             break;
@@ -263,6 +262,7 @@ public class UploadFiles extends AbstractFTPService {
                 boolean uploaded = ftp.storeFile(remotePath, is);
                 if (uploaded) {
                     if (overwritten) {
+                        log.info("[{}]Overwriting file '{}'...", txId, existRemotePath);
                         ftp.deleteFile(existRemotePath);
                         ftp.rename(remotePath, existRemotePath);
                     }
@@ -271,7 +271,7 @@ public class UploadFiles extends AbstractFTPService {
                     ++fileCount;
                     ++successCount;
                     if (debuggingWhenUploaded) {
-                        log.debug("[{}]The file \"{}\" is upload to \"{}\"", txId, localPath, remotePath);
+                        log.debug("[{}]The file \"{}\" is upload to \"{}\"", txId, localPath, existRemotePath);
                     }
                 } else {
                     String reply = ftp.getReplyString();
