@@ -174,8 +174,13 @@ public class MoveFiles extends AbstractFTPService {
             savePath = savePath + pathSeparator;
         }
 
-        if (!FTPUtil.isDirectoryExists(ftp, savePath)) {
-            ftp.makeDirectory(savePath);
+        String[] savePaths = savePath.split(pathSeparator);
+        StringBuilder pathBd = new StringBuilder();
+        for (int i = 0; i < savePaths.length; i++) {
+            String path = pathBd.append(pathSeparator).append(savePaths[i]).toString();
+            if (!FTPUtil.isDirectoryExists(ftp, path)) {
+                ftp.makeDirectory(path);
+            }
         }
 
         Collections.sort(targetFileNames, new Comparator<String>() {
@@ -217,9 +222,8 @@ public class MoveFiles extends AbstractFTPService {
                     //파일 덮어쓰기 옵션이 true인 경우 파일을 이동할 때 복사본을 먼저 만든다.
                     if (FTPUtil.isFileExists(ftp, newPath)) {
                         if (overwrite) {
-                            log.info("[{}]Overwriting file '{}'...", txId, newPath);
                             //ftp.deleteFile(newPath);
-                            newPath = "(" + (++i) + ")" + newPath;
+                            newPath =  newPath + "_" + (++i);
                             overwritten = true;
                         } else {
                             break;
@@ -232,13 +236,14 @@ public class MoveFiles extends AbstractFTPService {
                 moved = ftp.rename(oldPath, newPath);
                 if (moved) {
                     if (overwritten) {
+                        log.info("[{}]Overwriting file '{}'...", txId, originalNewPath);
                         ftp.deleteFile(originalNewPath);
                         ftp.rename(newPath, originalNewPath);
                     }
                     ++successCount;
                     movedFileList.add(newPath);
                     if (debuggingWhenMoved) {
-                        log.debug("[{}]The file is moved from '{}' to '{}'", txId, oldPath, newPath);
+                        log.debug("[{}]The file is moved from '{}' to '{}'", txId, oldPath, originalNewPath);
                     }
                 } else {
                     String reply = ftp.getReplyString();
