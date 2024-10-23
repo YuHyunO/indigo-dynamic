@@ -191,13 +191,14 @@ public class MoveFiles extends AbstractFTPService {
         });
 
         for (String targetFile : targetFileNames) {
+            String tmpTargetFile = null;
             String oldPath = null;
             String newPath = null;
             if (baseDir != null) {
                 oldPath = baseDir + targetFile;
                 newPath = savePath + targetFile;
             } else {
-                String tmpTargetFile = null;
+
                 if (targetFile.endsWith(pathSeparator)) {
                     tmpTargetFile = targetFile.substring(0, targetFile.length() - 1);
                     tmpTargetFile = tmpTargetFile.substring(tmpTargetFile.lastIndexOf(pathSeparator) + 1);
@@ -223,7 +224,8 @@ public class MoveFiles extends AbstractFTPService {
                     if (FTPUtil.isFileExists(ftp, newPath)) {
                         if (overwrite) {
                             //ftp.deleteFile(newPath);
-                            newPath =  newPath + "_" + (++i);
+                            //newPath =  newPath + "_" + (++i);
+                            newPath =  savePath + "$" + tmpTargetFile + "(" + (++i) + ")";
                             overwritten = true;
                         } else {
                             break;
