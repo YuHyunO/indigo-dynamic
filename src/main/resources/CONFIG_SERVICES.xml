@@ -31,14 +31,16 @@
                 <bean class="mb.dnm.service.db.Select"><!-- 송신 테이블 1번에서 데이터 조회 -->
                     <property name="output" value="Data1"/>
                 </bean>
-                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty"><!-- 송신 테이블 1번의 데이터가 없으면 연계 프로세스 중지 -->
+                <!-- 송신 테이블 1번의 데이터가 없으면 연계 프로세스 중지 -->
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
                     <property name="input"                          value="Data1"/>
                 </bean>
                 <bean class="mb.dnm.service.db.Select"><!-- 송신 테이블 1번의 조회 결과로 송신 테이블 2번에서 데이터 조회 -->
                     <property name="input"  value="Data1"/>
                     <property name="output" value="Data2"/>
                 </bean>
-                <bean class="mb.dnm.service.db.StartTransaction"/><!-- 트랜잭션 그룹 시작 -->
+                <!-- 트랜잭션 그룹 시작 -->
+                <bean class="mb.dnm.service.db.StartTransaction"/>
                 <bean class="mb.dnm.service.db.Insert"><!-- 수신 테이블 1번에 송신 테이블 1번 데이터를 Insert -->
                     <property name="input" value="Data1"/>
                 </bean>
@@ -50,6 +52,7 @@
                 </bean>
                 <!--<bean class="mb.dnm.service.general.ThrowException"/>--> <!-- 예외 발생 시 전부 rollback 확인 완료 -->
                 <bean class="mb.dnm.service.db.EndTransaction"/><!-- 트랜잭션 그룹 시작 -->
+
             </list>
         </entry>
 
@@ -63,6 +66,7 @@
                 </bean>
                 <bean class="mb.dnm.service.ftp.ListFiles">
                     <property name="sourceAlias"    value="SRC"/>
+                    <property name="directoryType"  value="REMOTE_SEND"/>
                     <property name="output"         value="file_list"/>
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
@@ -246,6 +250,7 @@
                     <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
+
             </list>
         </entry>
 
@@ -333,7 +338,8 @@
                 </bean>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="file_list"/>
-                    <property name="printToXmlWhenCollectionOrMap"       value="true"/>
+                    <property name="printToXmlWhenCollectionOrMap"  value="true"/>
+                    <property name="printToJsonWhenCollectionOrMap" value="false"/>
                     <property name="indented"                       value="true"/>
                 </bean>
                 <bean class="mb.dnm.service.ftp.DeleteFiles">
@@ -376,6 +382,7 @@
                     <property name="printToXmlWhenCollectionOrMap"       value="true"/>
                     <property name="indented"                       value="true"/>
                 </bean>
+
             </list>
         </entry>
 
