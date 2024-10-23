@@ -24,6 +24,7 @@ public class DynamicCodeProvider {
     private Map<String, DynamicCodeInstance> dnmCodes;
     private String javacToolsPath = System.getProperty("java.home") + File.separator + "..//bin/java";
     private boolean standaloneMode = false;
+    private boolean initializingLock = false;
 
     /*
      * Spring version 만 맞다면 private 으로 변경해도 bean으로 등록 가능함
@@ -45,6 +46,7 @@ public class DynamicCodeProvider {
 
     public void setCodeLocations(Resource[] codeLocations) throws Exception {
         if (!initialized) {
+            initializingLock = true;
             if (codeLocations.length == 0) {
                 log.debug("No dynamic code locations are found");
                 return;
