@@ -222,7 +222,8 @@ public class UploadFiles extends AbstractFTPService {
                 remotePath = savePath + tmpTargetFileName;
             } else {
                 localPath = targetFileName;
-                remotePath = savePath + new File(tmpTargetFileName).getName();
+                tmpTargetFileName = new File(tmpTargetFileName).getName();
+                remotePath = savePath + tmpTargetFileName;
             }
             if (!Files.exists(Paths.get(localPath))) {
                 log.warn("[{}]There is no file with name '{}'", txId, localPath);
@@ -248,7 +249,8 @@ public class UploadFiles extends AbstractFTPService {
                     //파일 덮어쓰기 옵션이 true인 경우 파일을 이동할 때 복사본을 먼저 만든다.
                     if (FTPUtil.isFileExists(ftp, remotePath)) {
                         if (overwrite) {
-                            remotePath = remotePath + "(" + (++i) + ")";
+                            //remotePath = remotePath + "(" + (++i) + ")";
+                            remotePath = savePath + "$" + tmpTargetFileName + "(" + (++i) + ")";
                             overwritten = true;
                         } else {
                             break;
