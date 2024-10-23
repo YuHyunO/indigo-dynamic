@@ -3,7 +3,7 @@
 <beans>
     <import resource="CONFIG_CORE.xml"/>
 
-    <bean class="com.indigo.springsupport.schedule.ScheduleBean" id="adaptorTemplateSchedule">
+    <bean class="com.indigo.springsupport.schedule.ScheduleBean" id="adaptorTemplateSchedule" depends-on="dynamicCodeProvider">
         <description><![CDATA[adaptorTemplateSchedule]]></description>
         <property name="targetObject">
             <bean class="mb.dnm.dispatcher.SimpleDispatcher"/>
