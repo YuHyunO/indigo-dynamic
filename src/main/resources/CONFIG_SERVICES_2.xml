@@ -251,6 +251,7 @@
                     <property name="outputDataType"     value="STRING"/>
                     <property name="output"             value="key"/>
                 </bean>
+                <bean class="mb.dnm.service.general.ThrowException"/>
                 <bean class="mb.dnm.service.general.PrintInput">
                     <property name="input"                          value="key"/>
                 </bean>

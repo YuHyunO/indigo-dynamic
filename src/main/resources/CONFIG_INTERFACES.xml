@@ -47,7 +47,7 @@
                         <property name="localReceiveDir"        value="C:\FTPdownload\@{if_id}"/>
                         <property name="remoteErrorDir"         value=""/>
                         <property name="dataType"               value="STRING"/>
-                        <property name="charset"                value=""/>
+                        <property name="charset"                value="UTF-8"/>
                     </bean>
                 </list>
             </property>
@@ -272,6 +272,12 @@
         </bean>
 
         <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="CRYPTO_IF_TEST2"/>
+            <property name="description"            value="암호화 인터페이스 테스트"/>
+            <property name="serviceId"              value="CRYPTO_GEN"/>
+        </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
             <property name="interfaceId"            value="HTTP_TEMPLATE_IF_TEST"/>
             <property name="description"            value="HTTP 템플릿 인터페이스 테스트"/>
             <property name="httpAPITemplate">
@@ -297,7 +303,7 @@
         <bean class="mb.dnm.storage.InterfaceInfo">
             <property name="interfaceId"            value="INTERFACE_CONTROLLER"/>
             <property name="controllerInterface"    value="true"/>
-            <property name="frontHttpUrl"           value="/@{if_id}"/>
+            <property name="frontHttpUrl"           value="/if-control"/>
             <property name="frontHttpMethod"        value="POST"/>
             <property name="loggingWhenNormal"      value="false"/>
             <property name="loggingWhenError"       value="false"/>

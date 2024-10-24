@@ -6,7 +6,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
     <util:map id="errorHandlers">
-        <entry key="DEFAULT_ERR_HANDLING">
+        <!--<entry key="DEFAULT_ERR_HANDLING">
             <list>
                 <bean class="mb.dnm.exeption.handler.ExecuteServiceErrorHandler">
                     <property name="service">
@@ -30,7 +30,7 @@
                     <property name="input"              value="local_file_list"/>
                 </bean>
             </list>
-        </entry>
+        </entry>-->
     </util:map>
 
 </beans>
