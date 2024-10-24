@@ -2,6 +2,7 @@ package mb.dnm.service.general;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.core.ServiceProcessor;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
@@ -87,8 +88,9 @@ public class ControlInterfaceActivation extends ParameterAssignableService {
                             }
                             StorageManager.access().activateInterface(infoIfId);
                             messageMap.put(infoIfId, "The interface '" + infoIfId + "' is activated");
-
                             log.info("[{}]The interface '{}' is activated", ctx.getTxId(), info.getInterfaceId());
+                            response.put("message", messageMap);
+
                         } else if (command.equals("INACTIVE")) {
                             if (!info.isActivated()) {
                                 messageMap.put(infoIfId, "The interface '" + infoIfId + "' is already inactivated");
@@ -97,6 +99,8 @@ public class ControlInterfaceActivation extends ParameterAssignableService {
                             StorageManager.access().inactivateInterface(infoIfId);
                             messageMap.put(infoIfId, "The interface '" + infoIfId + "' is inactivated");
                             log.info("[{}]The interface '{}' is inactivated", ctx.getTxId(), info.getInterfaceId());
+                            response.put("message", messageMap);
+
                         } else {
                             response.put("message", "The command '" + command + "' is unknown");
                             log.info("[{}]The command '" + command + "' is unknown", ctx.getTxId());
@@ -104,7 +108,7 @@ public class ControlInterfaceActivation extends ParameterAssignableService {
                             return;
                         }
                     }
-                    response.put("message", messageMap);
+
                     setOutputValue(ctx, response);
 
                 } else {
@@ -141,15 +145,21 @@ public class ControlInterfaceActivation extends ParameterAssignableService {
                         response.put("message", "The interface '" + ifId + "' is inactivated");
                         setOutputValue(ctx, response);
                         log.info("[{}]The interface '{}' is inactivated", ctx.getTxId(), info.getInterfaceId());
+
+                    } else if (command.equals("RUN")) {
+                        ServiceContext subCtx = new ServiceContext(info);
+                        log.info("[{}]Interface Executing Command-A new interface transaction was created", subCtx.getTxId());
+                        ServiceProcessor.unfoldServices(subCtx);
+                        log.info("[{}]Interface Executing Command-The interface transaction was ended", subCtx.getTxId());
+                        response.put("message", subCtx.toMap());
+                        setOutputValue(ctx, response);
+
                     } else {
                         response.put("message", "The command '" + command + "' is unknown");
                         setOutputValue(ctx, response);
                         log.info("[{}]The command '" + command + "' is unknown", ctx.getTxId());
                     }
                 }
-
-
-
 
             } else {
                 log.warn("[{}]Invalid command parameter type. Has no effect", ctx.getTxId());
