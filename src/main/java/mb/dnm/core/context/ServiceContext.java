@@ -19,6 +19,7 @@ import java.util.*;
 @Slf4j
 @Getter
 public class ServiceContext implements Serializable {
+    private static final long serialVersionUID = -5482275442360720322L;
     private String txId;
     private InterfaceInfo info;
     private Date startTime;
@@ -380,7 +381,8 @@ public class ServiceContext implements Serializable {
         return infoMap;
     }
 
-    public class InnerServiceTrace {
+    public class InnerServiceTrace implements Serializable {
+        private static final long serialVersionUID = -7111196943824771103L;
         @Getter
         private Map<Integer, InnerServiceTracePair> traceMap;
 
@@ -407,7 +409,8 @@ public class ServiceContext implements Serializable {
     }
 
     @Getter
-    public class InnerServiceTracePair {
+    public class InnerServiceTracePair implements Serializable {
+        private static final long serialVersionUID = -8073101364903503521L;
         private final Class<? extends Service> innerServiceClass;
         private int iterationCount = 0;
 
@@ -423,4 +426,31 @@ public class ServiceContext implements Serializable {
 
     }
 
+    @Override
+    public String toString() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        try {
+            return MessageUtil.mapToJson(toMap(), true);
+        } catch (Exception e) {
+            return super.toString();
+        }
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new LinkedHashMap<>();
+
+        map.put("transactionId", txId);
+        map.put("interfaceId", getInterfaceId());
+        map.put("interfaceName", info.getInterfaceName());
+        map.put("processStatus", processStatus.getProcessCode());
+        map.put("serviceId", info.getServiceId());
+        map.put("startTime", TimeUtil.getFormattedTime(startTime, TimeUtil.JDBC_TIMESTAMP_FORMAT));
+        map.put("endTime", TimeUtil.getFormattedTime(endTime, TimeUtil.JDBC_TIMESTAMP_FORMAT));
+        map.put("serviceTrace", getServiceTraceMap());
+        if (errorTrace != null && !errorTrace.isEmpty()) {
+            map.put("errorTrace", getErrorTrace());
+        }
+        return map;
+
+    }
 }
