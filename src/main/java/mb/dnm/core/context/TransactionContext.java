@@ -3,10 +3,12 @@ package mb.dnm.core.context;
 import mb.dnm.util.MessageUtil;
 import org.springframework.transaction.TransactionStatus;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransactionContext {
+public class TransactionContext implements Serializable {
+    private static final long serialVersionUID = -1311345572730756673L;
     private String name;
     private boolean groupTxEnabled = false;
     private TransactionStatus txStatus;
