@@ -257,6 +257,9 @@ public class DownloadFiles extends AbstractFTPService {
                         } else {
                             Files.deleteIfExists(localPath);
                             log.warn("[{}]FTP download failed. File: \"{}\", Reply: {} ", txId, ftpPath, ftp.getReplyString().trim());
+                            if (!ignoreErrorFile) {
+                                throw new IllegalStateException("The file '" + ftpPath + "' is not found in the FTP server '" + srcName + "'.");
+                            }
                         }
                     } else {
                         ++dirCount;
