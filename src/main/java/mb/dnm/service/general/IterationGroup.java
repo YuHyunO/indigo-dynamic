@@ -130,7 +130,6 @@ public class IterationGroup extends ParameterAssignableService {
         int currentDynamicCodeOrder = ctx.getCurrentDynamicCodeOrder();
         int currentErrorDynamicCodeOrder = ctx.getCurrentErrorDynamicCodeOrder();
 
-
         // 우선 iterateUntilBreak 조건에 따라 로직을 나눔 (코드정리 작업은 나중에 수행)
         if (iterateUntilBreak) {
             int serviceCount = services.size();
@@ -206,6 +205,10 @@ public class IterationGroup extends ParameterAssignableService {
                             }
                         }
                     }
+                    //반복문 수행이 끝나면 ServiceContext에 원래의 Sequence 에 반복문에서 마지막으로 소진된 Sequence Order 를 지정해줘야 한다.
+                    ctx.setCurrentQueryOrder(innerCtx.getCurrentQueryOrder());
+                    ctx.setCurrentDynamicCodeOrder(innerCtx.getCurrentDynamicCodeOrder());
+
                 } catch (Throwable t1) {
                     //Processing error handling
                     if (errorHandlers == null || errorHandlers.isEmpty()) {
@@ -278,6 +281,14 @@ public class IterationGroup extends ParameterAssignableService {
                     ++iterCnt;
                 }
             }
+
+
+            ctx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
+            ctx.setCurrentErrorDynamicCodeOrder(currentErrorDynamicCodeOrder);
+            /*ctx.setCurrentQueryOrder(queryOrderAfterLoop);
+            ctx.setCurrentDynamicCodeOrder(dynamicCodeOrderAfterLoop);
+            */
+
             ctx.deleteContextParam("$iter_break");
             log.debug("[{}]Iteration-Group: Total iteration count: {}", txId, iterCnt);
 
@@ -390,6 +401,10 @@ public class IterationGroup extends ParameterAssignableService {
                             log.debug("[{}]Iteration-Group: End the service '{}'", innerTxId, serviceClass);
                         }
                     }
+                    //반복문 수행이 끝나면 ServiceContext에 원래의 Sequence 에 반복문에서 마지막으로 소진된 Sequence Order 를 지정해줘야 한다.
+                    ctx.setCurrentQueryOrder(innerCtx.getCurrentQueryOrder());
+                    ctx.setCurrentDynamicCodeOrder(innerCtx.getCurrentDynamicCodeOrder());
+
                 } catch (Throwable t1) {
                     //Processing error handling
                     if (errorHandlers == null || errorHandlers.isEmpty()) {
@@ -416,6 +431,7 @@ public class IterationGroup extends ParameterAssignableService {
                             log.debug("[{}]Iteration-Group: End the error handler '{}'", innerTxId, errorHandlerClass);
                         }
                     }
+
                     if (!createNewContextEachLoop && !continueDespiteError) {
                         throw t1;
                     }
@@ -464,11 +480,11 @@ public class IterationGroup extends ParameterAssignableService {
                 }
             }
 
-            //반복문 수행이 끝나면 ServiceContext에 원래의 QueryOrder를 다시 지정해줘야 한다.
-            ctx.setCurrentQueryOrder(currentQueryOrder);
             ctx.setCurrentErrorQueryOrder(currentErrorQueryOrder);
-            ctx.setCurrentDynamicCodeOrder(currentDynamicCodeOrder);
             ctx.setCurrentErrorDynamicCodeOrder(currentErrorDynamicCodeOrder);
+            /*ctx.setCurrentQueryOrder(queryOrderAfterLoop);
+            ctx.setCurrentDynamicCodeOrder(dynamicCodeOrderAfterLoop);
+            */
 
             log.debug("[{}]Iteration-Group: Total iteration count: {}", txId, iterCnt);
         }
