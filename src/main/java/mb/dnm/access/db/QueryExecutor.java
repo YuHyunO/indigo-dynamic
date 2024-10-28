@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 
@@ -66,18 +67,6 @@ public class QueryExecutor {
     }
 
     public List<Map<String, Object>> doSelects(TransactionContext txCtx, String sqlId, List<Map<String, Object>> selectParam) {
-        /*List<Map<String, Object>> result = new ArrayList<>();
-        SqlSessionTemplate executor = getDefaultExecutor();
-
-        if (selectParam == null || selectParam.isEmpty()) {
-            List<Map<String, Object>> subResult = executor.selectList(sqlId, null);
-            result.addAll(subResult);
-        } else {
-            for (Map<String, Object> param : selectParam) {
-                List<Map<String, Object>> subResult = executor.selectList(sqlId, param);
-                result.addAll(subResult);
-            }
-        }*/
         return doSelects(txCtx, sqlId, selectParam, null);
     }
 
@@ -100,6 +89,27 @@ public class QueryExecutor {
             }
         }
         return result;
+    }
+
+    public int doHandleSelect(TransactionContext txCtx, String sqlId, ResultHandlingSupport resultHandlingSupport) {
+        return doHandleSelect(txCtx, sqlId, null, null, resultHandlingSupport);
+    }
+
+    public int doHandleSelect(TransactionContext txCtx, String sqlId, Map<String, Object> selectParam, ResultHandlingSupport resultHandlingSupport) {
+        List<Map<String, Object>> paramList = null;
+        if (selectParam != null && selectParam.isEmpty()) {
+            paramList = new ArrayList<>();
+            paramList.add(selectParam);
+        }
+        return doHandleSelect(txCtx, sqlId, paramList, null, resultHandlingSupport);
+    }
+
+    public int doHandleSelect(TransactionContext txCtx, String sqlId, List<Map<String, Object>> selectParam, ResultHandlingSupport resultHandlingSupport) {
+        return doHandleSelect(txCtx, sqlId, selectParam, null, resultHandlingSupport);
+    }
+
+    public int doHandleSelect(TransactionContext txCtx, String sqlId, List<Map<String, Object>> selectParam, Map<String, Object> commonParam, ResultHandlingSupport resultHandlingSupport) {
+        return 0;
     }
 
     public List<Map<String, Object>> doCall(TransactionContext txCtx, String sqlId, List<Map<String, Object>> callParam) {
