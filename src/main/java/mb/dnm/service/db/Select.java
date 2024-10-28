@@ -5,6 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import mb.dnm.access.db.DataSourceProvider;
 import mb.dnm.access.db.QueryExecutor;
 import mb.dnm.access.db.QueryMap;
+import mb.dnm.access.db.ResultHandlingSupport;
+import mb.dnm.core.ErrorHandler;
+import mb.dnm.core.Service;
+import mb.dnm.core.callback.AfterProcessCallback;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
@@ -30,8 +34,8 @@ import java.util.Map;
  * @version 2024.09.05
  * @Input Select query 시 사용될 parameter
  * @InputType <code>Map&lt;String, Object&gt;</code> or <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
- * @Output Select 쿼리의 결과
- * @OutputType <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
+ * @Output Select 쿼리의 결과 또는 Select 된 rows 의 개수(handleResultSet 속성이 true 인 경우)
+ * @OutputType <code>List&lt;Map&lt;String, Object&gt;&gt;</code> or <code>int</code>(handleResultSet 속성이 true 인 경우)
  *
  * @Exceptions <code>IllegalArgumentException</code>: Input parameter의 type이 지원되지 않는 타입인 경우 <br> <code>InvalidServiceConfigurationException</code>: QuerySequnce queue에서 더 이상 실행할 query를 찾지 못했을 때
  * */
@@ -40,6 +44,11 @@ import java.util.Map;
 @Setter
 public class Select extends ParameterAssignableService {
     private boolean errorQueryMode = false;
+    private boolean handleResultSet = false;
+    private int resultSetFetchSize = 1;
+    private List<Service> services;
+    private List<ErrorHandler> errorHandlers;
+    private List<AfterProcessCallback> callbacks;
 
     @Override
     public void process(ServiceContext ctx) {
@@ -58,6 +67,8 @@ public class Select extends ParameterAssignableService {
             }
             queryMap = ctx.nextQueryMap();
         }
+
+        String txId = ctx.getTxId();
         TransactionContext txContext = ctx.getTransactionContext(queryMap);
         QueryExecutor executor = DataSourceProvider.access().getExecutor(queryMap.getExecutorName());
 
@@ -69,6 +80,18 @@ public class Select extends ParameterAssignableService {
 
         Map<String, Object> ctxInfoMap = ctx.getContextInformation();
 
+        //대용량 결과 처리를 위한 객체(ResultHandlingSupport) 생성
+        ResultHandlingSupport resultHandlingSupport = null;
+        if (handleResultSet) {
+            log.debug("[{}]Initializing ResultHandlingSupport object...", txId);
+            resultHandlingSupport = new ResultHandlingSupport();
+            resultHandlingSupport.setFetchSize(resultSetFetchSize);
+            resultHandlingSupport.setServices(services);
+            resultHandlingSupport.setErrorHandlers(errorHandlers);
+            resultHandlingSupport.setCallbacks(callbacks);
+        }
+
+        int selectedCnt = 0;
         //(4) Execute query when parameter is not null
         if (inValue != null) {
             List<Map<String, Object>> selectParameters = new ArrayList<>();
@@ -85,15 +108,30 @@ public class Select extends ParameterAssignableService {
             }
 
             String queryId = queryMap.getQueryId();
-            selectResult = executor.doSelects(txContext, queryId, selectParameters, ctxInfoMap);
+            if (handleResultSet) {
+                selectedCnt = executor.doHandleSelect(txContext, queryId, selectParameters, ctxInfoMap, resultHandlingSupport);
+            } else {
+                selectResult = executor.doSelects(txContext, queryId, selectParameters, ctxInfoMap);
+            }
         } else { //(4) Execute query when parameter is null
-            selectResult = executor.doSelect(txContext, queryMap.getQueryId(), ctxInfoMap);
+            if (handleResultSet) {
+                selectedCnt = executor.doHandleSelect(txContext, queryMap.getQueryId(), ctxInfoMap, resultHandlingSupport);
+            } else {
+                selectResult = executor.doSelect(txContext, queryMap.getQueryId(), ctxInfoMap);
+            }
         }
 
-        log.info("[{}]{} rows selected", ctx.getTxId(), selectResult.size());
+        if (!handleResultSet) {
+            selectedCnt = selectResult.size();
+        }
+        log.info("[{}]{} rows selected", ctx.getTxId(), selectedCnt);
 
         if (getOutput() != null) {
-            setOutputValue(ctx, selectResult);
+            if (!handleResultSet) {
+                setOutputValue(ctx, selectResult);
+            } else {
+                setOutputValue(ctx, selectedCnt);
+            }
         }
     }
 
