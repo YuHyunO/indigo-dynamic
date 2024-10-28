@@ -2,13 +2,10 @@ package mb.dnm.access.db;
 
 import lombok.Getter;
 import lombok.Setter;
-import mb.dnm.core.ErrorHandler;
-import mb.dnm.core.Service;
-import mb.dnm.core.callback.AfterProcessCallback;
-import mb.dnm.core.callback.SessionCleanupCallback;
-import mb.dnm.core.callback.TransactionCleanupCallback;
 import mb.dnm.core.context.ServiceContext;
+import mb.dnm.service.general.IterationGroup;
 import org.apache.ibatis.session.ResultContext;
+import org.apache.ibatis.session.ResultHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,33 +14,41 @@ import java.util.Map;
 
 @Getter
 public class ResultHandlingSupport {
-    @Setter
     private int fetchSize = 1;
+    private int totalFetchedCount = 0;
     private int currentBufferSize = 0;
     private List<Map<String, Object>> resultSetBuffer;
+    private final ServiceContext context;
     @Setter
-    private List<Service> services;
-    @Setter
-    private List<ErrorHandler> errorHandlers;
-    private List<AfterProcessCallback> callbacks;
+    /**
+     * resultSetBuffer 에서 flushBuffer 를 통해 Fetch 되는 값들이  내부 services가 실행될 때 어떤 파라미터명으로 input 될 지에 대한 설정이다.
+     * */
+    private String fetchedInputName = "$RESULT_HANDLING_BUFFER";
+    private IterationGroup resultHandlingProcessor;
 
-    public ResultHandlingSupport() {
+    ResultHandlingSupport(ServiceContext context) {
+        this.context = context;
         resultSetBuffer = new ArrayList<>();
     }
 
-    public ResultHandlingSupport(List<Service> services, List<ErrorHandler> errorHandlers, List<AfterProcessCallback> callbacks) {
-        this.services = services;
-        this.errorHandlers = errorHandlers;
-        setCallbacks(callbacks);
-        resultSetBuffer = new ArrayList<>();
+
+    private int executeInternal() {
+        int fetched = resultSetBuffer.size();
+        if (resultHandlingProcessor != null) {
+            try {
+                context.addContextParam(fetchedInputName, resultSetBuffer);
+                resultHandlingProcessor.setIterationInputName(fetchedInputName);
+                resultHandlingProcessor.process(context);
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
+            }
+            return fetched;
+        } else {
+            return 0;
+        }
     }
 
-    private int executeInternal(ServiceContext ctx) {
-
-        return 0;
-    }
-
-    public void fillResult(ResultContext<Map<String, Object>> resultContext) {
+    void fillResult(ResultContext<? extends Map<String, Object>> resultContext) {
         if (currentBufferSize >= fetchSize) {
             throw new IllegalStateException("Result buffer is full. Please call flushBuffer(ServiceContext) first.");
         }
@@ -52,33 +57,55 @@ public class ResultHandlingSupport {
         ++currentBufferSize;
     }
 
-    public boolean isBufferFull() {
+    boolean isBufferFull() {
         return currentBufferSize == fetchSize;
     }
 
-    public int flushBuffer(ServiceContext ctx) {
-        int fetchedCount = executeInternal(ctx);
-        resultSetBuffer = new ArrayList<>();
-        return fetchedCount;
+    int flushBuffer() {
+        try {
+            if (!resultSetBuffer.isEmpty()) {
+                int fetchedCount = executeInternal();
+                resultSetBuffer = new ArrayList<>();
+                return fetchedCount;
+            } else {
+                return 0;
+            }
+        } finally {
+            currentBufferSize = 0;
+        }
     }
 
-    public void setFetchSize(int fetchSize) {
+    void setFetchSize(int fetchSize) {
         if (fetchSize < 1) {
             fetchSize = 1;
         }
         this.fetchSize = fetchSize;
     }
 
-    public void setCallbacks(List<AfterProcessCallback> callbacks) {
-        if (callbacks == null) {
+    ResultHandler<Map<String, Object>> getHandler() {
+        return new BufferedResultHandler();
+    }
+
+    class BufferedResultHandler implements ResultHandler<Map<String, Object>> {
+
+        @Override
+        public void handleResult(ResultContext<? extends Map<String, Object>> resultContext) {
+            if (!isBufferFull()) {
+                fillResult(resultContext);
+            } else {
+                //ResultSet 버퍼가 가득차면 버퍼를 비운뒤 다시 버퍼를 채운다.
+                flushBuffer();
+                fillResult(resultContext);
+            }
+        }
+
+    }
+
+    void setResultHandlingProcessor(IterationGroup resultHandlingProcessor) {
+        if (resultHandlingProcessor == null) {
             return;
         }
-        for (AfterProcessCallback callback : callbacks) {
-            if (callback instanceof TransactionCleanupCallback
-                    || callback instanceof SessionCleanupCallback) {
-                continue;
-            }
-            this.callbacks.add(callback);
-        }
+        this.resultHandlingProcessor = resultHandlingProcessor;
+        this.fetchSize = resultHandlingProcessor.getFetchSize();
     }
 }
