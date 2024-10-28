@@ -109,7 +109,26 @@ public class QueryExecutor {
     }
 
     public int doHandleSelect(TransactionContext txCtx, String sqlId, List<Map<String, Object>> selectParam, Map<String, Object> commonParam, ResultHandlingSupport resultHandlingSupport) {
-        return 0;
+        int fetchedCnt = 0;
+        SqlSessionTemplate executor = getDefaultExecutor();
+
+        if (selectParam == null || selectParam.isEmpty()) {
+            executor.select(sqlId, commonParam, resultHandlingSupport.getHandler());
+            resultHandlingSupport.flushBuffer();
+            fetchedCnt = resultHandlingSupport.getTotalFetchedCount();
+        } else {
+            for (Map<String, Object> param : selectParam) {
+                Map<String, Object> addParam = new HashMap<>();
+                if (commonParam != null) {
+                    addParam.putAll(commonParam);
+                }
+                addParam.putAll(param);
+                executor.select(sqlId, addParam, resultHandlingSupport.getHandler());
+                resultHandlingSupport.flushBuffer();
+                fetchedCnt += resultHandlingSupport.getTotalFetchedCount();
+            }
+        }
+        return fetchedCnt;
     }
 
     public List<Map<String, Object>> doCall(TransactionContext txCtx, String sqlId, List<Map<String, Object>> callParam) {
