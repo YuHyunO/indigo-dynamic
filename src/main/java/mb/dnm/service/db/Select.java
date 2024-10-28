@@ -20,6 +20,7 @@ import java.util.Map;
  * SELECT parameter가 <code>List</code> 형태로 전달되는 경우 SELECT 문이 <code>List</code>의 size만큼 반복되어 합산된 결과가 Output 된다.
  * <br>
  * Input 데이터가 Null 인 경우에도 query는 수행된다.
+ * handleResultSet 속성이 true 인 경우 ResultHandlingSupportFactory에 등록된 IterationGroup을 조작하여 Select 쿼리 결과를 한 건씩 핸들링 할 수있다.
  *
  * @see mb.dnm.storage.InterfaceInfo#setQuerySequence(String)
  * @see mb.dnm.storage.InterfaceInfo#getQuerySequence()
