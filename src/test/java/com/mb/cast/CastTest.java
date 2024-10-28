@@ -53,4 +53,12 @@ public class CastTest {
         String intStr = "0000000";
         Integer.parseInt(intStr);
     }
+
+    @Test
+    public void primitive_test() {
+        Object cnt = null;
+        int i = 100;
+        cnt = i;
+        log.info("{}", Number.class.isAssignableFrom(cnt.getClass()));
+    }
 }
