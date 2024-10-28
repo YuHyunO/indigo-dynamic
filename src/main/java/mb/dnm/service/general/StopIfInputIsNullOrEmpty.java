@@ -77,6 +77,11 @@ public class StopIfInputIsNullOrEmpty extends ParameterAssignableService {
                 ctx.setProcessOn(false);
                 stop = true;
             }
+        } else if (Number.class.isAssignableFrom(inputVal.getClass())) {
+            if (((Number)inputVal).intValue() == 0) {
+                ctx.setProcessOn(false);
+                stop = true;
+            }
         }
 
         if (stop) {
