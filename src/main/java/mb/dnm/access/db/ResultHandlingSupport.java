@@ -37,6 +37,8 @@ public class ResultHandlingSupport {
         if (resultHandlingProcessor != null) {
             try {
                 context.addContextParam(fetchedInputName, resultSetBuffer);
+                //ResultHandlingSupport 에서 사용되는 IterationGroup의 Input 과 IterationInputName 을 fetchedInputName으로 강제하였음
+                resultHandlingProcessor.setInput(fetchedInputName);
                 resultHandlingProcessor.setIterationInputName(fetchedInputName);
                 resultHandlingProcessor.process(context);
             } catch (Throwable t) {
