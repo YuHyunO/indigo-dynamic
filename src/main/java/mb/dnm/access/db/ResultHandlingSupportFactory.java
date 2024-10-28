@@ -26,6 +26,7 @@ public class ResultHandlingSupportFactory {
         support.setFetchSize(fetchSize);
         support.setFetchedInputName(fetchedInputName);
         if (resultHandlingProcessor != null) {
+            resultHandlingProcessor.setInput(fetchedInputName);
             resultHandlingProcessor.setIterationInputName(fetchedInputName);
             support.setResultHandlingProcessor(resultHandlingProcessor);
         }
