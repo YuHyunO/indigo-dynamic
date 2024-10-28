@@ -188,7 +188,7 @@ public class ServiceContext implements Serializable {
             throw new NoSuchElementException("DynamicCode sequence is null");
         }
         int seqSize = codeSequence.length;
-        if (currentDynamicCodeOrder > seqSize)
+        if (currentDynamicCodeOrder >= seqSize)
             throw new NoSuchElementException("DynamicCode sequence reached to the last");
         String code = codeSequence[currentDynamicCodeOrder];
         ++currentDynamicCodeOrder;
@@ -198,7 +198,7 @@ public class ServiceContext implements Serializable {
     public boolean hasMoreDynamicCodes() {
         String[] codeSequence = info.getDynamicCodeSequence();
         int seqSize = codeSequence.length;
-        if (currentDynamicCodeOrder <= seqSize)
+        if (currentDynamicCodeOrder < seqSize)
             return true;
         return false;
     }
@@ -209,7 +209,7 @@ public class ServiceContext implements Serializable {
             throw new NoSuchElementException("ErrorDynamicCode sequence is null");
         }
         int seqSize = codeSequence.length;
-        if (currentErrorDynamicCodeOrder > seqSize)
+        if (currentErrorDynamicCodeOrder >= seqSize)
             throw new NoSuchElementException("ErrorDynamicCode sequence reached to the last");
         String code = codeSequence[currentErrorDynamicCodeOrder];
         ++currentErrorDynamicCodeOrder;
@@ -219,7 +219,7 @@ public class ServiceContext implements Serializable {
     public boolean hasMoreErrorDynamicCodes() {
         String[] codeSequence = info.getErrorDynamicCodeSequence();
         int seqSize = codeSequence.length;
-        if (currentErrorDynamicCodeOrder <= seqSize)
+        if (currentErrorDynamicCodeOrder < seqSize)
             return true;
         return false;
     }
@@ -227,7 +227,7 @@ public class ServiceContext implements Serializable {
     public boolean hasMoreQueryMaps() {
         String[] querySequence = info.getQuerySequence();
         int seqSize = querySequence.length;
-        if (currentQueryOrder <= seqSize)
+        if (currentQueryOrder < seqSize)
             return true;
         return false;
     }
@@ -239,7 +239,7 @@ public class ServiceContext implements Serializable {
         }
 
         int seqSize = querySequence.length;
-        if (currentQueryOrder > seqSize)
+        if (currentQueryOrder >= seqSize)
             throw new NoSuchElementException("Query sequence reached to the last");
         String query = querySequence[currentQueryOrder];
         ++currentQueryOrder;
@@ -258,7 +258,7 @@ public class ServiceContext implements Serializable {
     public boolean hasMoreErrorQueryMaps() {
         String[] querySequence = info.getErrorQuerySequence();
         int seqSize = querySequence.length;
-        if (currentErrorQueryOrder <= seqSize)
+        if (currentErrorQueryOrder < seqSize)
             return true;
         return false;
     }
@@ -270,7 +270,7 @@ public class ServiceContext implements Serializable {
         }
 
         int seqSize = querySequence.length;
-        if (currentErrorQueryOrder > seqSize)
+        if (currentErrorQueryOrder >= seqSize)
             throw new NoSuchElementException("Error query sequence reached to the last");
         String query = querySequence[currentErrorQueryOrder];
         ++currentErrorQueryOrder;
