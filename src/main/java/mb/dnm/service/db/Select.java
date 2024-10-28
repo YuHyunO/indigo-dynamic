@@ -2,13 +2,7 @@ package mb.dnm.service.db;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import mb.dnm.access.db.DataSourceProvider;
-import mb.dnm.access.db.QueryExecutor;
-import mb.dnm.access.db.QueryMap;
-import mb.dnm.access.db.ResultHandlingSupport;
-import mb.dnm.core.ErrorHandler;
-import mb.dnm.core.Service;
-import mb.dnm.core.callback.AfterProcessCallback;
+import mb.dnm.access.db.*;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
@@ -45,10 +39,7 @@ import java.util.Map;
 public class Select extends ParameterAssignableService {
     private boolean errorQueryMode = false;
     private boolean handleResultSet = false;
-    private int resultSetFetchSize = 1;
-    private List<Service> services;
-    private List<ErrorHandler> errorHandlers;
-    private List<AfterProcessCallback> callbacks;
+    private ResultHandlingSupportFactory resultHandlingSupportFactory;
 
     @Override
     public void process(ServiceContext ctx) {
@@ -83,12 +74,11 @@ public class Select extends ParameterAssignableService {
         //대용량 결과 처리를 위한 객체(ResultHandlingSupport) 생성
         ResultHandlingSupport resultHandlingSupport = null;
         if (handleResultSet) {
-            log.debug("[{}]Initializing ResultHandlingSupport object...", txId);
-            resultHandlingSupport = new ResultHandlingSupport();
-            resultHandlingSupport.setFetchSize(resultSetFetchSize);
-            resultHandlingSupport.setServices(services);
-            resultHandlingSupport.setErrorHandlers(errorHandlers);
-            resultHandlingSupport.setCallbacks(callbacks);
+            if (resultHandlingSupportFactory == null) {
+                log.debug("[{}]Initializing resultHandlingSupportFactory object...", txId);
+                resultHandlingSupportFactory = new ResultHandlingSupportFactory();
+            }
+            resultHandlingSupport = resultHandlingSupportFactory.getResultHandlingSupport(ctx);
         }
 
         int selectedCnt = 0;
