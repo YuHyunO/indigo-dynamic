@@ -80,14 +80,16 @@ public class StopIfInputIsNullOrEmpty extends ParameterAssignableService {
         }
 
         if (stop) {
+            String txId = ctx.getTxId();
             if (nill) {
                 log.info("[{}]Input value is null. The service process will be stop", ctx.getTxId());
             } else {
                 log.info("[{}]Input value is empty. The service process will be stop", ctx.getTxId());
             }
             ctx.setProcessOn(false);
-            if (getOutput() != null) {
-                setOutputValue(outputValue);
+            if (output != null) {
+                log.debug("[{}]Setting output '{}' with value '{}'...", txId, output, outputValue);
+                ctx.addContextParam(output, outputValue);
             }
         }
 
