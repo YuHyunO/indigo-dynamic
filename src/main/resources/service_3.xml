@@ -2,12 +2,90 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
 
-    <util:list id="service_3">
-        <bean class="mb.dnm.service.db.Select">
-            <property name="output" value=""/>
-        </bean>
-
-    </util:list>
+    <util:map id="service_3">
+        <entry key="$P_DB2FTP_master_detail">
+            <!--<description>DB to FTP 서비스[대용량]</description>-->
+            <list>
+                <bean class="mb.dnm.service.db.Select">
+                    <description>Source DB 에서 연계 대상 데이터 존재여부를 조회한다.</description>
+                    <property name="output"             value="fetched_count"/>
+                </bean>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <description>연계 대상 파일이 없으면 프로세스를 종료한다.</description>
+                    <property name="input"              value="fetched_count"/>
+                    <property name="output"             value="no_logging_flag"/>
+                    <property name="outputValue"        value="Y"/>
+                </bean>
+                <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode">
+                    <description>파일명(file_name) 과 헤더내용(header_content)을 output 한다.</description>
+                    <property name="description"        value="파일명과 헤더 내용을 생성한다."/>
+                </bean>
+                <bean class="mb.dnm.service.file.WriteFile">
+                    <property name="description"        value="파일을 생성 후 헤더를 작성한다."/>
+                    <property name="sourceAlias"        value="TGT"/>
+                    <property name="filenameInput"      value="file_name"/>
+                    <property name="input"              value="header_content"/>
+                    <property name="directoryType"      value="LOCAL_TEMP"/>
+                    <property name="output"             value="file_loc"/>
+                </bean>
+                <bean class="mb.dnm.service.db.Select">
+                    <description>Source DB 에서 연계 대상 데이터를 조회하여 처리한다.(대용량)</description>
+                    <property name="output"             value="fetched_count"/>
+                    <property name="handleResultSet"    value="true"/>
+                    <property name="resultHandlingSupportFactory">
+                        <bean class="mb.dnm.access.db.ResultHandlingSupportFactory">
+                            <property name="fetchedInputName"   value="selected_rows"/>
+                            <property name="fetchSize"          value="100"/>
+                            <property name="resultHandlingProcessor">
+                                <bean class="mb.dnm.service.general.IterationGroup">
+                                    <description>Master 데이터의 수만큼 Detail 데이터를 추출하며 파일내용을 작성한다.</description>
+                                    <property name="input"                                  value="selected_rows"/>
+                                    <property name="iterationInputName"                     value="selected_rows"/>
+                                    <property name="createNewContextEachLoop"               value="false"/>
+                                    <property name="services">
+                                        <description>연계대상파일의 수만큼 아래에 정의된 프로세스를 순서대로 반복</description>
+                                        <list>
+                                            <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode">
+                                                <description>파일내용(body_content)을 output 한다.</description>
+                                                <property name="description"                value="파일에 작성될 본문 데이터를 매핑 및 생성한다."/>
+                                            </bean>
+                                            <bean class="mb.dnm.service.file.WriteFile">
+                                                <property name="description"        value="파일에 본문 데이터를 작성한다."/>
+                                                <property name="sourceAlias"        value="TGT"/>
+                                                <property name="input"              value="body_content"/>
+                                                <property name="directoryType"      value="LOCAL_TEMP"/>
+                                            </bean>
+                                        </list>
+                                    </property>
+                                </bean>
+                            </property>
+                        </bean>
+                    </property>
+                </bean>
+                <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode">
+                    <property name="description"        value="파일 마지막행의 내용을 생성한다."/>
+                </bean>
+                <bean class="mb.dnm.service.file.WriteFile">
+                    <property name="description"        value="파일에 마지막행 내용을 추가한다."/>
+                    <property name="sourceAlias"        value="TGT"/>
+                    <property name="input"              value="tail_content"/>
+                    <property name="directoryType"      value="LOCAL_TEMP"/>
+                </bean>
+                <bean class="mb.dnm.service.ftp.UploadFiles">
+                    <property name="description"        value="생성한 파일을 FTP 서버에 업로드 한다."/>
+                    <property name="sourceAlias"        value="TGT"/>
+                    <property name="input"              value="file_loc"/>
+                    <property name="output"             value="remote_file_loc"/>
+                    <property name="directoryType"      value="REMOTE_RECEIVE"/>
+                </bean>
+                <bean class="mb.dnm.service.file.DeleteFiles">
+                    <description>연계 완료 후 로컬에 생성했던 파일을 삭제한다.</description>
+                    <property name="ignoreError"        value="true"/>
+                    <property name="input"              value="file_loc"/>
+                </bean>
+            </list>
+        </entry>
+    </util:map>
 
 
 </beans>
