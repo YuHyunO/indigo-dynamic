@@ -1,5 +1,6 @@
 package mb.dnm.service.general;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.code.ProcessCode;
@@ -64,6 +65,7 @@ public class IterationGroup extends ParameterAssignableService {
      * 기본값: 1<br>
      * 각각의 Iteration의 반복되는 요소가 service strategies 의 Input 매개변수로 전달될 때 몇 개만큼 전달될 지를 결정한다.<br>
      * */
+    @Getter
     private int fetchSize = 1;
     /**
      * 기본값: false<br>
