@@ -2,6 +2,7 @@ package mb.dnm.core.dynamic;
 
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.core.context.ServiceContext;
+import org.springframework.core.io.Resource;
 
 import java.lang.reflect.Method;
 
@@ -14,12 +15,14 @@ import java.lang.reflect.Method;
  * */
 @Slf4j
 public class DynamicCodeInstance {
+    private final Resource resource;
     private final String id;
     private final Class<? extends DynamicCode> loadedClass;
     private final Object instance;
     private final Method method;
 
-    public DynamicCodeInstance(String id, Class<? extends DynamicCode> loadedClass) throws Exception {
+    public DynamicCodeInstance(Resource resource, String id, Class<? extends DynamicCode> loadedClass) throws Exception {
+        this.resource = resource;
         this.id = id;
         this.loadedClass = loadedClass;
         this.instance = loadedClass.newInstance();
@@ -42,5 +45,8 @@ public class DynamicCodeInstance {
         return loadedClass.getName();
     }
 
+    public Resource getResource() {
+        return resource;
+    }
 
 }
