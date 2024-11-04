@@ -79,6 +79,7 @@
     <!-- ¡ØDynamicCode Repository -->
     <bean class="mb.dnm.access.dynamic.DynamicCodeProvider">
         <property name="standaloneMode"     value="true"/>
+        <property name="compilerThreadCount"  value="10"/>
         <property name="codeLocations"      value="DYNAMIC_*.dnc"/>
     </bean>
 

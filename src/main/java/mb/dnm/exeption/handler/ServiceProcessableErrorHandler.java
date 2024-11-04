@@ -17,13 +17,18 @@ public class ServiceProcessableErrorHandler extends AbstractErrorHandler{
 
     @Override
     public void handleError(ServiceContext ctx) throws Throwable {
-        log.warn("[{}]Start error handler chaining", ctx.getTxId());
+        String txId = ctx.getTxId();
+        log.warn("[{}]Start error handler chaining", txId);
         for (Service service : services) {
+            Class clazz = service.getClass();
             try {
+                log.info("[{}]ERROR-HANDLER-CHAINING: starts the service '{}'", txId, clazz);
                 service.process(ctx);
             } catch (Throwable t) {
                 if (!ignoreException) {
                     throw t;
+                } else {
+                    log.warn("[{}]An exception occurred during error handling but was ignored. Exception message: {}", txId, t.getMessage());
                 }
             }
         }

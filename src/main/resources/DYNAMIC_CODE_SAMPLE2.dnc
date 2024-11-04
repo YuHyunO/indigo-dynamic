@@ -1,0 +1,79 @@
+#namespace: DYNAMIC_TEST_IF2
+    dnc(dynamic code) 문서의 가장 첫번째 줄에는 namespace가 적혀야 한다.
+    namespace를 나타내는 키워드는 namespace 이며 콜론(:) 다음에 나오는 문자가 namespace의 값이 된다.
+
+    빈공간에는 주석이나 기타 기록할 사항을 자유롭게 남길 수 있지만 키워드의 사용은 제한된다.
+
+
+    코드를 시작할 때는 code_id 키워드를 사용한다. code_id 키워드 다음에는 콜론이 나와야하며 콜론 다음에는 코드의 ID가 나와야 한다.
+    코드를 작성하는 부분은 양 끝에 #이 붙은 중괄호 안에 감싸져 있어야 한다. -> #/code_id: TEST_CODE #{ 코드작성 부분 }#
+
+#code_id:TEST1 #import java.net.HttpCookie;
+#import java.net.URL;
+#import java.net.ServerSocket;
+#{
+
+    //input 파라미터를 가져온다.
+    Object inputVal = getInput(ctx, "$http_body");
+    log.info("\nDynamic code를 통해 생성되었습니다. \n{}", inputVal);
+
+    if (inputVal == null) {
+        //output 파라미터를 지정한다.
+        setOutputValue(ctx, "test_output", "Output is null");
+    }
+
+    //File을 읽는다.
+    File file = new File("C:\\Projects\\indigo-dynamic\\src\\main\\resources\\log4js.xml");
+    if (!file.exists()) {
+        log.info("File content: \n{}", new String(Files.readAllBytes(file.toPath())));
+    } else {
+        log.info("파일 없음");
+    }
+
+    log.info("End process");
+
+}#
+
+
+#code_id:TEST2
+#{
+    Object inputVal = getInput(ctx, "result_list");
+
+    if (inputVal != null && inputVal instanceof List) {
+        for (Object obj : (List<Object>) inputVal) {
+            log.info("{}", obj);
+        }
+    }
+
+    setOutputValue(ctx, "dynamic_result", "테스트 완료");
+}#
+
+#code_id:TEST3
+
+#import java.net.URL;
+#import java.net.ServerSocket;
+#{
+    Object inputVal = getInput(ctx, "result_list");
+
+    if (inputVal != null && inputVal instanceof List) {
+        for (Object obj : (List<Object>) inputVal) {
+            log.info("{}", obj);
+        }
+    }
+
+    setOutputValue(ctx, "dynamic_result", "테스트 완료");
+}#
+
+
+    특정 코드를 주석하고 싶다면 아래와 같이 코드를 인식하는 키워드인 code_id 문자를 찾을 수 없도록 만들어주면 된다.
+#~code_id:TEST3 #{
+    Object inputVal = getInput("result_list");
+
+    if (inputVal != null && inputVal instanceof List) {
+        for (Object obj : (List<Object>) inputVal) {
+            log.info("{}", obj);
+        }
+    }
+
+    setOutputValue(ctx, "dynamic_result", "테스트 완료");
+}#

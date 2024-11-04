@@ -244,8 +244,6 @@ public class WriteFile extends SourceAccessService {
         if (getInput() == null) {
             throw new InvalidServiceConfigurationException(this.getClass(), "WriteFile service must have the input parameter in which contain the file data to write");
         }
-        if (getOutput() == null)
-            return;
 
         InterfaceInfo info = ctx.getInfo();
         String srcName = info.getSourceNameByAlias(getSourceAlias());
@@ -350,7 +348,9 @@ public class WriteFile extends SourceAccessService {
 
         Path filePath = path.resolve(filename);
         if (overwrite) {
-            log.debug("[{}]Overwriting file ...", txId);
+            if (Files.exists(filePath)) {
+                log.debug("[{}]Overwriting file ...", txId);
+            }
             Files.deleteIfExists(filePath);
         }
         log.info("[{}]Writing file to \"{}\" ...", txId, savePath);
@@ -409,8 +409,9 @@ public class WriteFile extends SourceAccessService {
             }
         }
 
-        setOutputValue(ctx, filePath.toString());
-
+        if (getOutput() != null) {
+            setOutputValue(ctx, filePath.toString());
+        }
 
     }
 
