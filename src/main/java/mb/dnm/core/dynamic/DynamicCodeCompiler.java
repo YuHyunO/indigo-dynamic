@@ -25,6 +25,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * DynamicCode를 컴파일하는 클래스이다.
@@ -56,6 +60,7 @@ public class DynamicCodeCompiler {
     private String classpath = System.getProperty("java.class.path");
     private static boolean initialized = false;
     private static ClassLoader classLoader;
+    protected ExecutorService executor;
 
     public static DynamicCodeCompiler getInstance() {
         if (instance == null) {
@@ -92,6 +97,7 @@ public class DynamicCodeCompiler {
                 }));
                 if (!instance.standaloneMode) {
                     String filePath = ".." + File.separator + ".." + File.separator + ".classpath";
+
                     instance.classpath = ClassPathFactory.makeClassPath(filePath, "AD");
                 }
             } catch (Exception e) {
@@ -108,22 +114,96 @@ public class DynamicCodeCompiler {
     }
 
     public static List<DynamicCodeInstance> compileAll(Resource[] resources) throws Exception {
-        List<DynamicCodeInstance> instances = new ArrayList<>();
-        List<String> duplicatedIdCheckList = new ArrayList<>();
-
-        for (Resource resource : resources) {
-            List<DynamicCodeInstance> newlyComplied = compile(resource);
-            for (DynamicCodeInstance compiled : newlyComplied) {
-                String id = compiled.getId();
-                if (duplicatedIdCheckList.contains(id)) {
-                    throw new DynamicCodeCompileException("duplicated dynamic code id: " + id + " at the resource: " + resource);
-                }
-                duplicatedIdCheckList.add(id);
-                instances.add(compiled);
-            }
-        }
-        return instances;
+        return compileAll(resources, 0);
     }
+    public static List<DynamicCodeInstance> compileAll(Resource[] resources, int threadCount) throws Exception {
+        try {
+            if (threadCount > 0 && instance.executor == null) {
+                instance.executor = Executors.newFixedThreadPool(threadCount);
+            }
+            List<DynamicCodeInstance> instances = new ArrayList<>();
+            List<String> duplicatedIdCheckList = new ArrayList<>();
+
+            List<Future> compileTasks = new ArrayList<>();
+            for (final Resource resource : resources) {
+                if (threadCount > 0) {
+                    Callable<Object> task = new Callable() {
+                        @Override
+                        public Object call() throws Exception {
+                            try {
+                                return compile(resource);
+                            } catch (Exception e) {
+                                return e;
+                            }
+                        }
+                    };
+                    Future<Object> compileTask = instance.executor.submit(task);
+                    compileTasks.add(compileTask);
+                } else {
+                    List<DynamicCodeInstance> compiledList = compile(resource);
+
+                    for (DynamicCodeInstance compiled : compiledList) {
+                        String id = compiled.getId();
+                        if (duplicatedIdCheckList.contains(id)) {
+                            throw new DynamicCodeCompileException("duplicated dynamic code id: " + id + " at the resource: " + compiled.getResource());
+                        }
+                        duplicatedIdCheckList.add(id);
+                        instances.add(compiled);
+                    }
+                }
+            }
+
+            int taskCount = compileTasks.size();
+            List<Integer> completedIdx = new ArrayList<>();
+            if (taskCount > 0) {
+                int completedJob = 0;
+                while (true) {
+
+                    for (int i = 0; i < taskCount; i++) {
+                        if (completedIdx.contains(i)) {
+                            continue;
+                        }
+                        Future future = compileTasks.get(i);
+                        if (future.isDone()) {
+                            Object result = future.get();
+                            if (result instanceof Exception) {
+                                throw (Exception) result;
+                            }
+                            List<DynamicCodeInstance> compiledList = (List<DynamicCodeInstance>) result;
+                            for (DynamicCodeInstance compiled : compiledList) {
+                                String id = compiled.getId();
+                                if (duplicatedIdCheckList.contains(id)) {
+                                    throw new DynamicCodeCompileException("duplicated dynamic code id: " + id + " at the resource: " + compiled.getResource());
+                                }
+                                duplicatedIdCheckList.add(id);
+                                instances.add(compiled);
+                            }
+                            completedIdx.add(i);
+                            ++completedJob;
+                        } /*else {
+                            try {
+                                Thread.sleep(10);
+                            } catch (InterruptedException ite) {
+                            }
+                        }*/
+                    }
+
+                    if (completedJob >= taskCount) {
+                        instance.executor.shutdown();
+                        instance.executor = null;
+                        break;
+                    }
+                }
+            }
+
+            return instances;
+        } catch (Exception e) {
+            instance.executor.shutdown();
+            throw e;
+        }
+    }
+
+
 
     public static List<DynamicCodeInstance> compile(Resource resource) throws Exception {
         if (!resource.getFilename().endsWith(".dnc"))
@@ -312,7 +392,7 @@ public class DynamicCodeCompiler {
                         loader = new URLClassLoader(new URL[]{new File(generatedClassPath).toURI().toURL()}, classLoader);
 
                         Class<? extends DynamicCode> loadedClass = (Class<? extends DynamicCode>) loader.loadClass(className);
-                        instances.add(new DynamicCodeInstance(holders.getUniqueId(), loadedClass));
+                        instances.add(new DynamicCodeInstance(resource, holders.getUniqueId(), loadedClass));
                         GENERATED_CLASS_FILES.add(Paths.get("." + File.separator + rootDirName + File.separator + className + ".class"));
                     } else {
                         StringBuilder cause = new StringBuilder();
