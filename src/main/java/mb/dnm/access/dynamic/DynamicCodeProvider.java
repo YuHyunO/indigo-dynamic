@@ -1,11 +1,13 @@
 package mb.dnm.access.dynamic;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.core.dynamic.DynamicCodeCompiler;
 import mb.dnm.core.dynamic.DynamicCodeInstance;
 import org.springframework.core.io.Resource;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ public class DynamicCodeProvider {
     private String javacToolsPath = System.getProperty("java.home") + File.separator + "..//bin/java";
     private boolean standaloneMode = false;
     private boolean initializingLock = false;
+    private int compilerThreadCount = 0;
 
     /*
      * Spring version 만 맞다면 private 으로 변경해도 bean으로 등록 가능함
@@ -45,6 +48,8 @@ public class DynamicCodeProvider {
     }
 
     public void setCodeLocations(Resource[] codeLocations) throws Exception {
+        boolean error = false;
+
         if (!initialized) {
             initializingLock = true;
             if (codeLocations.length == 0) {
@@ -53,15 +58,22 @@ public class DynamicCodeProvider {
             }
             this.codeLocations = codeLocations;
             DynamicCodeCompiler.init();
-            List<DynamicCodeInstance> dncInstances = DynamicCodeCompiler.compileAll(this.codeLocations);
+            List<DynamicCodeInstance> dncInstances = null;
+            if (compilerThreadCount > 0) {
+                dncInstances = DynamicCodeCompiler.compileAll(this.codeLocations, compilerThreadCount);
+            } else {
+                dncInstances = DynamicCodeCompiler.compileAll(this.codeLocations);
+            }
+            log.debug("Generating DynamicCodeInstances ...");
             for (DynamicCodeInstance dncInstance : dncInstances) {
                 dnmCodes.put(dncInstance.getId(), dncInstance);
-                log.info("Loaded dynamic code instance '{}.class' with id '{}'", dncInstance.getDynamicCodeClassName(), dncInstance.getId());
+                log.debug("Loaded dynamic code instance '{}.class' with id '{}'", dncInstance.getDynamicCodeClassName(), dncInstance.getId());
             }
             initialized = true;
             return;
         }
         throw new IllegalStateException("DynamicCodeProvider is already initialized");
+
     }
 
     public void setJavacToolsPaths(String javacToolsPath) {
@@ -78,4 +90,14 @@ public class DynamicCodeProvider {
         DynamicCodeCompiler.getInstance().setStandaloneMode(standaloneMode);
     }
 
+    public void setCompilerThreadCount(int compilerThreadCount) {
+        if (compilerThreadCount < 0) {
+            compilerThreadCount = 0;
+        }
+        this.compilerThreadCount = compilerThreadCount;
+    }
+
+    public int getCompilerThreadCount() {
+        return compilerThreadCount;
+    }
 }
