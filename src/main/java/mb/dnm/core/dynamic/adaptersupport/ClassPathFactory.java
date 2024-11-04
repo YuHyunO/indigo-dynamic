@@ -143,7 +143,6 @@ public class ClassPathFactory extends DefaultHandler {
         String[] entryList = pathBean.getEntry();
         int entrySize = pdName.length;
         String value = "";
-        log.debug("entrySize : " + entrySize);
 
         for(int i = 0; i < entrySize; ++i) {
             if (productName.equals(pdName[i])) {
