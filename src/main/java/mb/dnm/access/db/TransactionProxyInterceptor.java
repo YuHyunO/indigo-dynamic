@@ -8,6 +8,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 
 
@@ -26,8 +27,9 @@ import java.lang.reflect.Method;
  *
  * */
 @Slf4j
-public class TransactionProxyInterceptor implements MethodInterceptor {
+public class TransactionProxyInterceptor implements MethodInterceptor, Serializable {
 
+    private static final long serialVersionUID = -6562784215800920896L;
     private final QueryExecutor target;
 
     public TransactionProxyInterceptor(QueryExecutor target) {
@@ -71,7 +73,7 @@ public class TransactionProxyInterceptor implements MethodInterceptor {
                 log.debug("Executing query with id '{}'", args[1]);
                 return methodProxy.invoke(target, args);
 
-            } else { //트랜잭션 그룹이 지정되지 않은 경우, QueryExecutor 의 do*(*) 메소드 실행 시 마다 트랜잭션이 생성되고, 메소드 종료 시 commit 또는 rollback 됨
+            } else { //트랜잭션 그룹이 지정되지 않은 경우, QueryExecutor 의 do*(**) 메소드 실행 시 마다 트랜잭션이 생성되고, 메소드 종료 시 commit 또는 rollback 됨
                 DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
                 txDef.setName(executorName);
                 txDef.setTimeout(txCtx.getTimeoutSecond());

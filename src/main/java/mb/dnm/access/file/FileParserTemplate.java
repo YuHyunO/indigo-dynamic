@@ -2,8 +2,11 @@ package mb.dnm.access.file;
 
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @Getter
-public class FileParserTemplate {
+public class FileParserTemplate implements Serializable {
+    private static final long serialVersionUID = -8496697747879161631L;
     private final String recordSeparator;
     private final String delimiter;
     private final String qualifier;

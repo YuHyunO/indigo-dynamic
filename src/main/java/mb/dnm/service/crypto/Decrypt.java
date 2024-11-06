@@ -16,7 +16,8 @@ import java.nio.file.Files;
 
 @Slf4j
 @Setter
-public class Decrypt extends ParameterAssignableService {
+public class Decrypt extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = 3873127519162473449L;
     private String key = "indigo-dynamic-7";
 
     /**

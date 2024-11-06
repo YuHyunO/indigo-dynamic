@@ -2,8 +2,11 @@ package mb.dnm.access.db;
 
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @Getter
-public class QueryMap {
+public class QueryMap implements Serializable {
+    private static final long serialVersionUID = 6992066094805880704L;
     private String executorName;
     private String queryId;
     private int timeoutSecond = -1;

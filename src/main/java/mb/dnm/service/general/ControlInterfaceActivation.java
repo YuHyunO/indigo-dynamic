@@ -9,6 +9,7 @@ import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.storage.StorageManager;
 
+import java.io.Serializable;
 import java.util.*;
 
 
@@ -21,7 +22,8 @@ import java.util.*;
  *
  * */
 @Slf4j
-public class ControlInterfaceActivation extends ParameterAssignableService {
+public class ControlInterfaceActivation extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = -6792285984303411801L;
     @Setter
     private String key = "5uIW8zL0AmVQN9xdP7GoWPlsl7115asdqwDWEHd3RsT2fDA1yNcG4AyBbKdJMiC";
     private final String IF_ID_KEYWORD = "$$IF_ID";

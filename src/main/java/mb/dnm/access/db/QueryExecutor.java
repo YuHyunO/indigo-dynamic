@@ -10,13 +10,15 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class QueryExecutor {
+public class QueryExecutor implements Serializable {
+    private static final long serialVersionUID = -447383890877348209L;
     @Getter
     private SqlSessionFactory sqlSessionFactory;
     private Map<ExecutorType, SqlSessionTemplate> sqlSessionTemplateMap;

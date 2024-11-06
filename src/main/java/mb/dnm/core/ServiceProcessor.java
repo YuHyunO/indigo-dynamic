@@ -23,10 +23,10 @@ import java.util.List;
  * <code>StorageManager</code> 에서 가져와 <i>Service chaining</i>을 수행한다.<br><br>
  *
  * <i><b>Service chaining</b></i> 이 진행되는 도중 Exception이 발생하면 <i><b>Service chaining</b></i> 은 종료된다.<br>
- * 이 경우 Exception 발생하는 경우에 대한 처리를 지원하기 위해 <code>mb.dnm.core.ErrorHandler</code> 인터페이스를 제공한다.<br>
+ * 예외가 발생하는 경우에 대한 처리를 지원하기 위해 <code>mb.dnm.core.ErrorHandler</code> 인터페이스를 제공한다.<br>
  * <code>ErrorHandler</code> 또한 <code>StorageManager</code>에 <i>키(<code>String errorHandlerId</code>):값(<code>List&lt;ErrorHandler&gt; errorHandlerList</code>)</i>형태로 등록이 되며
  * 에러처리 프로세스는 <code>InterfaceInfo</code> 클래스의 <code>getErrorHandlerId()</code> 메소드를 통해 가져온 <code>errorHandlerId</code>와 일치하는
- * <code>List&lt;ErrorHandler&gt; errorHandlerList</code> 를 가져오는 것이므로 <code>StorageManager</code> 에는 동일한 <code>errorHandlerId</code> 를 가진 ErrorHandler가 등록되어야 한다.<br><br>
+ * <code>List&lt;ErrorHandler&gt; errorHandlerList</code> 로부터 가져오는 것이므로 <code>StorageManager</code> 에는 동일한 <code>errorHandlerId</code> 를 가진 ErrorHandler가 등록되어야 한다.<br><br>
  *
  * <i><b>Error handling</b></i> 프로세스 또한 여러 ErrorHandler를 Chaining 하는 방식으로 수행되지만 <i><b>Service chaining</b></i> 과정과 다른점은
  * <i><b>Error handling</b></i> 도중에 Exception이 발생하더라도 Chaining이 도중에 중단되지 않는다는 점이다.
@@ -36,10 +36,10 @@ import java.util.List;
  * <code>mb.dnm.core.Service</code> 인터페이스를 구현할 때  <code>process(ServiceContext)</code> 메소드 내부에 Chaining을 멈춰야 하는 조건이 포함된 로직에서
  * <code>mb.dnm.core.context.ServiceContext</code> 클래스의 <code>setProcessOn(boolean)</code> 메소드를 호출하여 <code>ServiceContext#processOn</code> 속성을 <code>false</code> 로 변경해주면 된다.<br>
  *
- * 또 <i><b>Service chaining</b></i> 도중 특정한 <code>Service</code> 에서 Exception이 발생하더라도 Exception을 무시하고 Chaining 프로세스를 계속 진행하고 싶은 경우에는 해당 조건을 <code>try catch</code> 문으로
+ * 또 <i><b>Service chaining</b></i> 도중 특정한 <code>Service</code> 에서 Exception이 발생하더라도 Exception을 무시하고 Chaining 프로세스를 계속 진행하고 싶은 경우에는 Service 구현체 내부의 특정 로직을 <code>try catch</code> 문으로
  * 처리해주는 방법도 있지만 <code>Service</code> 인터페이스의 <code>setIgnoreError(boolean)</code>와 <code>isIgnoreError()</code> 메소드를 구현하여 Chaining 이 멈추지 않도록 처리할 수도 있다.
  * 추상클래스인 <code>mb.dnm.service.AbstractService</code> 는 <code>Service</code> 인터페이스의 <code>process(ServiceContext)</code> 메소드를 제외한 위 메소드를 기본적으로 구현하고 있기 때문에
- * <code>Service</code> 인터페이스를 직접적으로 구현하기보다 <code>mb.dnm.service.AbstractService</code> 추상클래스를 상속받아 <code>Service</code>를 구현하는 것을 권장한다.<br><br>
+ * <code>Service</code> 인터페이스의 모든 메소드를 직접 구현하기보다 <code>mb.dnm.service.AbstractService</code> 추상클래스를 상속받아 <code>Service</code>를 <code>process(ServiceContext)</code> 메소드만을 구현하는 것을 권장한다.<br><br>
  *
  * <code>ServiceProcessor</code> 의 <code>unfoldServices(ServiceContext)</code> 메소드 내에서 마지막으로 수행되는 프로세스는 Callback이다.
  * <code>mb.dnm.core.callback.AfterProcessCallback</code> 인터페이스의 구현체를 <code>ServiceProcessor.addCallback(AfterProcessCallback)</code> 메소드의 파라미터로 지정해 사용함으로써 
@@ -139,6 +139,7 @@ public class ServiceProcessor {
             int handlerCount = errorHandlers.size();
             int cnt2 = 0;
             for (ErrorHandler errorHandler : errorHandlers) {
+                ++cnt2;
                 if (!errorHandler.isTriggered(t1.getClass()))
                     continue;
                 Class errorHandlerClass = errorHandler.getClass();

@@ -12,6 +12,7 @@ import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 import org.apache.commons.net.ftp.FTPClient;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -32,7 +33,8 @@ import java.util.*;
  * */
 @Slf4j
 @Setter
-public class DeleteFiles extends AbstractFTPService {
+public class DeleteFiles extends AbstractFTPService implements Serializable {
+    private static final long serialVersionUID = 694107796554156688L;
     /**
      * 기본값: false
      * */

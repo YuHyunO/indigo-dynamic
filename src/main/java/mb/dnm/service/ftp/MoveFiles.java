@@ -19,6 +19,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,7 +45,8 @@ import java.util.*;
  */
 @Slf4j
 @Setter
-public class MoveFiles extends AbstractFTPService {
+public class MoveFiles extends AbstractFTPService implements Serializable {
+    private static final long serialVersionUID = 1792374178458720119L;
     /**
      * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 이동할 경로로써 사용할 지 결정된다.<br><br>
      * -기본값: <code>REMOTE_MOVE</code><br>

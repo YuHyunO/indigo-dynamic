@@ -14,6 +14,7 @@ import mb.dnm.util.SortingUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,7 +64,8 @@ import java.util.*;
  * */
 @Slf4j
 @Setter
-public class WriteFile extends SourceAccessService {
+public class WriteFile extends SourceAccessService implements Serializable {
+    private static final long serialVersionUID = 1388432570284684150L;
     /**
      * 기본값: true
      * <br>

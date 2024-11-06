@@ -10,6 +10,8 @@ import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
 import org.apache.commons.net.ftp.FTPClient;
 
+import java.io.Serializable;
+
 /**
  * <code>FTPLogin</code>의 <code>sourceName</code> 또는 <code>sourceAlias</code> 속성이나, <code>InterfaceInfo</code>클래스의  <code>getSourceNameByAlias(String)</code>메소드 통해 <code>FTPSourceProvider</code>로부터 가져온 FTP source에 접속(로그인)하는 서비스 클래스이다.<br>
  *
@@ -23,7 +25,9 @@ import org.apache.commons.net.ftp.FTPClient;
  *
  * */
 @Slf4j
-public class FTPLogin extends AbstractFTPService {
+public class FTPLogin extends AbstractFTPService implements Serializable {
+
+    private static final long serialVersionUID = -437917905646835505L;
 
     public FTPLogin(){}
 
@@ -40,7 +44,10 @@ public class FTPLogin extends AbstractFTPService {
         if (session == null) {
             session = FTPSourceProvider.access().getNewSession(srcName);
             ctx.addSession(srcName, session);
-            log.info("[{}]Login success. The FTPSession for '{}' is gained.", ctx.getTxId(), srcName);
+            log.info("[{}]Login success. The FTPSession for '{}({}:{})' is gained.", ctx.getTxId(),
+                    srcName
+                    , FTPSourceProvider.access().getFtpClientTemplate(srcName).getHost()
+                    , FTPSourceProvider.access().getFtpClientTemplate(srcName).getPort());
         } else {
             log.info("[{}]The FTPSession for '{}' is already exist.", ctx.getTxId(), srcName);
         }

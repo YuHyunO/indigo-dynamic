@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class HttpResponseEntity {
+public class HttpResponseEntity implements Serializable {
+    private static final long serialVersionUID = -7186121775917736576L;
     private byte[] body;
     @Getter
     private Map<String, String> headers;

@@ -6,6 +6,7 @@ import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.util.MessageUtil;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +27,9 @@ import java.util.Map;
  * */
 @Slf4j
 @Setter
-public class PrintInput extends ParameterAssignableService {
+public class PrintInput extends ParameterAssignableService implements Serializable {
 
+    private static final long serialVersionUID = 5801564941267138217L;
     /**
      * input으로 전달된 데이터의 타입이 Collection인 경우 json 형식으로 출력한다.
      * */

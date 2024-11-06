@@ -5,6 +5,7 @@ import mb.dnm.util.MessageUtil;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -17,8 +18,9 @@ import java.util.Map;
 
 
 @Slf4j
-public class HttpRequestSupport {
+public class HttpRequestSupport implements Serializable {
 
+    private static final long serialVersionUID = -7681787300349640386L;
     private int connectTimeout = 10000;
     private int readTimeout = 10000;
     private boolean useCashes = false;

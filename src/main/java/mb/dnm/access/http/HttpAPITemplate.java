@@ -4,11 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import mb.dnm.code.HttpMethod;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Setter
 @Getter
-public class HttpAPITemplate {
+public class HttpAPITemplate implements Serializable {
+    private static final long serialVersionUID = -7889211422659141612L;
     private String frontUrl;
     private Set<HttpMethod> frontMethods;
     private String backendUrl;

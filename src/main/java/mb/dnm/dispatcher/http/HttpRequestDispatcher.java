@@ -24,7 +24,7 @@ import java.util.Map;
 
 
 /**
- * HTTP request 처리하는 handler 이다.
+ * HTTP request 를 처리하는 handler 이다.
  * HttpServletRequest 의 요청 URL 및 HTTP Method 와 맵핑되는 InterfaceInfo 가  <code>StorageManager</code>에 존재하는 지 확인한 후
  * <code>ServiceProcess</code> 의 process 를 수행한다.<br><br>
  *

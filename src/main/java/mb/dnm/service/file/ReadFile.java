@@ -66,7 +66,8 @@ import java.util.*;
  * */
 @Slf4j
 @Setter
-public class ReadFile extends SourceAccessService {
+public class ReadFile extends SourceAccessService implements Serializable {
+    private static final long serialVersionUID = -6076772516465372292L;
     /**
      * 읽을 파일의 인코딩을 지정하는 설정이다.<br>
      * 이 속성이 지정되지 않았을 경우, 이 서비스의 <code>process(ServiceContext)</code> 메소드를 통해 전달된 <code>ServiceContext</code>의 <code>InterfaceInfo</code>가 참조하는

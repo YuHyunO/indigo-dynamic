@@ -9,6 +9,7 @@ import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 
+import java.io.Serializable;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,8 +34,9 @@ import java.util.*;
  * */
 @Slf4j
 @Setter
-public class DeleteFiles extends SourceAccessService {
+public class DeleteFiles extends SourceAccessService implements Serializable {
 
+    private static final long serialVersionUID = 238893267637107314L;
     /**
      * 기본값: false
      * */

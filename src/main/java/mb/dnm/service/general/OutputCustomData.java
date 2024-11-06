@@ -5,7 +5,10 @@ import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.ParameterAssignableService;
 import org.apache.commons.beanutils.ConvertUtils;
 
-public class OutputCustomData extends ParameterAssignableService {
+import java.io.Serializable;
+
+public class OutputCustomData extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = 6380142655583465081L;
     private Object customData = null;
     private Class castType = null;
 

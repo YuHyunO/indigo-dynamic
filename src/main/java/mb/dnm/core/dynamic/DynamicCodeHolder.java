@@ -53,24 +53,6 @@ class DynamicCodeHolder {
         }
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("-namespace = ").append(namespace).append(",\n");
-        sb.append("-implements = ").append(wrapperClass.getName()).append(",\n");
-        sb.append("-codeId = ").append(codeId).append(",\n");
-        sb.append("-imports = [").append("\n");
-        for (String importClass : imports) {
-            sb.append("\t").append(importClass).append(",\n");
-        }
-        if (imports.size() > 0)
-            sb.deleteCharAt(sb.length() - 2);
-        sb.append("]").append(",\n");
-        sb.append("-source = ").append("\n").append(source);
-
-        return sb.toString();
-    }
-
     public void setWrapperClass(Class<? extends DynamicCode> wrapperClass) throws Exception {
         if (!DynamicCode.class.isAssignableFrom(wrapperClass)) {
             throw new IllegalArgumentException("The class " + wrapperClass.getName() + " is not a subclass of " + DynamicCode.class.getName());
@@ -96,5 +78,23 @@ class DynamicCodeHolder {
         } else {
             return String.valueOf(hash);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("-namespace = ").append(namespace).append(",\n");
+        sb.append("-implements = ").append(wrapperClass.getName()).append(",\n");
+        sb.append("-codeId = ").append(codeId).append(",\n");
+        sb.append("-imports = [").append("\n");
+        for (String importClass : imports) {
+            sb.append("\t").append(importClass).append(",\n");
+        }
+        if (imports.size() > 0)
+            sb.deleteCharAt(sb.length() - 2);
+        sb.append("]").append(",\n");
+        sb.append("-source = ").append("\n").append(source);
+
+        return sb.toString();
     }
 }

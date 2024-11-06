@@ -2,7 +2,11 @@ package mb.dnm.exeption;
 
 import mb.dnm.core.Service;
 
-public class InvalidServiceConfigurationException extends RuntimeException {
+import java.io.Serializable;
+
+public class InvalidServiceConfigurationException extends RuntimeException implements Serializable {
+
+    private static final long serialVersionUID = 8187415640085524789L;
 
     public InvalidServiceConfigurationException() {
         super("Service configuration is invalid");

@@ -8,6 +8,8 @@ import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.AbstractService;
 import mb.dnm.storage.InterfaceInfo;
 
+import java.io.Serializable;
+
 /**
  * DynamicCode 를 실행한다.<br>
  * ServiceStorage에 등록된  <code>ExecuteDynamicCode</code> 서비스의 수와 <code>InterfaceInfo</code>의 <code>dynamicCodeSequence</code>에 등록된 dynamic code의 수는 동일해야한다.<br>
@@ -25,7 +27,9 @@ import mb.dnm.storage.InterfaceInfo;
  * @Throws InvalidServiceConfigurationException <code>InterfaceInfo</code>의 <code>dynamicCodeSequence</code>에 등록된 code가 더이상 존재하지 않는 경우
  * */
 @Slf4j
-public class ExecuteDynamicCode extends AbstractService {
+public class ExecuteDynamicCode extends AbstractService implements Serializable {
+
+    private static final long serialVersionUID = -5870630048628268142L;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {

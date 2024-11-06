@@ -18,6 +18,7 @@ import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,7 +46,8 @@ import java.util.*;
  * */
 @Slf4j
 @Setter
-public class UploadFiles extends AbstractFTPService {
+public class UploadFiles extends AbstractFTPService implements Serializable {
+    private static final long serialVersionUID = -1038608024349166103L;
     /**
      * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 파일을 업로드할 경로로써 사용할 지 결정된다.<br><br>
      * -기본값: <code>LOCAL_SEND</code><br>

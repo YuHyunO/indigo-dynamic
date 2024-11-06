@@ -7,6 +7,8 @@ import mb.dnm.dispatcher.http.HttpRequestDispatcher;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
 
+import java.io.Serializable;
+
 /**
  * Input으로 전달된 데이터를 HTTP Response Body로 지정한다.
  * <br>
@@ -24,7 +26,9 @@ import mb.dnm.service.ParameterAssignableService;
  * */
 @Slf4j
 @Setter
-public class SetHttpResponseBody extends ParameterAssignableService {
+public class SetHttpResponseBody extends ParameterAssignableService implements Serializable {
+
+    private static final long serialVersionUID = 2461342063038762900L;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {

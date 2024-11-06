@@ -5,6 +5,7 @@ import mb.dnm.access.SizeCheckable;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.ParameterAssignableService;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -40,7 +41,9 @@ import java.util.Map;
  *
  * */
 @Slf4j
-public class GetSize extends ParameterAssignableService {
+public class GetSize extends ParameterAssignableService implements Serializable {
+
+    private static final long serialVersionUID = 3861612581954345962L;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {

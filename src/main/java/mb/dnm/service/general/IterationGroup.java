@@ -16,6 +16,7 @@ import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -36,7 +37,8 @@ import java.util.*;
  * */
 @Slf4j
 @Setter
-public class IterationGroup extends ParameterAssignableService {
+public class IterationGroup extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = -1498031350763423430L;
     /**
      * IterationGroup 에서 실행될 service strategies
      * */
@@ -210,6 +212,7 @@ public class IterationGroup extends ParameterAssignableService {
                     //반복문 수행이 끝나면 ServiceContext에 원래의 Sequence 에 반복문에서 마지막으로 소진된 Sequence Order 를 지정해줘야 한다.
                     ctx.setCurrentQueryOrder(innerCtx.getCurrentQueryOrder());
                     ctx.setCurrentDynamicCodeOrder(innerCtx.getCurrentDynamicCodeOrder());
+
 
                 } catch (Throwable t1) {
                     //Processing error handling

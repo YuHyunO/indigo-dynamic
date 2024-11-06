@@ -10,6 +10,7 @@ import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +35,9 @@ import java.util.Map;
 
 @Slf4j
 @Setter
-public class Delete extends ParameterAssignableService {
+public class Delete extends ParameterAssignableService implements Serializable {
 
+    private static final long serialVersionUID = -1231931765629075941L;
     private boolean errorQueryMode = false;
 
     @Override

@@ -47,14 +47,14 @@ public class StringUtil {
 
     public static String trim(Object valObj) {
         if (valObj == null)
-            return null;
+            valObj = "";
 
         return String.valueOf(valObj).trim();
     }
 
     public static String ltrim(Object valObj) {
         if (valObj == null)
-            return null;
+            valObj = "";
         String val = String.valueOf(valObj);
         char[] chars = val.toCharArray();
         int ltrimIdx = 0;
@@ -70,7 +70,7 @@ public class StringUtil {
 
     public static String rtrim(Object valObj) {
         if (valObj == null)
-            return null;
+            valObj = "";
         String val = String.valueOf(valObj);
         char[] chars = val.toCharArray();
         int rtrimIdx = chars.length - 1;
@@ -86,13 +86,14 @@ public class StringUtil {
 
     public static String lpad(Object valObj, int len) {
         if (valObj == null)
-            return null;
+            valObj = "";
         return StringUtils.leftPad(String.valueOf(valObj), len);
     }
 
     public static String lpad(Object valObj, int len, Object pad) {
         if (valObj == null)
-            return null;
+            valObj = "";
+            //return null;
         if (pad == null)
             return StringUtils.leftPad(String.valueOf(valObj), len);
         return StringUtils.leftPad(String.valueOf(valObj), len, String.valueOf(pad));
@@ -100,7 +101,7 @@ public class StringUtil {
 
     public static String rpad(Object valObj, int len, Object pad) {
         if (valObj == null)
-            return null;
+            valObj = "";
         if (pad == null)
             return StringUtils.leftPad(String.valueOf(valObj), len);
         return StringUtils.rightPad(String.valueOf(valObj), len, String.valueOf(pad));
@@ -108,7 +109,7 @@ public class StringUtil {
 
     public static String rpad(Object valObj, int len) {
         if (valObj == null)
-            return null;
+            valObj = "";
         return StringUtils.rightPad(String.valueOf(valObj), len);
     }
 

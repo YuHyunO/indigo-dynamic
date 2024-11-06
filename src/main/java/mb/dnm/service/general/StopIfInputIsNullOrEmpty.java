@@ -6,6 +6,7 @@ import mb.dnm.access.SizeCheckable;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.ParameterAssignableService;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
@@ -25,7 +26,8 @@ import java.util.Map;
  * */
 @Slf4j
 @Setter
-public class StopIfInputIsNullOrEmpty extends ParameterAssignableService {
+public class StopIfInputIsNullOrEmpty extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = -3474809894612842750L;
     private Object outputValue;
 
     @Override

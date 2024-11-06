@@ -7,13 +7,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
 @Slf4j
-public class DataSourceProvider {
+public class DataSourceProvider implements Serializable {
+    private static final long serialVersionUID = -3906433097076484909L;
     private static DataSourceProvider instance;
     private Map<String, QueryExecutor> executorMap;
     private Map<String, DataSourceTransactionManager> txManagers;

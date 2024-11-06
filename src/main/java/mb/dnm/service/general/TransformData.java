@@ -11,6 +11,7 @@ import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.util.MessageUtil;
 
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -42,7 +43,8 @@ import java.util.Map;
 @Slf4j
 @Setter
 @Getter
-public class TransformData extends ParameterAssignableService {
+public class TransformData extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = 6118071336424114828L;
     private DataType inputDataType;
     private DataType outputDataType;
     /**

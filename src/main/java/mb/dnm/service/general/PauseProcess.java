@@ -4,8 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.AbstractService;
 
+import java.io.Serializable;
+
 @Slf4j
-public class PauseProcess extends AbstractService {
+public class PauseProcess extends AbstractService implements Serializable {
+    private static final long serialVersionUID = -8689374111009769407L;
     private int millisecond = 0;
 
     @Override

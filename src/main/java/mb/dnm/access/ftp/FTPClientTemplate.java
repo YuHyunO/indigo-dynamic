@@ -10,10 +10,12 @@ import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 @Slf4j
 @Setter @Getter
-public class FTPClientTemplate {
+public class FTPClientTemplate implements Serializable {
+    private static final long serialVersionUID = 3036621860501209905L;
     private String templateName;
     private String host;
     private int port = 21;

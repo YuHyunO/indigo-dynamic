@@ -7,6 +7,7 @@ import mb.dnm.core.dynamic.DynamicCodeInstance;
 import org.springframework.core.io.Resource;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,8 @@ import java.util.Map;
  *
  * */
 @Slf4j
-public class DynamicCodeProvider {
+public class DynamicCodeProvider implements Serializable {
+    private static final long serialVersionUID = 4285587685416187268L;
     private static DynamicCodeProvider instance;
     private boolean initialized = false;
     private Resource[] codeLocations;
@@ -60,11 +62,12 @@ public class DynamicCodeProvider {
             DynamicCodeCompiler.init();
             List<DynamicCodeInstance> dncInstances = null;
             if (compilerThreadCount > 0) {
+                log.debug("Generating DynamicCodeInstances using threads ...");
                 dncInstances = DynamicCodeCompiler.compileAll(this.codeLocations, compilerThreadCount);
             } else {
+                log.debug("Generating DynamicCodeInstances ...");
                 dncInstances = DynamicCodeCompiler.compileAll(this.codeLocations);
             }
-            log.debug("Generating DynamicCodeInstances ...");
             for (DynamicCodeInstance dncInstance : dncInstances) {
                 dnmCodes.put(dncInstance.getId(), dncInstance);
                 log.debug("Loaded dynamic code instance '{}.class' with id '{}'", dncInstance.getDynamicCodeClassName(), dncInstance.getId());

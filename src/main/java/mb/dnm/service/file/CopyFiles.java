@@ -12,6 +12,7 @@ import mb.dnm.storage.InterfaceInfo;
 import mb.dnm.util.MessageUtil;
 
 import java.io.File;
+import java.io.Serializable;
 import java.nio.file.*;
 import java.util.*;
 
@@ -35,7 +36,8 @@ import java.util.*;
  * */
 @Slf4j
 @Setter
-public class CopyFiles extends SourceAccessService {
+public class CopyFiles extends SourceAccessService implements Serializable {
+    private static final long serialVersionUID = -4307329321493254334L;
     /**
      * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 복사할 경로로써 사용할 지 결정된다.<br><br>
      * -기본값: <code>LOCAL_COPY</code><br>

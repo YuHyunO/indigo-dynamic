@@ -6,12 +6,14 @@ import mb.dnm.core.Service;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.AbstractService;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Setter
-public class ServiceProcessableErrorHandler extends AbstractErrorHandler{
+public class ServiceProcessableErrorHandler extends AbstractErrorHandler implements Serializable {
+    private static final long serialVersionUID = 2662458063002485429L;
     private List<Service> services;
     private boolean ignoreException = false;
 

@@ -5,11 +5,13 @@ import lombok.Setter;
 import mb.dnm.access.file.FileTemplate;
 import mb.dnm.access.http.HttpAPITemplate;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Setter
 @Getter
-public class InterfaceInfo {
+public class InterfaceInfo implements Serializable {
+    private static final long serialVersionUID = -6626530733122262663L;
     //Common properties
     protected boolean activated = true;
     protected boolean controllerInterface = false;

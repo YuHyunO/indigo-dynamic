@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.ParameterAssignableService;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -20,7 +21,9 @@ import java.util.Collection;
  * */
 @Slf4j
 @Setter
-public class BreakIteration extends ParameterAssignableService {
+public class BreakIteration extends ParameterAssignableService implements Serializable {
+
+    private static final long serialVersionUID = 228578450163271102L;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {

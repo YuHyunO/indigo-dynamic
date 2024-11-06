@@ -10,6 +10,7 @@ import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,8 @@ import java.util.Map;
 
 @Slf4j
 @Setter
-public class Insert extends ParameterAssignableService {
+public class Insert extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = 5157825800696290202L;
     private boolean errorQueryMode = false;
 
     @Override

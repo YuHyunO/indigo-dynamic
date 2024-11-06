@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,7 +32,9 @@ import java.util.Set;
  *
  * */
 @Slf4j
-public class EndTransaction extends ParameterAssignableService {
+public class EndTransaction extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = -4596639645344510758L;
+
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         String txId = ctx.getTxId();

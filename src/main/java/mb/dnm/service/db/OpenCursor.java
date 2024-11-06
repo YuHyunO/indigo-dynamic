@@ -10,6 +10,8 @@ import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
 
+import java.io.Serializable;
+
 
 /**
  * Database의 Cursor 를 open 한다.
@@ -31,7 +33,8 @@ import mb.dnm.service.ParameterAssignableService;
 
 @Slf4j
 @Setter
-public class OpenCursor extends ParameterAssignableService {
+public class OpenCursor extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = -6182495086850851902L;
     private boolean errorQueryMode = false;
 
     @Override

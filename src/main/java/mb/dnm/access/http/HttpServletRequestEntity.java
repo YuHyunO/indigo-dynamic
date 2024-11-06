@@ -15,7 +15,8 @@ import java.util.Map;
 
 
 @Slf4j
-public class HttpServletRequestEntity {
+public class HttpServletRequestEntity implements Serializable {
+    private static final long serialVersionUID = 2088174028218642348L;
     private HttpServletRequest request;
     private byte[] body;
     @Getter

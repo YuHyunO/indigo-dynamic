@@ -1,10 +1,12 @@
 package mb.dnm.access.file;
 
+import java.io.Serializable;
 import java.util.*;
 
 
-public class FileParser {
+public class FileParser implements Serializable {
 
+    private static final long serialVersionUID = 4255889394521379039L;
     public static final String BINARY_DATA_WRAPPER = "<![BINARY[]]>";
 
     public static List<String> readHeader(String data, FileParserTemplate template) {

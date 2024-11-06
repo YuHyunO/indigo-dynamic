@@ -155,6 +155,7 @@ public class DynamicCodeCompiler {
 
             int taskCount = compileTasks.size();
             List<Integer> completedIdx = new ArrayList<>();
+            List<DynamicCodeInstance> compiledList = new ArrayList<>();
             if (taskCount > 0) {
                 int completedJob = 0;
                 while (true) {
@@ -169,15 +170,7 @@ public class DynamicCodeCompiler {
                             if (result instanceof Exception) {
                                 throw (Exception) result;
                             }
-                            List<DynamicCodeInstance> compiledList = (List<DynamicCodeInstance>) result;
-                            for (DynamicCodeInstance compiled : compiledList) {
-                                String id = compiled.getId();
-                                if (duplicatedIdCheckList.contains(id)) {
-                                    throw new DynamicCodeCompileException("duplicated dynamic code id: " + id + " at the resource: " + compiled.getResource());
-                                }
-                                duplicatedIdCheckList.add(id);
-                                instances.add(compiled);
-                            }
+                            compiledList.addAll((List<DynamicCodeInstance>) result);
                             completedIdx.add(i);
                             ++completedJob;
                         } /*else {
@@ -189,17 +182,28 @@ public class DynamicCodeCompiler {
                     }
 
                     if (completedJob >= taskCount) {
-                        instance.executor.shutdown();
-                        instance.executor = null;
                         break;
                     }
                 }
+
+                for (DynamicCodeInstance compiled : compiledList) {
+                    String id = compiled.getId();
+                    if (duplicatedIdCheckList.contains(id)) {
+                        throw new DynamicCodeCompileException("duplicated dynamic code id: " + id + " at the resource: " + compiled.getResource());
+                    }
+                    duplicatedIdCheckList.add(id);
+                    instances.add(compiled);
+                }
+
             }
 
             return instances;
-        } catch (Exception e) {
-            instance.executor.shutdown();
-            throw e;
+        } finally {
+            if (instance.executor != null) {
+                instance.executor.shutdown();
+                log.debug("The dynamic code compiler thread pool is shut down.");
+                instance.executor = null;
+            }
         }
     }
 

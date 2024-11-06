@@ -6,6 +6,8 @@ import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
 
+import java.io.Serializable;
+
 
 /**
  * FTP source에 접근하는 작업을 하는 클래스들이 상속받을 수 있는 추상클래스이다.<br>
@@ -22,7 +24,9 @@ import mb.dnm.storage.InterfaceInfo;
  * @author Yuhyun O
  * @version 2024.09.09
  * */
-public abstract class AbstractFTPService extends SourceAccessService {
+public abstract class AbstractFTPService extends SourceAccessService implements Serializable {
+
+    private static final long serialVersionUID = -3552888451393446236L;
 
     protected FTPSession getFTPSession(ServiceContext ctx, String srcName) throws Throwable {
         FTPSession session = (FTPSession) ctx.getSession(srcName);

@@ -10,6 +10,7 @@ import mb.dnm.storage.InterfaceInfo;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,7 +30,9 @@ import java.util.Set;
  *
  * */
 @Slf4j
-public class Rollback extends ParameterAssignableService {
+public class Rollback extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = -6914562194164795885L;
+
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         String txId = ctx.getTxId();

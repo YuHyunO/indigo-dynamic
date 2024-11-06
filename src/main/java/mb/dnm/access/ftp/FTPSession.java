@@ -4,8 +4,10 @@ import mb.dnm.access.ClosableStreamWrapper;
 import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.IOException;
+import java.io.Serializable;
 
-public class FTPSession implements ClosableStreamWrapper {
+public class FTPSession implements ClosableStreamWrapper, Serializable {
+    private static final long serialVersionUID = -6338893611571699317L;
     private FTPClient ftp;
 
     public FTPSession(FTPClient ftp) {

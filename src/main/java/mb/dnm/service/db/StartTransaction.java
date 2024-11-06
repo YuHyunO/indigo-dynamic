@@ -6,6 +6,7 @@ import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.storage.InterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.util.Set;
 
 
@@ -38,7 +39,9 @@ import java.util.Set;
  *
  * */
 @Slf4j
-public class StartTransaction extends ParameterAssignableService {
+public class StartTransaction extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = 6387073454432906415L;
+
     @Override
     public void process(ServiceContext ctx) {
         String txId = ctx.getTxId();

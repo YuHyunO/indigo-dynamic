@@ -10,6 +10,7 @@ import mb.dnm.storage.InterfaceInfo;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,7 +30,9 @@ import java.util.Set;
  *
  * */
 @Slf4j
-public class Commit extends ParameterAssignableService {
+public class Commit extends ParameterAssignableService implements Serializable {
+    private static final long serialVersionUID = 7569451561169113126L;
+
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         String txId = ctx.getTxId();

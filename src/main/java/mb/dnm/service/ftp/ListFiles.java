@@ -16,6 +16,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,8 @@ import java.util.Map;
 
 @Slf4j
 @Setter
-public class ListFiles extends AbstractFTPService {
+public class ListFiles extends AbstractFTPService implements Serializable {
+    private static final long serialVersionUID = 6744130189101816379L;
     /**
      * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 가져올 경로로써 사용할 지 결정된다.<br><br>
      * -기본값: <code>REMOTE_SEND</code><br>

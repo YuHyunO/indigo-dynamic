@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mb.dnm.access.SizeCheckable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,7 +24,8 @@ import java.util.List;
  *
  * */
 @Setter @Getter
-public class FileList implements SizeCheckable, Iterable {
+public class FileList implements SizeCheckable, Iterable, Serializable {
+    private static final long serialVersionUID = -5133279606054445225L;
     private String baseDirectory;
     private List<String> fileList;
 

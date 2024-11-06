@@ -14,10 +14,7 @@ import mb.dnm.util.FileUtil;
 import mb.dnm.util.MessageUtil;
 import org.apache.commons.net.ftp.FTPClient;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,8 +61,9 @@ import java.util.*;
  * */
 @Slf4j
 @Setter
-public class DownloadFiles extends AbstractFTPService {
+public class DownloadFiles extends AbstractFTPService implements Serializable {
 
+    private static final long serialVersionUID = 7240209509936929547L;
     /**
      * outPutDataType 속성에 따라 파일의 데이터가 어떤 식으로 저장될 지 결정된다.<br>
      * 기본값: FILE<br>

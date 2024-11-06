@@ -4,13 +4,15 @@ import mb.dnm.core.ErrorHandler;
 import mb.dnm.core.Service;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class StorageManager {
+public class StorageManager implements Serializable {
+    private static final long serialVersionUID = 8454662346692851741L;
     private static StorageManager instance;
     private Map<String, InterfaceInfo> interfaceRegistry;
     private Map<String, List<Service>> serviceRegistry;

@@ -9,11 +9,13 @@ import mb.dnm.code.FileType;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.storage.InterfaceInfo;
 
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 @Setter @Getter
-public class FileTemplate {
+public class FileTemplate implements Serializable {
+    private static final long serialVersionUID = -5683892050317874131L;
     /**
      * <code>FileTemplate</code> 의 이름이다.<br>
      * <code>FTPSourceProvider</code> 나 <code>InterfaceInfo</code> 에 등록되어 사용될 때는 이름이 고유한 값으로 지정되어야 한다.
