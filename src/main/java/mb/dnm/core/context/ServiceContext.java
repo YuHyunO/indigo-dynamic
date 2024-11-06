@@ -166,9 +166,13 @@ public class ServiceContext implements Serializable {
         endTime = new Date();
     }
 
+    /**
+     * 현재 ServiceContext 에 context 파라미터를 저장한다.
+     * */
     public void addContextParam(String key, Object value) {
         contextParams.put(key, value);
     }
+
 
     public void deleteContextParam(String key) {
         if (contextParams.containsKey(key)) {
