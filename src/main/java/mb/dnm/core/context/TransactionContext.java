@@ -1,7 +1,10 @@
 package mb.dnm.core.context;
 
+import lombok.Getter;
 import mb.dnm.util.MessageUtil;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ public class TransactionContext implements Serializable {
     private boolean groupTxEnabled = false;
     private TransactionStatus txStatus;
     private int timeoutSecond = -1;
+    private DefaultTransactionDefinition txDef;
     private List<String> queryHistory;
     private Throwable error;
 
@@ -64,6 +68,14 @@ public class TransactionContext implements Serializable {
 
     public void setGroupTxEnabled(boolean groupTxEnabled) {
         this.groupTxEnabled = groupTxEnabled;
+    }
+
+    public void setTransactionDefinition(DefaultTransactionDefinition txDef) {
+        this.txDef = txDef;
+    }
+
+    public DefaultTransactionDefinition getTransactionDefinition() {
+        return txDef;
     }
 
     public boolean isGroupTxEnabled() {

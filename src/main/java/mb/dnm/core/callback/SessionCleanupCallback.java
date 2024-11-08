@@ -33,6 +33,7 @@ public class SessionCleanupCallback implements AfterProcessCallback {
                 log.error("[" + txId + "]Exception occurred during closing session (" + session.getClass() + "-" + sessionId + ")");
             }
         }
+        sessionMap.clear();
     }
 
 }

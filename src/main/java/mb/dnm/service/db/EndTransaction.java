@@ -5,12 +5,17 @@ import mb.dnm.core.context.ServiceContext;
 import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
+import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionStatus;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,7 +37,7 @@ import java.util.Set;
  *
  * */
 @Slf4j
-public class EndTransaction extends ParameterAssignableService implements Serializable {
+public class EndTransaction extends SourceAccessService implements Serializable {
     private static final long serialVersionUID = -4596639645344510758L;
 
     @Override
@@ -50,8 +55,21 @@ public class EndTransaction extends ParameterAssignableService implements Serial
             return;
         }
 
+        String targetSourceName = null;
+        if (sourceName != null) {
+            targetSourceName = sourceName;
+        } else if (sourceAlias != null) {
+            targetSourceName = getSourceName(info);
+        }
+
         boolean errorOccurred = ctx.isErrorExist();
         for (String executorName : executorNames) {
+            if (targetSourceName != null) {
+                if (!executorName.equals(targetSourceName)) {
+                    continue;
+                }
+            }
+
             TransactionContext txContext = txContextMap.get(executorName);
             if (txContext == null) {
                 log.warn("[{}]The transaction context named '{}' does not exist for termination. It may have already been terminated or not created.", txId, executorName);
@@ -68,18 +86,52 @@ public class EndTransaction extends ParameterAssignableService implements Serial
 
             DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
             try {
+                DefaultTransactionStatus status = (DefaultTransactionStatus) txStatus;
+                DefaultTransactionDefinition txDef = txContext.getTransactionDefinition();
+                if (!TransactionSynchronizationManager.isSynchronizationActive() && status.isNewSynchronization()) {
+                    TransactionSynchronizationManager.setActualTransactionActive(status.hasTransaction());
+                    TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(txDef.getIsolationLevel());
+                    TransactionSynchronizationManager.setCurrentTransactionReadOnly(txDef.isReadOnly());
+                    TransactionSynchronizationManager.setCurrentTransactionName(txContext.getName());
+                    TransactionSynchronizationManager.initSynchronization();
+                }
+
+
+                if (log.isTraceEnabled()) {
+                    boolean actualTxActive = TransactionSynchronizationManager.isActualTransactionActive();
+                    boolean syncActive = TransactionSynchronizationManager.isSynchronizationActive();
+                    String curTxName = TransactionSynchronizationManager.getCurrentTransactionName();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("[")
+                            .append("isNewTransaction: ")
+                            .append(status.isNewTransaction())
+                            .append(", isNewSynchronization: ")
+                            .append(status.isNewSynchronization())
+                            .append(", isCompleted: ")
+                            .append(status.isCompleted())
+                            .append(", hasTransaction: ")
+                            .append(status.hasTransaction())
+                            .append("]");
+
+                    log.trace("EndTransaction-[executor name: {}, isActualTransactionActive: {}, isSynchronizationActive: {}, TransactionStatus: {}, Current transaction name: {}]"
+                            , executorName, actualTxActive, syncActive, sb, curTxName);
+                }
+
                 if (errorOccurred) {
+                    log.error("[" + txId + "]An error detected in the service context. Processing rollback for executor: " + executorName + ". Because of exception of before ");
                     txManager.rollback(txStatus);
-                    log.error("[" + txId + "]Commit failed. Processed rollback for executor: " + executorName + ". Because of exception of before ");
                     continue;
                 }
+
+                log.info("[{}]Committing transaction for executor: {}", txId, executorName);
                 txManager.commit(txStatus);
                 log.info("[{}]Transaction committed for executor: {}", txId, executorName);
             } catch (Throwable t) {
+                log.error("[" + txId + "]Commit failed. Processing rollback for executor: " + executorName + ". Cause: ", t);
                 txManager.rollback(txStatus);
-                log.error("[" + txId + "]Commit failed. Processed rollback for executor: " + executorName + ". Cause: ", t);
                 throw t;
             } finally {
+                //txContext.setTransactionStatus(null);
                 txContextMap.remove(executorName); //Commit 이나 Rollback 처리를 한 뒤 항상 작업한 DataSource와 관련된 TransactionContext 객체를 지워줌
             }
         }

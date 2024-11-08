@@ -66,6 +66,10 @@ public class ServiceContext implements Serializable {
         serviceTrace.add(service);
     }
 
+    public void addServiceTraces(List<Class<? extends Service>> serviceTrace) {
+        serviceTrace.addAll(serviceTrace);
+    }
+
     public String getServiceTraceMessage() {
         String msg = "";
         Map<String, Object> msgMap = getServiceTraceMap();
@@ -108,6 +112,8 @@ public class ServiceContext implements Serializable {
         }
         return traceMap;
     }
+
+
 
     public void addInnerServiceTrace(int externalServiceIdx, int innerServiceIdx, Class<? extends Service> service) {
         InnerServiceTrace innerTrace = innerServiceTraces.get(externalServiceIdx);

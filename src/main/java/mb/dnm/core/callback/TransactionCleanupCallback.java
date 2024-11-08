@@ -45,6 +45,7 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
                 }
             }
         }
+        txCtxMap.clear();
     }
 
 }

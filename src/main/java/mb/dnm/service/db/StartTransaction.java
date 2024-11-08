@@ -3,6 +3,7 @@ package mb.dnm.service.db;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
+import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +40,7 @@ import java.util.Set;
  *
  * */
 @Slf4j
-public class StartTransaction extends ParameterAssignableService implements Serializable {
+public class StartTransaction extends SourceAccessService implements Serializable {
     private static final long serialVersionUID = 6387073454432906415L;
 
     @Override
@@ -50,12 +51,26 @@ public class StartTransaction extends ParameterAssignableService implements Seri
         if (executorNames == null || executorNames.size() == 0) {
             throw new InvalidServiceConfigurationException(StartTransaction.class, "There is no query sequences which contains the information of an Executor.");
         }
+
+        String targetSourceName = null;
+        if (sourceName != null) {
+            targetSourceName = sourceName;
+        } else if (sourceAlias != null) {
+            targetSourceName = getSourceName(info);
+        }
+
         for (String executorName : executorNames) {
+            if (targetSourceName != null) {
+                if (!executorName.equals(targetSourceName)) {
+                    continue;
+                }
+            }
+
             boolean result = ctx.setGroupTransaction(executorName, true);
             if (result) {
-                log.info("[{}]A TranscationContext is ready for the executor: {}", txId, executorName);
+                log.info("[{}]A TranscationContext is ready for the executor: {}. Group transaction is enabled.", txId, executorName);
             } else {
-                log.info("[{}]A TranscationContext of the executor: {} is already exist", txId, executorName);
+                log.info("[{}]A TranscationContext of the executor: {} is already exist. Group transaction is enabled.", txId, executorName);
             }
         }
 

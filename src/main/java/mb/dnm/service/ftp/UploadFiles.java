@@ -324,7 +324,7 @@ public class UploadFiles extends AbstractFTPService implements Serializable {
                 setErrorOutputValue(ctx, errorFilePaths);
             }
         }
-        log.info("[{}]FTP file download result: input_count={}, uploaded_file={}, uploaded_directory={}, download_success={}, error_count={}"
+        log.info("[{}]FTP file upload result: input_count={}, uploaded_file={}, uploaded_directory={}, upload_success={}, error_count={}"
                 , txId, inputListSize, fileCount, dirCount, successCount, errorFilePaths.size());
     }
 

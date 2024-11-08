@@ -146,6 +146,7 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                 if (createNewContextEachLoop) {
                     //createNewContextEachLoop=true 인 경우 각 반복문에서 Inner Processing service chaining 을 할 때 전달될 ServiceContext 객체를 새로 생성함
                     innerCtx = new ServiceContext(info);
+                    //innerCtx.addServiceTraces(ctx.getServiceTrace());
                     innerTxId = innerCtx.getTxId();
                     innerCtx.addContextParam("$iter_break", false);
                     log.debug("[{}]Iteration-Group: New service context is created.", innerTxId);
@@ -172,6 +173,8 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                             innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
                         } else {
                             innerCtx.addServiceTrace(serviceClass);
+                            //ctx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
+                            //innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
                             if (passTransactionToContexts) {
                                 innerCtx.setTxContextMap(ctx.getTxContextMap());
                             }
@@ -344,6 +347,7 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                 if (createNewContextEachLoop) {
                     //createNewContextEachLoop=true 인 경우 각 반복문에서 Inner Processing service chaining 을 할 때 전달될 ServiceContext 객체를 새로 생성함
                     innerCtx = new ServiceContext(info);
+                    //innerCtx.addServiceTraces(ctx.getServiceTrace());
                     innerTxId = innerCtx.getTxId();
                     log.debug("[{}]Iteration-Group: New service context is created.", innerTxId);
                 } else {
@@ -374,7 +378,9 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                         if (!createNewContextEachLoop) {
                             innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
                         } else {
+                            //ctx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
                             innerCtx.addServiceTrace(serviceClass);
+                            //innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
                             if (passTransactionToContexts) {
                                 innerCtx.setTxContextMap(ctx.getTxContextMap());
                             }

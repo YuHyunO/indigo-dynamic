@@ -244,7 +244,8 @@ public class WriteFile extends SourceAccessService implements Serializable {
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         if (getInput() == null) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "WriteFile service must have the input parameter in which contain the file data to write");
+            if (!allowCreateEmptyFile)
+                throw new InvalidServiceConfigurationException(this.getClass(), "WriteFile service must have the input parameter in which contain the file data to write");
         }
 
         InterfaceInfo info = ctx.getInfo();
