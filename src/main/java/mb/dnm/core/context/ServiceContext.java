@@ -179,6 +179,11 @@ public class ServiceContext implements Serializable {
         contextParams.put(key, value);
     }
 
+    public void addContextParams(Map<String, Object> params) {
+        if (params != null && !params.isEmpty()) {
+            this.contextParams.putAll(params);
+        }
+    }
 
     public void deleteContextParam(String key) {
         if (contextParams.containsKey(key)) {
@@ -190,6 +195,10 @@ public class ServiceContext implements Serializable {
         if (key == null)
             return null;
         return contextParams.get(key);
+    }
+
+    public Map<String, Object> getContextParams() {
+        return contextParams;
     }
 
     public String nextDynamicCodeId() {
@@ -363,9 +372,12 @@ public class ServiceContext implements Serializable {
     }
 
     public void setMsg(StringBuilder msg) {
-        this.msg = new StringBuilder(msg);
+        this.msg = msg;
     }
 
+    public void setMsg(String msg) {
+        this.msg = new StringBuilder(msg);
+    }
 
 
     public String getMsg() {
