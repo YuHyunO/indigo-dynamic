@@ -244,6 +244,8 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                     }
 
                     if (!createNewContextEachLoop && !continueDespiteError) {
+                        ctx.addContextParams(innerCtx.getContextParams());
+
                         // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passTransactionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
                         if (passTransactionToContexts) {
                             log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passTransactionToContexts' is also true.", innerTxId);
@@ -375,21 +377,23 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                     log.info("[{}]Iteration-Group: Unfold the services", innerTxId);
                     for (Service service : services) {
                         Class serviceClass = service.getClass();
-                        if (!createNewContextEachLoop) {
-                            innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
-                        } else {
-                            //ctx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
-                            innerCtx.addServiceTrace(serviceClass);
-                            //innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
-                            if (passTransactionToContexts) {
-                                innerCtx.setTxContextMap(ctx.getTxContextMap());
-                            }
-                            if (passSessionToContexts) {
-                                innerCtx.setSessionMap(ctx.getSessionMap());
-                            }
-                        }
+
                         try {
                             if (innerCtx.isProcessOn()) {
+                                if (!createNewContextEachLoop) {
+                                    innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
+                                } else {
+                                    //ctx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
+                                    innerCtx.addServiceTrace(serviceClass);
+                                    //innerCtx.addInnerServiceTrace(curServiceIdx, cnt1 + 1, serviceClass);
+                                    if (passTransactionToContexts) {
+                                        innerCtx.setTxContextMap(ctx.getTxContextMap());
+                                    }
+                                    if (passSessionToContexts) {
+                                        innerCtx.setSessionMap(ctx.getSessionMap());
+                                    }
+                                }
+
                                 ++cnt1;
                                 log.debug("[{}]Iteration-Group: Start the service '{}'({}/{})", innerTxId, serviceClass, cnt1, serviceCount);
                                 service.process(innerCtx);
@@ -448,6 +452,7 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                     }
 
                     if (createNewContextEachLoop && continueDespiteError) {
+                        ctx.addContextParams(innerCtx.getContextParams());
                         // createNewContextEachLoop 와 continueDespiteError 속성이 true 이면서 passTransactionToContexts 또한 true 인 경우 에러가 발생했을 때는 continueDespiteError 의 참여부와 관계없이 throw Exception 해야함
                         if (passTransactionToContexts) {
                             log.warn("[{}]Iteration-Group: Warning! The property 'continueDespiteError' is true, but chaining is broken because the property 'passTransactionToContexts' is also true.", innerTxId);
