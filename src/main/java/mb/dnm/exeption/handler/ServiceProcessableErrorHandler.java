@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 public class ServiceProcessableErrorHandler extends AbstractErrorHandler implements Serializable {
     private static final long serialVersionUID = 2662458063002485429L;
-    private List<Service> services;
+    private List<Service> services = new ArrayList<>();
     private boolean ignoreException = false;
 
     @Override
@@ -24,8 +24,13 @@ public class ServiceProcessableErrorHandler extends AbstractErrorHandler impleme
         for (Service service : services) {
             Class clazz = service.getClass();
             try {
-                log.info("[{}]ERROR-HANDLER-CHAINING: starts the service '{}'", txId, clazz);
-                service.process(ctx);
+                if (ctx.isProcessOn()) {
+                    log.warn("[{}]ERROR-HANDLER-CHAINING: starts the service '{}'", txId, clazz);
+                    service.process(ctx);
+                } else {
+                    log.warn("[{}]ERROR-HANDLER-CHAINING: Stop prcess flag is detected. Stopping error handler chaining", txId);
+                    break;
+                }
             } catch (Throwable t) {
                 if (!ignoreException) {
                     throw t;
@@ -38,14 +43,12 @@ public class ServiceProcessableErrorHandler extends AbstractErrorHandler impleme
     }
 
     public void setServices(List<Service> services) {
-        List<Service> newServices = new ArrayList<>();
         for (Service service : services) {
             if (AbstractService.class.isAssignableFrom(service.getClass())) {
                 ((AbstractService) service).setExceptionHandlingMode(true);
             }
-            newServices.add(service);
+            this.services.add(service);
         }
-
     }
 
 }

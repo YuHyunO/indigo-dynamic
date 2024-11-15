@@ -1,7 +1,10 @@
 package com.mb.dynamic;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
 import org.junit.Test;
+import org.mybatis.spring.SqlSessionUtils;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.tools.*;
 import java.io.File;
@@ -9,6 +12,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -16,6 +20,7 @@ public class CompileTest {
 
     @Test
     public void compile_test() throws Exception {
+
         File file = new File("C:\\Projects\\indigo-dynamic\\src\\main\\resources\\testCompiled\\TestJava.java");
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();

@@ -5,6 +5,8 @@ import mb.dnm.util.MessageUtil;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionStatus;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,10 +21,15 @@ public class TransactionContext implements Serializable {
     private DefaultTransactionDefinition txDef;
     private List<String> queryHistory;
     private Throwable error;
+    @Getter
+    private LastTransactionStatus lastTxStatus;
+
+
 
     TransactionContext(String name) {
         this.name = name;
         queryHistory = new ArrayList<>();
+        lastTxStatus = new LastTransactionStatus();
     }
 
     public void addQueryHistory(String queryId) {
@@ -97,5 +104,33 @@ public class TransactionContext implements Serializable {
 
     public Throwable getError() {
         return error;
+    }
+
+    public void setLastTransactionStatus() {
+        lastTxStatus.setLastTxStatus();
+    }
+
+
+    @Getter
+    public class LastTransactionStatus {
+        private boolean initialized = false;
+        private boolean actualTransactionActive = false;
+        private Integer currentTransactionIsolationLevel = null;
+        private boolean currentTransactionReadOnly = false;
+        private String currentTransactionName = null;
+        private List<TransactionSynchronization> synchronizations;
+
+        public void setLastTxStatus() {
+            actualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
+            currentTransactionIsolationLevel = TransactionSynchronizationManager.getCurrentTransactionIsolationLevel();
+            currentTransactionReadOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+            currentTransactionName = TransactionSynchronizationManager.getCurrentTransactionName();
+            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                synchronizations = TransactionSynchronizationManager.getSynchronizations();
+            }
+            initialized = true;
+        }
+
+
     }
 }

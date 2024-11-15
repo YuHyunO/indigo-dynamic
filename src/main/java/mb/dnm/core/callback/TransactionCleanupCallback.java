@@ -6,7 +6,11 @@ import mb.dnm.core.context.TransactionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,6 +50,26 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
             }
         }
         txCtxMap.clear();
+
+        try {
+            TransactionSynchronizationManager.setActualTransactionActive(false);
+            TransactionSynchronizationManager.setCurrentTransactionIsolationLevel((Integer) null);
+            TransactionSynchronizationManager.setCurrentTransactionReadOnly(false);
+            TransactionSynchronizationManager.setCurrentTransactionName((String) null);
+            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                TransactionSynchronizationManager.clearSynchronization();
+            }
+
+            Map<Object, Object> resourceMap = TransactionSynchronizationManager.getResourceMap();
+            if (resourceMap != null) {
+                List<Object> keys = new ArrayList<>(resourceMap.keySet());
+                for (Object key : keys) {
+                    TransactionSynchronizationManager.unbindResourceIfPossible(key);
+                }
+            }
+        } catch (Exception e) {
+            log.error("[{}]", ctx.getTxId(), e);
+        }
     }
 
 }

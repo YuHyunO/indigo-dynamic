@@ -1,7 +1,14 @@
 package com.mb.map;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.executor.BaseExecutor;
+import org.apache.ibatis.executor.BatchExecutor;
+import org.apache.ibatis.executor.CachingExecutor;
+import org.apache.ibatis.session.defaults.DefaultSqlSession;
 import org.junit.Test;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +22,13 @@ public class MapAllocateTest {
         map.put("A", 1);
         map.put("B", 2);
         map.put("C", 3);
-
-
+        //BaseExecutor
+        //CachingExecutor
+        //BatchExecutor
+        //DefaultSqlSession
+        //SqlSessionTemplate
+       // DataSourceTransactionManager
+        //TransactionSynchronizationManager
         Map<String, Object> context = new HashMap<>();
         context.put("master", map);
 
@@ -29,5 +41,11 @@ public class MapAllocateTest {
         log.info("{}", context.get("master"));
         log.info("{}", context.get("sub"));
 
+    }
+
+    @Test
+    public void testMapRemove() {
+        Map<String, Object> map = new HashMap<>();
+        map.remove("asdas");
     }
 }

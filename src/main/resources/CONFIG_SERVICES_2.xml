@@ -326,6 +326,103 @@
                 </bean>
             </list>
         </entry>
+
+        <entry key="$P_DB2DB_master_detail_2:1">
+            <!--            <description>DB to DB 서비스[마스터디테일(2:1)]</description>-->
+            <list>
+                <bean class="mb.dnm.service.db.StartTransaction"/>
+                <bean class="mb.dnm.service.db.Select">
+                    <description>Source DB 에서 연계 대상 데이터를 조회한다.</description>
+                    <property name="output"             value="master_data_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <description>연계 대상 파일이 없으면 프로세스를 종료한다.</description>
+                    <property name="input"              value="master_data_list"/>
+                    <property name="output"             value="no_logging_flag"/>
+                    <property name="outputValue"        value="Y"/>
+                </bean>
+                <bean class="mb.dnm.service.general.GetSize">
+                    <description>Master 데이터의 개수를 확인한다.</description>
+                    <property name="input"      		value="master_data_list"/>
+                    <property name="output"     		value="tx_count"/>
+                </bean>
+                <bean class="mb.dnm.service.general.IterationGroup">
+                    <description>Master 데이터의 수만큼 Detail 데이터를 추출하여 수신 DB에 데이터를 적재한다.</description>
+                    <property name="input"                                  value="master_data_list"/>
+                    <property name="iterationInputName"                     value="master_data"/>
+                    <property name="fetchSize"                              value="1"/>
+                    <property name="services">
+                        <description>연계대상파일의 수만큼 아래에 정의된 프로세스를 순서대로 반복</description>
+                        <list>
+                            <bean class="mb.dnm.service.db.Select">
+                                <property name="description"                value="Detail 데이터를 조회한다."/>
+                                <property name="input"                      value="master_data"/>
+                                <property name="output"                     value="detail_data"/>
+                            </bean>
+                            <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode">
+                                <description>Master data 와 Detail data 를 Mapping 한 후 insert_data 를 output 한다.</description>
+                            </bean>
+                            <bean class="mb.dnm.service.db.Insert">
+                                <property name="description"        value="Target DB 에 데이터를 Insert 한다."/>
+                                <property name="input"              value="insert_data"/>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+                <bean class="mb.dnm.service.db.Update">
+                    <property name="description"        value="Source DB 에 처리결과를 Update 한다."/>
+                    <property name="input"              value="master_data_list"/>
+                </bean>
+                <bean class="mb.dnm.service.db.Commit"/>
+            </list>
+        </entry>
+
+        <entry key="$P_DB2DB_large">
+            <!--<description>DB to DB[대용량]</description>-->
+            <list>
+                <bean class="mb.dnm.service.db.Select">
+                    <description>Source DB 에서 연계 대상 데이터 존재여부를 조회한다.</description>
+                    <property name="output"             value="data_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <description>연계 대상 파일이 없으면 프로세스를 종료한다.</description>
+                    <property name="input"              value="data_list"/>
+                    <property name="output"             value="no_logging_flag"/>
+                    <property name="outputValue"        value="Y"/>
+                </bean>
+                <bean class="mb.dnm.service.db.StartTransaction"/>
+                <bean class="mb.dnm.service.db.Select">
+                    <description>Source DB 에서 연계 대상 데이터를 fetchSize 만큼씩 조회하여 처리한다.</description>
+                    <property name="output"             value="total_fetched_count"/>
+                    <property name="handleResultSet"    value="true"/>
+                    <property name="resultHandlingSupportFactory">
+                        <bean class="mb.dnm.access.db.ResultHandlingSupportFactory">
+                            <property name="fetchedInputName"   value="fetched_rows"/>
+                            <property name="fetchSize"          value="1000"/>
+                            <property name="resultHandlingProcessor">
+                                <bean class="mb.dnm.service.general.IterationGroup">
+                                    <property name="services">
+                                        <description>데이터가 모두 조회될 때까지 아래의 프로세스를 반복</description>
+                                        <list>
+                                            <bean class="mb.dnm.service.db.Insert">
+                                                <property name="description"        value="Target DB 에 데이터를 Insert 한다."/>
+                                                <property name="input"              value="fetched_rows"/>
+                                            </bean>
+                                            <bean class="mb.dnm.service.db.Update">
+                                                <property name="description"        value="Source DB 에 처리결과를 Update 한다."/>
+                                                <property name="input"              value="fetched_rows"/>
+                                            </bean>
+                                        </list>
+                                    </property>
+                                </bean>
+                            </property>
+                        </bean>
+                    </property>
+                </bean>
+                <bean class="mb.dnm.service.db.EndTransaction"/>
+            </list>
+        </entry>
+
     </util:map>
 
 

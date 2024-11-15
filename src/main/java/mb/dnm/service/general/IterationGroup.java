@@ -262,12 +262,12 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                         //Processing callbacks
                         for (AfterProcessCallback callback : callbacks) {
                             try {
-                                if (createNewContextEachLoop) {
-                                    /*
+                                /*if (createNewContextEachLoop) {
+                                    *//*
                                     * 매 반복문에서 새로운 ServiceContext 를 생성하면서 DB 트랜잭션 또는 세션을 공유하는 경우
                                     * IterationGroup의 기본 callback 으로 등록되어 있는 TransactionCleanupCallback 또는 SessionCleanupCallback 이 실행되지 않도록 해야한다.
                                     * 그 외의 경우에는 종료되지 않는 트랜잭션 또는 세션이 없도록 관리해주어야 함
-                                    * */
+                                    * *//*
                                     Class callbackClass = callback.getClass();
                                     if (passTransactionToContexts && callbackClass == TransactionCleanupCallback.class) {
                                         continue;
@@ -275,8 +275,14 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                                     if (passSessionToContexts && callbackClass == SessionCleanupCallback.class) {
                                         continue;
                                     }
+                                }*/
+                                Class callbackClass = callback.getClass();
+                                if (passTransactionToContexts && callbackClass == TransactionCleanupCallback.class) {
+                                    continue;
                                 }
-
+                                if (passSessionToContexts && callbackClass == SessionCleanupCallback.class) {
+                                    continue;
+                                }
                                 log.debug("[{}]Iteration-Group: Processing callback: {}", txId, callback.getClass());
                                 callback.afterProcess(innerCtx);
                             } catch (Throwable t) {
@@ -471,12 +477,12 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                         //Processing callbacks
                         for (AfterProcessCallback callback : callbacks) {
                             try {
-                                if (createNewContextEachLoop) {
-                                    /*
+                                /*if (createNewContextEachLoop) {
+                                    *//*
                                      * 매 반복문에서 새로운 ServiceContext 를 생성하면서 DB 트랜잭션 또는 세션을 공유하는 경우
                                      * IterationGroup의 기본 callback 으로 등록되어 있는 TransactionCleanupCallback 또는 SessionCleanupCallback 이 실행되지 않도록 해야한다.
                                      * 그 외의 경우에는 종료되지 않는 트랜잭션 또는 세션이 없도록 관리해주어야 함
-                                     * */
+                                     * *//*
                                     Class callbackClass = callback.getClass();
                                     if (passTransactionToContexts && callbackClass == TransactionCleanupCallback.class) {
                                         continue;
@@ -484,6 +490,13 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                                     if (passSessionToContexts && callbackClass == SessionCleanupCallback.class) {
                                         continue;
                                     }
+                                }*/
+                                Class callbackClass = callback.getClass();
+                                if (passTransactionToContexts && callbackClass == TransactionCleanupCallback.class) {
+                                    continue;
+                                }
+                                if (passSessionToContexts && callbackClass == SessionCleanupCallback.class) {
+                                    continue;
                                 }
                                 log.debug("[{}]Iteration-Group: Processing callback: {}", txId, callback.getClass());
                                 callback.afterProcess(innerCtx);

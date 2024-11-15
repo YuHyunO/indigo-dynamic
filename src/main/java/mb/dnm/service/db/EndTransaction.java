@@ -8,12 +8,16 @@ import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.defaults.DefaultSqlSession;
+import org.mybatis.spring.SqlSessionHolder;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.sql.DataSource;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +89,7 @@ public class EndTransaction extends SourceAccessService implements Serializable 
             }
 
             DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
+
             try {
                 DefaultTransactionStatus status = (DefaultTransactionStatus) txStatus;
                 DefaultTransactionDefinition txDef = txContext.getTransactionDefinition();
@@ -132,6 +137,8 @@ public class EndTransaction extends SourceAccessService implements Serializable 
                 throw t;
             } finally {
                 //txContext.setTransactionStatus(null);
+
+
                 txContextMap.remove(executorName); //Commit 이나 Rollback 처리를 한 뒤 항상 작업한 DataSource와 관련된 TransactionContext 객체를 지워줌
             }
         }

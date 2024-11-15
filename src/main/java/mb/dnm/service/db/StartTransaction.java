@@ -1,11 +1,10 @@
 package mb.dnm.service.db;
 
+import lombok.extern.slf4j.Slf4j;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
-import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -75,4 +74,5 @@ public class StartTransaction extends SourceAccessService implements Serializabl
         }
 
     }
+
 }

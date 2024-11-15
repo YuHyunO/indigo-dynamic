@@ -10,8 +10,11 @@ import java.util.Map;
 
 public class ErrorTrace implements Serializable {
     private static final long serialVersionUID = -5851150242323943159L;
+    @Getter
     private String message;
+    @Getter
     private String localizedMessage;
+    @Getter
     private StringBuffer traceBuffer;
 
 

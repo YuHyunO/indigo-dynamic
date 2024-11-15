@@ -75,6 +75,7 @@ public class ImportSupporter {
         AUTO_IMPORT_CLASSES.put("StringUtil", "mb.dnm.util.StringUtil");
         AUTO_IMPORT_CLASSES.put("TimeUtil", "mb.dnm.util.TimeUtil");
         AUTO_IMPORT_CLASSES.put("ServiceContext", "mb.dnm.core.context.ServiceContext");
+        AUTO_IMPORT_CLASSES.put("ErrorTrace", "mb.dnm.exeption.ErrorTrace");
         AUTO_IMPORT_CLASSES.put("AbstractDynamicCode", "mb.dnm.core.dynamic.AbstractDynamicCode");
         AUTO_IMPORT_CLASSES.put("Logger", "org.slf4j.Logger");
         AUTO_IMPORT_CLASSES.put("LoggerFactory", "org.slf4j.LoggerFactory");

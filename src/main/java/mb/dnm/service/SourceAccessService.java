@@ -36,8 +36,8 @@ public abstract class SourceAccessService extends ParameterAssignableService {
                 throw new InvalidServiceConfigurationException(this.getClass(), "There is no source name for alias of '" + srcAlias + "'");
             }
         }
-
         return srcName;
     }
+
 
 }

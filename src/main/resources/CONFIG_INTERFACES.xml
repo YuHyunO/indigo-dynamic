@@ -328,6 +328,35 @@
                 </list>
             </property>
         </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo"  name="DB2DB master detail 2:1">
+            <property name="interfaceId"            value="?{인터페이스_ID}"/>
+            <property name="interfaceName"          value="?{인터페이스명}"/>
+            <property name="sourceCode"             value="?{송신시스템_코드}"/>
+            <property name="targetCode"             value="?{수신시스템_코드}"/>
+            <property name="loggingWhenNormal"      value="true"/>
+            <property name="loggingWhenError"       value="true"/>
+            <property name="sourceAliases"          value="MQ:ESB"/>
+            <property name="querySequence"          value="?{송신_DB_템플릿명}$@{if_id}.SELECT_M, ?{송신_DB_템플릿명}$@{if_id}.SELECT_D, ?{수신_DB_템플릿명}$@{if_id}.INSERT, ?{송신_DB_템플릿명}$@{if_id}.SUCCESS_UPDATE"/>
+            <property name="errorQuerySequence"     value="?{송신_DB_템플릿명}$@{if_id}.ERROR_UPDATE"/>
+            <property name="dynamicCodeSequence"    value="@{if_id}.MAP_DATA"/>
+            <property name="serviceId"              value="$P_DB2DB_master_detail_2:1"/>
+            <property name="errorHandlerId"         value="$EH_DB2DB"/>
+        </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo"  name="DB2DB master detail 2:2">
+            <property name="interfaceId"            value="?{인터페이스_ID}"/>
+            <property name="interfaceName"          value="?{인터페이스명}"/>
+            <property name="sourceCode"             value="?{송신시스템_코드}"/>
+            <property name="targetCode"             value="?{수신시스템_코드}"/>
+            <property name="loggingWhenNormal"      value="true"/>
+            <property name="loggingWhenError"       value="true"/>
+            <property name="sourceAliases"          value="MQ:ESB"/>
+            <property name="querySequence"          value="?{송신_DB_템플릿명}$@{if_id}.SELECT_M, ?{송신_DB_템플릿명}$@{if_id}.SELECT_D, ?{수신_DB_템플릿명}$@{if_id}.INSERT, ?{송신_DB_템플릿명}$@{if_id}.SUCCESS_UPDATE"/>
+            <property name="errorQuerySequence"     value="?{송신_DB_템플릿명}$@{if_id}.ERROR_UPDATE"/>
+            <property name="serviceId"              value="$P_DB2DB_master_detail_2:2"/>
+            <property name="errorHandlerId"         value="$EH_DB2DB"/>
+        </bean>
     </util:list>
 
 

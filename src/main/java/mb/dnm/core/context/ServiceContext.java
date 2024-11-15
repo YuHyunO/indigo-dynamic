@@ -164,6 +164,14 @@ public class ServiceContext implements Serializable {
         return traceMap;
     }
 
+    public List<ErrorTrace> getErrorTraces() {
+        List<ErrorTrace> errorTraceList = new ArrayList<>();
+        for (Map.Entry<Class<? extends Service>, ErrorTrace> entry : errorTrace.entrySet()) {
+            errorTraceList.add(entry.getValue());
+        }
+        return errorTraceList;
+    }
+
     public String getInterfaceId() {
         return info.getInterfaceId();
     }
@@ -391,6 +399,7 @@ public class ServiceContext implements Serializable {
         Map<String, Object> infoMap = new HashMap<>();
         infoMap.put("$tx_id", txId);
         infoMap.put("$if_id", getInterfaceId());
+        infoMap.put("$tx_msg", getMsg());
         infoMap.put("$process_status", processStatus.getProcessCode());
         infoMap.put("$start_time_timestamp", TimeUtil.getFormattedTime(startTime, TimeUtil.TIMESTAMP_FORMAT));
         infoMap.put("$start_time_date", TimeUtil.getFormattedTime(startTime, TimeUtil.DATETIME_FORMAT));
