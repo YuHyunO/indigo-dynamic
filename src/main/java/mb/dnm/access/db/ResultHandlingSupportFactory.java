@@ -32,6 +32,8 @@ public class ResultHandlingSupportFactory implements Serializable {
         if (resultHandlingProcessor != null) {
             resultHandlingProcessor.setInput(fetchedInputName);
             resultHandlingProcessor.setIterationInputName(fetchedInputName);
+            //resultHandlingProcessor.setCreateNewContextEachLoop(false);
+            resultHandlingProcessor.setPassTransactionToContexts(true);
             support.setResultHandlingProcessor(resultHandlingProcessor);
         }
         return support;

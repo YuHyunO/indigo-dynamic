@@ -131,6 +131,17 @@ public class TransactionContext implements Serializable {
             initialized = true;
         }
 
-
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("LastTransactionStatus{");
+            sb.append("initialized=").append(initialized);
+            sb.append(", actualTransactionActive=").append(actualTransactionActive);
+            sb.append(", currentTransactionIsolationLevel=").append(currentTransactionIsolationLevel);
+            sb.append(", currentTransactionReadOnly=").append(currentTransactionReadOnly);
+            sb.append(", currentTransactionName='").append(currentTransactionName).append('\'');
+            sb.append(", synchronizations=").append(synchronizations);
+            sb.append('}');
+            return sb.toString();
+        }
     }
 }

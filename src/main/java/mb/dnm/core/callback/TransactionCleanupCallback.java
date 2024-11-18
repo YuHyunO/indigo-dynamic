@@ -4,10 +4,16 @@ import mb.dnm.access.db.DataSourceProvider;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.core.context.TransactionContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.datasource.ConnectionHandle;
+import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,26 +36,110 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
         Map<String, TransactionContext> txCtxMap = ctx.getTransactionContextMap();
 
         boolean errorExist = ctx.isErrorExist();
-        for (Map.Entry<String, TransactionContext> entry : txCtxMap.entrySet()) {
-            String executorName = entry.getKey();
-            TransactionContext txCtx = entry.getValue();
-            TransactionStatus txStatus = txCtx.getTransactionStatus();
-            //log.info("TxStatus: {}, Executor: {}", txStatus, executorName); //Logging for test
-            if (txStatus != null) {
-                if (!txStatus.isCompleted()) {
-                    DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
-                    if (errorExist) {
-                        txManager.rollback(txStatus);
-                        log.warn("[{}]Rollback transaction context for executor {}, Because an error trace is detected in the ServiceContext."
-                                , ctx.getTxId(), executorName);
-                    } else {
-                        log.info("[{}]Commiting transaction context for executor {}", ctx.getTxId(), executorName);
-                        txManager.commit(txStatus);
+
+        ConnectionHolder conHolder = null;
+        Connection connection = null;
+
+        try {
+            for (Map.Entry<String, TransactionContext> entry : txCtxMap.entrySet()) {
+                String executorName = entry.getKey();
+                TransactionContext txCtx = entry.getValue();
+                TransactionStatus txStatus = txCtx.getTransactionStatus();
+                TransactionContext.LastTransactionStatus lastTxStatus = txCtx.getLastTxStatus();
+
+
+                if (txStatus != null) {
+                    if (!txStatus.isCompleted()) {
+                        DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
+                        Object key = txManager.getDataSource();
+
+                        Object conHolderObj = TransactionSynchronizationManager.getResource(key);
+                        if (conHolderObj == null) {
+                            log.debug("The ConnectionHolder object of the executor [{}] is null. No transaction to end.", executorName);
+                            continue;
+                        }
+
+                        conHolder = (ConnectionHolder) conHolderObj;
+                        ConnectionHandle conHandle = conHolder.getConnectionHandle();
+                        if (conHandle == null) {
+                            log.debug("There is no JDBC connection of the executor[{}] to release", executorName);
+                            continue;
+                        }
+
+                        connection = conHandle.getConnection();
+                        if (connection.isClosed()) {
+                            log.debug("The JDBC connection of the executor[{}] is already closed", executorName);
+                            continue;
+                        }
+
+                        /*if (TransactionSynchronizationManager.getCurrentTransactionName() != null &&
+                                !TransactionSynchronizationManager.getCurrentTransactionName().equals(executorName)) {
+                            if (lastTxStatus.isInitialized()) {
+                                TransactionSynchronizationManager.setCurrentTransactionName(lastTxStatus.getCurrentTransactionName());
+                                TransactionSynchronizationManager.setCurrentTransactionReadOnly(lastTxStatus.isCurrentTransactionReadOnly());
+                                TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(lastTxStatus.getCurrentTransactionIsolationLevel());
+                                if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                                    TransactionSynchronizationManager.clearSynchronization();
+                                }
+                                TransactionSynchronizationManager.initSynchronization();
+                                List<TransactionSynchronization> synchs = lastTxStatus.getSynchronizations();
+                                for (TransactionSynchronization txSync : synchs) {
+                                    TransactionSynchronizationManager.registerSynchronization(txSync);
+                                }
+                                TransactionSynchronizationManager.setActualTransactionActive(true);
+                            }
+                        }*/
+                        if (lastTxStatus.isInitialized()) {
+                            TransactionSynchronizationManager.setCurrentTransactionName(lastTxStatus.getCurrentTransactionName());
+                            TransactionSynchronizationManager.setCurrentTransactionReadOnly(lastTxStatus.isCurrentTransactionReadOnly());
+                            TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(lastTxStatus.getCurrentTransactionIsolationLevel());
+                        } else {
+                            DefaultTransactionDefinition def = txCtx.getTransactionDefinition();
+                            TransactionSynchronizationManager.setCurrentTransactionName(def.getName());
+                            TransactionSynchronizationManager.setCurrentTransactionReadOnly(def.isReadOnly());
+                            TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(def.getIsolationLevel());
+                        }
+
+                        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                            TransactionSynchronizationManager.clearSynchronization();
+                        }
+                        TransactionSynchronizationManager.initSynchronization();
+                        List<TransactionSynchronization> synchs = lastTxStatus.getSynchronizations();
+                        if (synchs != null) {
+                            for (TransactionSynchronization txSync : lastTxStatus.getSynchronizations()) {
+                                TransactionSynchronizationManager.registerSynchronization(txSync);
+                                log.trace("Registering synchronization [{}] to release transaction", txSync);
+                            }
+                        }
+                        TransactionSynchronizationManager.setActualTransactionActive(true);
+
+
+                        if (errorExist) {
+                            txManager.rollback(txStatus);
+                            log.warn("[{}]Rollback transaction context for executor {}, Because an error trace is detected in the ServiceContext."
+                                    , ctx.getTxId(), executorName);
+                        } else {
+                            log.info("[{}]Commiting transaction context for executor {}", ctx.getTxId(), executorName);
+                            txManager.commit(txStatus);
+                        }
                     }
                 }
             }
+
+        } catch (Throwable t) {
+            log.error("", t);
+        } finally {
+            txCtxMap.clear();
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    conHolder.released();
+                    conHolder.clear();
+                }
+            } catch (Throwable t) {
+                log.error("", t);
+            }
         }
-        txCtxMap.clear();
+
 
         try {
             TransactionSynchronizationManager.setActualTransactionActive(false);

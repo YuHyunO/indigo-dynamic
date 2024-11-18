@@ -4,15 +4,22 @@ import mb.dnm.core.context.TransactionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.sql.DataSource;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -57,19 +64,21 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
         TransactionStatus txStatus = null;
         String executorName = null;
         TransactionContext.LastTransactionStatus lastTxStatus = null;
-
+        Object dataSource = null;
         try {
             txCtx = (TransactionContext) args[0];
             txManager = DataSourceProvider.access().getTransactionManager(txCtx.getName());
             executorName = txCtx.getName();
+            dataSource = txManager.getDataSource();
 
-            if (txCtx.isGroupTxEnabled()) { //트랜잭션이 그룹으로 묶인 경우, 명시적인 commit 또는 rollback 명령이 있기전까지 하나의 트랜잭션을 유지
+            if (txCtx.isGroupTxEnabled()) {//트랜잭션이 그룹으로 묶인 경우, 명시적인 commit 또는 rollback 명령이 있기전까지 하나의 트랜잭션을 유지
                 lastTxStatus = txCtx.getLastTxStatus();
                 txStatus = txCtx.getTransactionStatus();
 
                 //TransactionSynchronizationManager 는 ThreadLocal 변수를 사용하여 트랜잭션을 관리하므로 여러 트랜잭션을 하나의 Thread 에서 사용하는 경우 관리가 필요함
-                if (TransactionSynchronizationManager.getCurrentTransactionName() != null &&
-                        !TransactionSynchronizationManager.getCurrentTransactionName().equals(executorName)) {
+                String currentTxName = TransactionSynchronizationManager.getCurrentTransactionName();
+                if (!(currentTxName != null && currentTxName.equals(executorName))) {
+
                     if (lastTxStatus.isInitialized()) {
                         TransactionSynchronizationManager.setCurrentTransactionName(lastTxStatus.getCurrentTransactionName());
                         TransactionSynchronizationManager.setCurrentTransactionReadOnly(lastTxStatus.isCurrentTransactionReadOnly());
@@ -83,55 +92,27 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
                             TransactionSynchronizationManager.registerSynchronization(txSync);
                         }
                     } else {
-                        TransactionSynchronizationManager.setCurrentTransactionName((String)null);
-                        TransactionSynchronizationManager.setCurrentTransactionReadOnly(false);
-                        TransactionSynchronizationManager.setCurrentTransactionIsolationLevel((Integer)null);
-                        TransactionSynchronizationManager.setActualTransactionActive(false);
-                        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-                            TransactionSynchronizationManager.clearSynchronization();
-                        }
+                        clearTransaction(null);
                     }
                 }
 
-                if (txStatus == null) { //TransactionStatus가 존재하는 경우 쿼리작업을 하려는 dataSource에 대한 트랜잭션을 새로 생성하지 않음
-
+                DefaultTransactionDefinition txDef = txCtx.getTransactionDefinition();
+                if (txDef == null) {
                     log.info("[TX]A group transaction for executor: {} is assigned.", executorName);
-                    DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+                    txDef = new DefaultTransactionDefinition();
                     txDef.setName(executorName);
                     txDef.setTimeout(txCtx.getTimeoutSecond());
-                    txStatus = txManager.getTransaction(txDef);
                     txCtx.setTransactionDefinition(txDef);
+                    txStatus = txManager.getTransaction(txDef);
                     txCtx.setTransactionStatus(txStatus);
                 } else {
                     log.info("[TX]Continuing with group transaction for executor: {}", executorName);
                 }
+
+                txCtx.setLastTransactionStatus();
                 log.debug("Executing query with id '{}'", args[1]);
                 Object rtVal = methodProxy.invoke(target, args);
 
-                if (log.isTraceEnabled()) {
-                    boolean actualTxActive = TransactionSynchronizationManager.isActualTransactionActive();
-                    boolean syncActive = TransactionSynchronizationManager.isSynchronizationActive();
-                    String curTxName = TransactionSynchronizationManager.getCurrentTransactionName();
-                    StringBuilder sb = new StringBuilder();
-                    if (txStatus != null) {
-                        DefaultTransactionStatus dfStatus = (DefaultTransactionStatus) txStatus;
-                        sb.append("[")
-                                .append("isNewTransaction: ")
-                                .append(dfStatus.isNewTransaction())
-                                .append(", isNewSynchronization: ")
-                                .append(dfStatus.isNewSynchronization())
-                                .append(", isCompleted: ")
-                                .append(dfStatus.isCompleted())
-                                .append(", hasTransaction")
-                                .append(dfStatus.hasTransaction())
-                                .append("]");
-                    } else {
-                        sb.append("[null]");
-                    }
-
-                    log.trace("TransactionProxy-[executor name: {}, isActualTransactionActive: {}, isSynchronizationActive: {}, TransactionStatus: {}, Current transaction name: {}]"
-                            , executorName, actualTxActive, syncActive, sb, curTxName);
-                }
                 return rtVal;
             } else { //트랜잭션 그룹이 지정되지 않은 경우, QueryExecutor 의 do*(**) 메소드 실행 시 마다 트랜잭션이 생성되고, 메소드 종료 시 commit 또는 rollback 됨
 
@@ -142,34 +123,10 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
                 log.debug("Executing query with id '{}'", args[1]);
                 Object rtVal = methodProxy.invoke(target, args);
 
-                if (log.isTraceEnabled()) {
-                    boolean actualTxActive = TransactionSynchronizationManager.isActualTransactionActive();
-                    boolean syncActive = TransactionSynchronizationManager.isSynchronizationActive();
-                    String curTxName = TransactionSynchronizationManager.getCurrentTransactionName();
-                    StringBuilder sb = new StringBuilder();
-                    if (txStatus != null) {
-                        DefaultTransactionStatus dfStatus = (DefaultTransactionStatus) txStatus;
-                        sb.append("[")
-                                .append("isNewTransaction: ")
-                                .append(dfStatus.isNewTransaction())
-                                .append(", isNewSynchronization: ")
-                                .append(dfStatus.isNewSynchronization())
-                                .append(", isCompleted: ")
-                                .append(dfStatus.isCompleted())
-                                .append("]");
-                    } else {
-                        sb.append("[null]");
-                    }
-
-                    log.trace("EndTransaction-[executor name: {}, isActualTransactionActive: {}, isSynchronizationActive: {}, TransactionStatus: {}, Current transaction name: {}]"
-                            , executorName, actualTxActive, syncActive, sb, curTxName);
-                }
-
                 if (!txStatus.isCompleted()) {
                     txManager.commit(txStatus);
                 }
                 return rtVal;
-
             }
         } catch (Throwable t) {
             if (txStatus != null && !txStatus.isCompleted()) {
@@ -182,11 +139,40 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
         } finally {
             if (!txCtx.isGroupTxEnabled()) {
                 txCtx.setTransactionStatus(null);
+                clearTransaction(null);
+                //clearTransaction(dataSource);
                 log.debug("[TX]Cleaned up non-group TransactionStatus");
             } else {
-                txCtx.setLastTransactionStatus();
+                String currentTxName = TransactionSynchronizationManager.getCurrentTransactionName();
+                if (currentTxName != null && currentTxName.equals(executorName)) {
+                    txCtx.setLastTransactionStatus();
+                }
+                log.trace("[TX]Last transaction status of the executor[{}] :\n{}", txCtx.getName(), txCtx.getLastTxStatus());
             }
         }
+    }
+
+    void clearTransaction(Object key) {
+
+        if (key != null) {
+            ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(key);
+            DataSourceUtils.releaseConnection(conHolder.getConnection(), (DataSource) key);
+
+            /*Object unbindedResource = TransactionSynchronizationManager.unbindResourceIfPossible(key);
+            if (unbindedResource != null) {
+                log.debug("The resource[{}] is removed by the '{}'", unbindedResource, this.getClass());
+            } else {
+                log.debug("The resource is null. Couldn't remove");
+            }*/
+        }
+
+        TransactionSynchronizationManager.setCurrentTransactionName((String) null);
+        TransactionSynchronizationManager.setCurrentTransactionIsolationLevel((Integer) null);
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.clearSynchronization();
+        }
+        TransactionSynchronizationManager.setCurrentTransactionReadOnly(false);
+        TransactionSynchronizationManager.setActualTransactionActive(false);
     }
 
 }

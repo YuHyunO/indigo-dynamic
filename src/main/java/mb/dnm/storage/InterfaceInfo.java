@@ -104,7 +104,7 @@ public class InterfaceInfo implements Serializable {
             if (executorName.isEmpty())
                 throw new IllegalArgumentException("The QueryExecutor name is empty: " + query);
             if (executorNames == null) {
-                executorNames = new HashSet<>();
+                executorNames = new LinkedHashSet<>();
             }
             executorNames.add(executorName);
 

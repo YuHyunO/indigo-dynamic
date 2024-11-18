@@ -55,6 +55,7 @@ public class ResultHandlingSupport implements Serializable {
                 resultHandlingProcessor.setInput(fetchedInputName);
                 resultHandlingProcessor.setIterationInputName(fetchedInputName);
                 resultHandlingProcessor.setFetchSize(fetchSize);
+                resultHandlingProcessor.setPassTransactionToContexts(true);
 
                 //매번의 반복문에서 같은 QueryOrder 를 지정해준다.
                 context.setCurrentQueryOrder(currentQueryOrder);

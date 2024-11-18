@@ -11,14 +11,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.defaults.DefaultSqlSession;
 import org.mybatis.spring.SqlSessionHolder;
+import org.springframework.jdbc.datasource.ConnectionHandle;
+import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.DefaultTransactionStatus;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.*;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,7 @@ public class EndTransaction extends SourceAccessService implements Serializable 
         String txId = ctx.getTxId();
         InterfaceInfo info = ctx.getInfo();
         Set<String> executorNames = info.getExecutorNames();
+
         if (executorNames == null || executorNames.size() == 0) {
             throw new InvalidServiceConfigurationException(StartTransaction.class, "There is no query sequences which contains the information of an Executor.");
         }
@@ -58,6 +60,7 @@ public class EndTransaction extends SourceAccessService implements Serializable 
             log.warn("[{}]The transaction contexts do not exist for termination. It may have already been terminated or not created.", txId);
             return;
         }
+        log.trace("[{}]{}", txId, txContextMap);
 
         String targetSourceName = null;
         if (sourceName != null) {
@@ -67,6 +70,7 @@ public class EndTransaction extends SourceAccessService implements Serializable 
         }
 
         boolean errorOccurred = ctx.isErrorExist();
+
         for (String executorName : executorNames) {
             if (targetSourceName != null) {
                 if (!executorName.equals(targetSourceName)) {
@@ -87,40 +91,61 @@ public class EndTransaction extends SourceAccessService implements Serializable 
                 log.warn("[{}]Can not end the transaction. The transaction named '{}' is already completed.", txId, executorName);
                 continue;
             }
-
+            TransactionContext.LastTransactionStatus lastTxStatus = txContext.getLastTxStatus();
             DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
-
+            Object key = txManager.getDataSource();
+            log.trace("[{}]Retrieved the transaction manager [{}] managing the dataSource [{}]. Current executor name is [{}]", txId, txManager, key, executorName);
+            ConnectionHolder conHolder = null;
+            Connection connection = null;
             try {
-                DefaultTransactionStatus status = (DefaultTransactionStatus) txStatus;
-                DefaultTransactionDefinition txDef = txContext.getTransactionDefinition();
-                if (!TransactionSynchronizationManager.isSynchronizationActive() && status.isNewSynchronization()) {
-                    TransactionSynchronizationManager.setActualTransactionActive(status.hasTransaction());
-                    TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(txDef.getIsolationLevel());
-                    TransactionSynchronizationManager.setCurrentTransactionReadOnly(txDef.isReadOnly());
-                    TransactionSynchronizationManager.setCurrentTransactionName(txContext.getName());
+
+                Object conHolderObj = TransactionSynchronizationManager.getResource(key);
+                if (conHolderObj == null) {
+                    log.debug("[{}]The ConnectionHolder object of the executor [{}] is null. No transaction to end.", txId, executorName);
+                    continue;
+                }
+
+                conHolder = (ConnectionHolder) conHolderObj;
+                ConnectionHandle conHandle = conHolder.getConnectionHandle();
+                if (conHandle == null) {
+                    log.debug("[{}]There is no JDBC connection of the executor[{}] to release", txId, executorName);
+                    continue;
+                }
+
+                connection = conHandle.getConnection();
+                if (connection.isClosed()) {
+                    log.debug("[{}]The JDBC connection of the executor[{}] is already closed", txId, executorName);
+                    continue;
+                }
+
+                String currentTxName = TransactionSynchronizationManager.getCurrentTransactionName();
+                log.trace("[{}]The current transaction name is [{}]", txId, currentTxName);
+                if (!(currentTxName != null
+                        && currentTxName.equals(executorName))) {
+                    DefaultTransactionDefinition def = txContext.getTransactionDefinition();
+                    if (lastTxStatus.isInitialized()) {
+                        TransactionSynchronizationManager.setCurrentTransactionName(lastTxStatus.getCurrentTransactionName());
+                        TransactionSynchronizationManager.setCurrentTransactionReadOnly(lastTxStatus.isCurrentTransactionReadOnly());
+                        TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(lastTxStatus.getCurrentTransactionIsolationLevel());
+                    } else {
+                        TransactionSynchronizationManager.setCurrentTransactionName(def.getName());
+                        TransactionSynchronizationManager.setCurrentTransactionReadOnly(def.isReadOnly());
+                        TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(def.getIsolationLevel());
+                    }
+                    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                        TransactionSynchronizationManager.clearSynchronization();
+                    }
                     TransactionSynchronizationManager.initSynchronization();
+                    List<TransactionSynchronization> synchs = lastTxStatus.getSynchronizations();
+                    if (synchs != null) {
+                        for (TransactionSynchronization txSync : lastTxStatus.getSynchronizations()) {
+                            TransactionSynchronizationManager.registerSynchronization(txSync);
+                            log.trace("[{}]Registering synchronization [{}]", txId, txSync);
+                        }
+                    }
                 }
-
-
-                if (log.isTraceEnabled()) {
-                    boolean actualTxActive = TransactionSynchronizationManager.isActualTransactionActive();
-                    boolean syncActive = TransactionSynchronizationManager.isSynchronizationActive();
-                    String curTxName = TransactionSynchronizationManager.getCurrentTransactionName();
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("[")
-                            .append("isNewTransaction: ")
-                            .append(status.isNewTransaction())
-                            .append(", isNewSynchronization: ")
-                            .append(status.isNewSynchronization())
-                            .append(", isCompleted: ")
-                            .append(status.isCompleted())
-                            .append(", hasTransaction: ")
-                            .append(status.hasTransaction())
-                            .append("]");
-
-                    log.trace("EndTransaction-[executor name: {}, isActualTransactionActive: {}, isSynchronizationActive: {}, TransactionStatus: {}, Current transaction name: {}]"
-                            , executorName, actualTxActive, syncActive, sb, curTxName);
-                }
+                log.trace("[{}]\n{}", txId, lastTxStatus.toString());
+                TransactionSynchronizationManager.setActualTransactionActive(true);
 
                 if (errorOccurred) {
                     log.error("[" + txId + "]An error detected in the service context. Processing rollback for executor: " + executorName + ". Because of exception of before ");
@@ -135,11 +160,33 @@ public class EndTransaction extends SourceAccessService implements Serializable 
                 log.error("[" + txId + "]Commit failed. Processing rollback for executor: " + executorName + ". Cause: ", t);
                 txManager.rollback(txStatus);
                 throw t;
+
             } finally {
                 //txContext.setTransactionStatus(null);
-
-
                 txContextMap.remove(executorName); //Commit 이나 Rollback 처리를 한 뒤 항상 작업한 DataSource와 관련된 TransactionContext 객체를 지워줌
+                if (key != null) {
+                    Object unbindedResource = TransactionSynchronizationManager.unbindResourceIfPossible(key);
+                    if (unbindedResource != null) {
+                        log.trace("[{}]The resource[{}] is removed by the '{}' service", txId, unbindedResource, this.getClass().getSimpleName());
+                    }
+                }
+
+                TransactionSynchronizationManager.setCurrentTransactionName((String) null);
+                TransactionSynchronizationManager.setCurrentTransactionIsolationLevel((Integer) null);
+                if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                    TransactionSynchronizationManager.clearSynchronization();
+                }
+                TransactionSynchronizationManager.setCurrentTransactionReadOnly(false);
+                TransactionSynchronizationManager.setActualTransactionActive(false);
+                try {
+                    if (connection != null && !connection.isClosed()) {
+                        log.warn("[{}]The JDBC connection of the executor[{}] is not closed by TransactionManager", txId, executorName);
+                        conHolder.released();
+                        conHolder.clear();
+                    }
+                } catch (Throwable t) {
+                    log.error("", t);
+                }
             }
         }
     }
