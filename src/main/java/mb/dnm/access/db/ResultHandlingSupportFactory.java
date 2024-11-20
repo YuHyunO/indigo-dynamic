@@ -23,6 +23,7 @@ public class ResultHandlingSupportFactory implements Serializable {
      * */
     private String fetchedInputName;
     private IterationGroup resultHandlingProcessor;
+    private boolean enforcePassTransactionToContexts = true;
 
     public ResultHandlingSupport getResultHandlingSupport(ServiceContext ctx) {
         log.debug("Creating a new ResultHandlingSupport object[fetchSize: {}, fetchedInputName: {}]", fetchSize, fetchedInputName);
@@ -32,8 +33,9 @@ public class ResultHandlingSupportFactory implements Serializable {
         if (resultHandlingProcessor != null) {
             resultHandlingProcessor.setInput(fetchedInputName);
             resultHandlingProcessor.setIterationInputName(fetchedInputName);
-            //resultHandlingProcessor.setCreateNewContextEachLoop(false);
-            resultHandlingProcessor.setPassTransactionToContexts(true);
+            if (enforcePassTransactionToContexts) {
+                resultHandlingProcessor.setPassTransactionToContexts(true);
+            }
             support.setResultHandlingProcessor(resultHandlingProcessor);
         }
         return support;

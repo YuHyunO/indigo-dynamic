@@ -22,12 +22,15 @@ public class ResultHandlingSupport implements Serializable {
     private int fetchSize = 1;
     private int totalFetchedCount = 0;
     private int currentBufferSize = 0;
+    private int resultSetIdx = 0;
     private List<Map<String, Object>> resultSetBuffer;
     private final ServiceContext context;
     private final int currentQueryOrder;
     private final int currentErrorQueryOrder;
     private final int currentDynamicCodeOrder;
     private final int currentErrorDynamicCodeOrder;
+    @Setter
+    private boolean enforcePassTransactionToContexts = true;
     @Setter
     /**
      * resultSetBuffer 에서 flushBuffer 를 통해 Fetch 되는 값들이  내부 services가 실행될 때 어떤 파라미터명으로 input 될 지에 대한 설정이다.
@@ -55,13 +58,17 @@ public class ResultHandlingSupport implements Serializable {
                 resultHandlingProcessor.setInput(fetchedInputName);
                 resultHandlingProcessor.setIterationInputName(fetchedInputName);
                 resultHandlingProcessor.setFetchSize(fetchSize);
-                resultHandlingProcessor.setPassTransactionToContexts(true);
+                if (enforcePassTransactionToContexts) {
+                    resultHandlingProcessor.setPassTransactionToContexts(true);
+                }
 
                 //매번의 반복문에서 같은 QueryOrder 를 지정해준다.
                 context.setCurrentQueryOrder(currentQueryOrder);
                 context.setCurrentErrorQueryOrder(currentErrorQueryOrder);
                 context.setCurrentDynamicCodeOrder(currentDynamicCodeOrder);
                 context.setCurrentErrorDynamicCodeOrder(currentErrorDynamicCodeOrder);
+
+                context.addContextParam("$fetchSize", fetchSize);
 
                 resultHandlingProcessor.process(context);
             } catch (Throwable t) {
@@ -78,6 +85,7 @@ public class ResultHandlingSupport implements Serializable {
             throw new IllegalStateException("Result buffer is full. Please call flushBuffer(ServiceContext) first.");
         }
         Map<String, Object> resultRow = resultContext.getResultObject();
+        resultRow.put("$resultSet_idx", resultSetIdx);
         resultSetBuffer.add(resultRow);
         ++currentBufferSize;
     }
@@ -117,6 +125,7 @@ public class ResultHandlingSupport implements Serializable {
 
         @Override
         public void handleResult(ResultContext<? extends Map<String, Object>> resultContext) {
+            ++resultSetIdx;
             if (!isBufferFull()) {
                 fillResult(resultContext);
             } else {

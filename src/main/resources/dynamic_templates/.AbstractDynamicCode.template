@@ -6,6 +6,12 @@ public class ${class_name} extends AbstractDynamicCode {
 
     @Override
     public void execute(ServiceContext ctx) throws Throwable {
-        ${code}
+        try {
+            ${code}
+        } catch(Throwable t) {
+            log.error("[" + ctx.getTxId() + "]Exception occurred in dynamic code.", t);
+            ctx.setProcessStatus(ProcessCode.DYNAMIC_CODE_FAILURE);
+            ctx.addContextParam(this.getClass().getName(), t);
+        }
     }
 }

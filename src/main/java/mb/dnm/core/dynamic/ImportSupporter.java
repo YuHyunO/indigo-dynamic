@@ -80,6 +80,7 @@ public class ImportSupporter {
         AUTO_IMPORT_CLASSES.put("Logger", "org.slf4j.Logger");
         AUTO_IMPORT_CLASSES.put("LoggerFactory", "org.slf4j.LoggerFactory");
         AUTO_IMPORT_CLASSES.put("Slf4j", "lombok.extern.slf4j.Slf4j");
+        AUTO_IMPORT_CLASSES.put("ProcessCode", "mb.dnm.code.ProcessCode");
 
         AUTO_IMPORT_CLASSES.put("File", "java.io.File");
         AUTO_IMPORT_CLASSES.put("InputStream", "java.io.InputStream");

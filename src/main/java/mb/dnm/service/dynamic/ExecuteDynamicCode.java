@@ -1,6 +1,7 @@
 package mb.dnm.service.dynamic;
 
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.code.ProcessCode;
 import mb.dnm.core.dynamic.DynamicCodeInstance;
 import mb.dnm.access.dynamic.DynamicCodeProvider;
 import mb.dnm.core.context.ServiceContext;
@@ -50,7 +51,21 @@ public class ExecuteDynamicCode extends AbstractService implements Serializable 
             throw new InvalidServiceConfigurationException(this.getClass(), "The dynamic code instance with id '" + codeId + "' is not exist in the DynamicCodeProvider.");
         }
         log.info("[{}]Executing dynamic code. id:'{}', instance: {}", ctx.getTxId(), codeId, dnmInstance.getDynamicCodeClassName());
+        ProcessCode beforeCode = ctx.getProcessStatus();
         dnmInstance.execute(ctx);
+        if (ctx.getProcessStatus() == ProcessCode.DYNAMIC_CODE_FAILURE) {
+            log.warn("[{}]Dynamic code '{}' execution failure", ctx.getTxId(), codeId);
+            ctx.setProcessStatus(beforeCode);
+            Object errorObj = ctx.getContextParam(dnmInstance.getDynamicCodeClassName());
+            if (errorObj instanceof Throwable) {
+                throw (Throwable) errorObj;
+            } else {
+                log.warn("[{}]Couldn't get exception cause. Because the detected object '{}' is not Throwable", ctx.getTxId(), errorObj);
+                throw new Exception("An error occurred while executing dynamic code: " + codeId);
+            }
+
+        }
+
     }
 
 }

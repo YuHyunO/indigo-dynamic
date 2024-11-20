@@ -45,6 +45,10 @@ public class DynamicCodeInstance {
         return loadedClass.getName();
     }
 
+    public Class<? extends DynamicCode> getLoadedClass() throws Exception {
+        return loadedClass;
+    }
+
     public Resource getResource() {
         return resource;
     }

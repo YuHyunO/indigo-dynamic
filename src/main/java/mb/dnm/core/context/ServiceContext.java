@@ -172,6 +172,10 @@ public class ServiceContext implements Serializable {
         return errorTraceList;
     }
 
+    public ErrorTrace getErrorTrace(Class<? extends Service> service) {
+        return errorTrace.get(service);
+    }
+
     public String getInterfaceId() {
         return info.getInterfaceId();
     }

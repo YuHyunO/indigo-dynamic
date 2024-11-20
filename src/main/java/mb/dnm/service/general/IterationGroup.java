@@ -24,7 +24,11 @@ import java.util.*;
  * <code>createNewContextEachLoop</code> 설정을 true로 한 경우에는 반복문이 수행되며 때마다 등록된 <code>List<Service> services</code>를 관통하는
  * <code>ServiceContext</code> 가 매번 새로 생성된다. 하지만 이렇게 반복마다 매번 생성되는 Context 객체는 하나의 반복문 안에서만 유효하다.<br><br>
  *
- * 이 서비스가 실행되기 전의 <code>ServiceContext</code> 객체는 사라지지 않는다.
+ * 이 서비스가 실행되기 전의 <code>ServiceContext</code> 객체는 사라지지 않는다.<br><br>
+ *
+ * IterationGroup 내의 Service를 관통하는 <code>ServiceContext</code>에는 현재의 반복횟수를 의미하는 변수가 전달되며, Context 파라미터에서 $iter_position 라는 명으로 확인이 가능하다.<br>
+ * <code>Integer currentIterPosition = (Integer) ctx.getContextParam("$iter_position");</code>
+ *
  *
  * @author Yuhyun O
  * @version 2024.09.22
@@ -134,6 +138,8 @@ public class IterationGroup extends ParameterAssignableService implements Serial
         int currentDynamicCodeOrder = ctx.getCurrentDynamicCodeOrder();
         int currentErrorDynamicCodeOrder = ctx.getCurrentErrorDynamicCodeOrder();
 
+
+        int iter_position = 0;
         // 우선 iterateUntilBreak 조건에 따라 로직을 나눔 (코드정리 작업은 나중에 수행)
         if (iterateUntilBreak) {
             int serviceCount = services.size();
@@ -166,6 +172,7 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                 try {
                     //Inner Processing service chaining 시작
                     innerCtx.setProcessStatus(ProcessCode.IN_PROCESS);
+                    innerCtx.addContextParam("$iter_position", ++iter_position);
                     log.info("[{}]Iteration-Group: Unfold the services", innerTxId);
                     for (Service service : services) {
                         Class serviceClass = service.getClass();
@@ -380,6 +387,7 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                 try {
                     //Inner Processing service chaining 시작
                     innerCtx.setProcessStatus(ProcessCode.IN_PROCESS);
+                    innerCtx.addContextParam("$iter_position", ++iter_position);
                     log.info("[{}]Iteration-Group: Unfold the services", innerTxId);
                     for (Service service : services) {
                         Class serviceClass = service.getClass();

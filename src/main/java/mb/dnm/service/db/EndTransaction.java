@@ -60,7 +60,6 @@ public class EndTransaction extends SourceAccessService implements Serializable 
             log.warn("[{}]The transaction contexts do not exist for termination. It may have already been terminated or not created.", txId);
             return;
         }
-        log.trace("[{}]{}", txId, txContextMap);
 
         String targetSourceName = null;
         if (sourceName != null) {
@@ -165,9 +164,9 @@ public class EndTransaction extends SourceAccessService implements Serializable 
                 //txContext.setTransactionStatus(null);
                 txContextMap.remove(executorName); //Commit 이나 Rollback 처리를 한 뒤 항상 작업한 DataSource와 관련된 TransactionContext 객체를 지워줌
                 if (key != null) {
-                    Object unbindedResource = TransactionSynchronizationManager.unbindResourceIfPossible(key);
-                    if (unbindedResource != null) {
-                        log.trace("[{}]The resource[{}] is removed by the '{}' service", txId, unbindedResource, this.getClass().getSimpleName());
+                    Object unboundResource = TransactionSynchronizationManager.unbindResourceIfPossible(key);
+                    if (unboundResource != null) {
+                        log.trace("[{}]The resource[{}] is removed by the '{}' service", txId, unboundResource, this.getClass().getSimpleName());
                     }
                 }
 

@@ -50,7 +50,7 @@ public class CastTest {
 
     @Test
     public void castInt_test() {
-        String intStr = "0000000";
+        String intStr = "00000001";
         Integer.parseInt(intStr);
     }
 
@@ -60,5 +60,13 @@ public class CastTest {
         int i = 100;
         cnt = i;
         log.info("{}", Number.class.isAssignableFrom(cnt.getClass()));
+    }
+
+    @Test
+    public void castMap_test() {
+        Map<String, String> strMap = new HashMap<>();
+        Map<String, Object> objMap = new HashMap<>();
+        objMap.put("s", "asd");
+        objMap.putAll(strMap);
     }
 }

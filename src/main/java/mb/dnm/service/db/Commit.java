@@ -6,11 +6,19 @@ import mb.dnm.core.context.ServiceContext;
 import mb.dnm.core.context.TransactionContext;
 import mb.dnm.exeption.InvalidServiceConfigurationException;
 import mb.dnm.service.ParameterAssignableService;
+import mb.dnm.service.SourceAccessService;
 import mb.dnm.storage.InterfaceInfo;
+import org.springframework.jdbc.datasource.ConnectionHandle;
+import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,7 +38,7 @@ import java.util.Set;
  *
  * */
 @Slf4j
-public class Commit extends ParameterAssignableService implements Serializable {
+public class Commit extends SourceAccessService implements Serializable {
     private static final long serialVersionUID = 7569451561169113126L;
 
     @Override
@@ -48,7 +56,20 @@ public class Commit extends ParameterAssignableService implements Serializable {
             return;
         }
 
+        String targetSourceName = null;
+        if (sourceName != null) {
+            targetSourceName = sourceName;
+        } else if (sourceAlias != null) {
+            targetSourceName = getSourceName(info);
+        }
+
         for (String executorName : executorNames) {
+            if (targetSourceName != null) {
+                if (!executorName.equals(targetSourceName)) {
+                    continue;
+                }
+            }
+
             TransactionContext txContext = txContextMap.get(executorName);
             if (txContext == null) {
                 log.warn("[{}]The transaction context named '{}' does not exist for termination. It may have already been terminated or not created.", txId, executorName);
@@ -62,8 +83,63 @@ public class Commit extends ParameterAssignableService implements Serializable {
                 log.warn("[{}]Can not commit. The transaction named '{}' is already completed.", txId, executorName);
                 continue;
             }
+
+            TransactionContext.LastTransactionStatus lastTxStatus = txContext.getLastTxStatus();
             DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
+            Object key = txManager.getDataSource();
+            log.trace("[{}]Retrieved the transaction manager [{}] managing the dataSource [{}]. Current executor name is [{}]", txId, txManager, key, executorName);
+            ConnectionHolder conHolder = null;
+            Connection connection = null;
+
             try {
+                Object conHolderObj = TransactionSynchronizationManager.getResource(key);
+                if (conHolderObj == null) {
+                    log.debug("[{}]The ConnectionHolder object of the executor [{}] is null. No transaction to commit.", txId, executorName);
+                    continue;
+                }
+
+                conHolder = (ConnectionHolder) conHolderObj;
+                ConnectionHandle conHandle = conHolder.getConnectionHandle();
+                if (conHandle == null) {
+                    log.debug("[{}]There is no JDBC connection of the executor[{}] to release", txId, executorName);
+                    continue;
+                }
+
+                connection = conHandle.getConnection();
+                if (connection.isClosed()) {
+                    log.debug("[{}]The JDBC connection of the executor[{}] is already closed", txId, executorName);
+                    continue;
+                }
+
+                String currentTxName = TransactionSynchronizationManager.getCurrentTransactionName();
+                log.trace("[{}]The current transaction name is [{}]", txId, currentTxName);
+                if (!(currentTxName != null
+                        && currentTxName.equals(executorName))) {
+                    DefaultTransactionDefinition def = txContext.getTransactionDefinition();
+                    if (lastTxStatus.isInitialized()) {
+                        TransactionSynchronizationManager.setCurrentTransactionName(lastTxStatus.getCurrentTransactionName());
+                        TransactionSynchronizationManager.setCurrentTransactionReadOnly(lastTxStatus.isCurrentTransactionReadOnly());
+                        TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(lastTxStatus.getCurrentTransactionIsolationLevel());
+                    } else {
+                        TransactionSynchronizationManager.setCurrentTransactionName(def.getName());
+                        TransactionSynchronizationManager.setCurrentTransactionReadOnly(def.isReadOnly());
+                        TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(def.getIsolationLevel());
+                    }
+                    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                        TransactionSynchronizationManager.clearSynchronization();
+                    }
+                    TransactionSynchronizationManager.initSynchronization();
+                    List<TransactionSynchronization> synchs = lastTxStatus.getSynchronizations();
+                    if (synchs != null) {
+                        for (TransactionSynchronization txSync : lastTxStatus.getSynchronizations()) {
+                            TransactionSynchronizationManager.registerSynchronization(txSync);
+                            log.trace("[{}]Registering synchronization [{}]", txId, txSync);
+                        }
+                    }
+                }
+                log.trace("[{}]\n{}", txId, lastTxStatus.toString());
+                TransactionSynchronizationManager.setActualTransactionActive(true);
+
                 log.info("[{}]Committing transaction. executor: {}", txId, executorName);
                 txManager.commit(txStatus);
                 log.info("[{}]Transaction committed. executor: {}", txId, executorName);
@@ -71,8 +147,33 @@ public class Commit extends ParameterAssignableService implements Serializable {
                 txManager.rollback(txStatus);
                 log.error("[" + txId + "]Commit failed. Processed rollback for executor: " + executorName + ". Cause: ", t);
                 throw t;
+
             } finally {
+                //txContext.setTransactionStatus(null);
                 txContextMap.remove(executorName); //Commit 이나 Rollback 처리를 한 뒤 항상 작업한 DataSource와 관련된 TransactionContext 객체를 지워줌
+                if (key != null) {
+                    Object unboundResource = TransactionSynchronizationManager.unbindResourceIfPossible(key);
+                    if (unboundResource != null) {
+                        log.trace("[{}]The resource[{}] is removed by the '{}' service", txId, unboundResource, this.getClass().getSimpleName());
+                    }
+                }
+
+                TransactionSynchronizationManager.setCurrentTransactionName((String) null);
+                TransactionSynchronizationManager.setCurrentTransactionIsolationLevel((Integer) null);
+                if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                    TransactionSynchronizationManager.clearSynchronization();
+                }
+                TransactionSynchronizationManager.setCurrentTransactionReadOnly(false);
+                TransactionSynchronizationManager.setActualTransactionActive(false);
+                try {
+                    if (connection != null && !connection.isClosed()) {
+                        log.warn("[{}]The JDBC connection of the executor[{}] is not closed by TransactionManager", txId, executorName);
+                        conHolder.released();
+                        conHolder.clear();
+                    }
+                } catch (Throwable t) {
+                    log.error("", t);
+                }
             }
         }
     }
