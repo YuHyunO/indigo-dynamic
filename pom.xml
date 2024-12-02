@@ -324,6 +324,7 @@
                         <exclude>**/*.txt</exclude>
                         <exclude>**/*.dnc</exclude>
                         <exclude>**/config_*</exclude>
+                        <exclude>**/resources_samples/</exclude>
                     </excludes>
                 </configuration>
             </plugin>
