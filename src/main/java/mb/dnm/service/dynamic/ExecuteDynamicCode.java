@@ -1,5 +1,6 @@
 package mb.dnm.service.dynamic;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.code.ProcessCode;
 import mb.dnm.core.dynamic.DynamicCodeInstance;
@@ -31,19 +32,25 @@ import java.io.Serializable;
 public class ExecuteDynamicCode extends AbstractService implements Serializable {
 
     private static final long serialVersionUID = -5870630048628268142L;
+    @Setter
+    private String codeId;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
 
         String codeId = null;
-        if (exceptionHandlingMode) {
-            if (!ctx.hasMoreErrorDynamicCodes())
-                throw new InvalidServiceConfigurationException(this.getClass(), "No more errorDynamic code found in the dynamic code sequence queue");
-            codeId = ctx.nextErrorDynamicCodeId();
+        if (this.codeId == null) {
+            if (exceptionHandlingMode) {
+                if (!ctx.hasMoreErrorDynamicCodes())
+                    throw new InvalidServiceConfigurationException(this.getClass(), "No more errorDynamic code found in the dynamic code sequence queue");
+                codeId = ctx.nextErrorDynamicCodeId();
+            } else {
+                if (!ctx.hasMoreDynamicCodes())
+                    throw new InvalidServiceConfigurationException(this.getClass(), "No more dynamic code found in the dynamic code sequence queue");
+                codeId = ctx.nextDynamicCodeId();
+            }
         } else {
-            if (!ctx.hasMoreDynamicCodes())
-                throw new InvalidServiceConfigurationException(this.getClass(), "No more dynamic code found in the dynamic code sequence queue");
-            codeId = ctx.nextDynamicCodeId();
+            codeId = this.codeId.replace("@{if_id}", ctx.getInterfaceId());
         }
 
         DynamicCodeInstance dnmInstance = DynamicCodeProvider.access().getDynamicCode(codeId);

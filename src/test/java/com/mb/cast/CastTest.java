@@ -1,6 +1,7 @@
 package com.mb.cast;
 
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.general.OutputCustomData;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.junit.Test;
@@ -68,5 +69,16 @@ public class CastTest {
         Map<String, Object> objMap = new HashMap<>();
         objMap.put("s", "asd");
         objMap.putAll(strMap);
+    }
+
+    @Test
+    public void null_test() {
+
+        Object continueIterFlag = null;
+        if (continueIterFlag instanceof Boolean) {
+            if ((Boolean) continueIterFlag) {
+                log.debug("Breaking current element iteration and fetching next iter element");
+            }
+        }
     }
 }

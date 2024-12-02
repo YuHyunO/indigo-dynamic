@@ -14,6 +14,8 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class CompileTest {
@@ -75,6 +77,28 @@ public class CompileTest {
 
         }
         fileManager.close();
+    }
+
+    @Test
+    public void methodparse_Test() {
+        // 입력 문자열
+        String input = "getInput   (\n\"Any content here\"\n    (   ;";
+
+        // 정규표현식 정의
+        String regex = "^getInput[ \\r\\n]*\\(\\\"[^\\\"]*\\\"[ \\r\\n]*\\([ \\r\\n]*;$";
+
+        // 정규식 패턴 컴파일
+        Pattern pattern = Pattern.compile(regex);
+
+        // 매칭 객체 생성
+        Matcher matcher = pattern.matcher(input);
+
+        // 정규식과 일치하는지 확인
+        if (matcher.matches()) {
+            System.out.println("입력 문자열이 정규표현식에 일치합니다!");
+        } else {
+            System.out.println("입력 문자열이 정규표현식에 일치하지 않습니다.");
+        }
     }
 
 }

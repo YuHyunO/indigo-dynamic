@@ -105,7 +105,12 @@ public class ServiceProcessor {
                             break;
                         }
                     }
-                    ctx.setProcessStatus(ProcessCode.SUCCESS);
+                    if (ctx.getProcessStatus() != ProcessCode.ENFORCED_FAILURE) {
+                        ctx.setProcessStatus(ProcessCode.SUCCESS);
+                    } else {
+                        ctx.setProcessStatus(ProcessCode.FAILURE);
+                    }
+
                 } catch (Throwable t0) {
 
                     ctx.addErrorTrace(serviceClass, t0);

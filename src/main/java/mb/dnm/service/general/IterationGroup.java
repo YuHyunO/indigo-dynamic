@@ -217,6 +217,18 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                                 breaked = true;
                                 break;
                             }
+
+                            Object continueIterFlag = ctx.getContextParam("$iter_continue");
+                            if (continueIterFlag instanceof Boolean) {
+                                try {
+                                    if ((Boolean) continueIterFlag) {
+                                        log.debug("[{}]Breaking current element iteration and fetching next iter element", txId);
+                                        break;
+                                    }
+                                } finally {
+                                    ctx.deleteContextParam("$iter_continue");
+                                }
+                            }
                         }
                     }
                     //반복문 수행이 끝나면 ServiceContext에 원래의 Sequence 에 반복문에서 마지막으로 소진된 Sequence Order 를 지정해줘야 한다.
@@ -428,6 +440,18 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                         } finally {
                             innerCtx.stampEndTime();
                             log.debug("[{}]Iteration-Group: End the service '{}'", innerTxId, serviceClass);
+
+                            Object continueIterFlag = ctx.getContextParam("$iter_continue");
+                            if (continueIterFlag instanceof Boolean) {
+                                try {
+                                    if ((Boolean) continueIterFlag) {
+                                        log.debug("[{}]Breaking current element iteration and fetching next iter element", txId);
+                                        break;
+                                    }
+                                } finally {
+                                    ctx.deleteContextParam("$iter_continue");
+                                }
+                            }
                         }
                     }
                     //반복문 수행이 끝나면 ServiceContext에 원래의 Sequence 에 반복문에서 마지막으로 소진된 Sequence Order 를 지정해줘야 한다.
@@ -439,7 +463,7 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                     if (errorHandlers == null || errorHandlers.isEmpty()) {
                         log.warn("[{}]Iteration-Group: No error handlers are found for this iteration group", innerTxId);
                     }
-
+                    
                     int handlerCount = errorHandlers.size();
                     int cnt2 = 0;
                     for (ErrorHandler errorHandler : errorHandlers) {

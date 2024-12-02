@@ -7,8 +7,15 @@
 
 
     <util:map id="serviceStrategies">
+
         <entry key="CALL_PROCEDURE_AND_FETCH">
             <list>
+                <bean class="mb.dnm.service.db.Select">
+                    <description>Source DB 에서 연계 대상 데이터를 조회한다.</description>
+                    <property name="input"              value=""/>
+                    <property name="output"             value="data_list"/>
+                </bean>
+
                 <bean class="mb.dnm.service.db.Select">
                     <property name="output" value="records"/>
                 </bean>

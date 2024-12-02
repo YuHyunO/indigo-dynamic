@@ -7,7 +7,8 @@ public enum ProcessCode {
     SUCCESS("S"),
     FAILURE("F"),
     SERVICE_FAILURE("B"),
-    DYNAMIC_CODE_FAILURE("DF")
+    DYNAMIC_CODE_FAILURE("DF"),
+    ENFORCED_FAILURE("EF")
     ;
 
     private final String processCode;

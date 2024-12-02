@@ -4,6 +4,7 @@ import mb.dnm.core.context.TransactionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.jdbc.datasource.ConnectionHandle;
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -129,10 +130,39 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
                 return rtVal;
             }
         } catch (Throwable t) {
+
             if (txStatus != null && !txStatus.isCompleted()) {
+                if (lastTxStatus != null) {
+                    String currentTxName = TransactionSynchronizationManager.getCurrentTransactionName();
+                    if (!(currentTxName != null && currentTxName.equals(executorName))) {
+                        if (lastTxStatus.isInitialized()) {
+                            TransactionSynchronizationManager.setCurrentTransactionName(lastTxStatus.getCurrentTransactionName());
+                            TransactionSynchronizationManager.setCurrentTransactionReadOnly(lastTxStatus.isCurrentTransactionReadOnly());
+                            TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(lastTxStatus.getCurrentTransactionIsolationLevel());
+                            TransactionSynchronizationManager.setActualTransactionActive(lastTxStatus.isActualTransactionActive());
+                            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                                TransactionSynchronizationManager.clearSynchronization();
+                            }
+                            TransactionSynchronizationManager.initSynchronization();
+                            List<TransactionSynchronization> syncs = lastTxStatus.getSynchronizations();
+                            if (syncs != null) {
+                                for (TransactionSynchronization txSync : lastTxStatus.getSynchronizations()) {
+                                    TransactionSynchronizationManager.registerSynchronization(txSync);
+                                }
+                            }
+                        }
+                    }
+                }
+
+
                 log.warn("[TX]Processing rollback this transaction. Executor name: {}, Query history: {}", txCtx.getName(), txCtx.getQueryHistory());
-                txManager.rollback(txStatus);
-                log.warn("[TX]Rollback completed. Executor name: {}", txCtx.getName());
+                try {
+                    txManager.rollback(txStatus);
+                    log.warn("[TX]Rollback completed. Executor name: {}", txCtx.getName());
+                } catch (Throwable t2) {
+                    log.warn("[TX]Rollback failed. But the transaction will be cleared. Executor name: {}. Cause: {}"
+                            , txCtx.getName(), t2.getMessage());
+                }
                 txCtx.setError(t);
             }
             throw t;
