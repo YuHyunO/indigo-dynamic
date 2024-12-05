@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+
+
+
+    <util:map id="serviceStrategies">
+        <!-- serviceStrategies 내부의 빈 공간에 $P 입력 후 Ctrl+Space 키를 누른뒤 원하는 패턴을 선택 -->
+        <entry key="$TEST">
+            <list>
+                <bean class="mb.dnm.service.general.OutputCustomData">
+                    <property name="output"         value="data"/>
+                    <property name="customData">
+                        <map>
+                            <entry key="ITEM_CD" value="3215"/>
+                            <entry key="o_RESULT" value=""/>
+                            <entry key="O_RESULT" value=""/>
+                        </map>
+                    </property>
+                </bean>
+                <bean class="mb.dnm.service.db.CallProcedure">
+                    <property name="input"              value="data"/>
+                    <property name="output"             value="result"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <description>Input으로 전달된 변수를 로그로 출력한다.</description>
+                    <property name="input"                          value="result"/>
+                    <property name="printToXmlWhenCollectionOrMap"  value="false"/>
+                    <property name="indented"                       value="false"/>
+                </bean>
+                <bean class="mb.dnm.service.general.PrintInput">
+                    <description>Input으로 전달된 변수를 로그로 출력한다.</description>
+                    <property name="input"                          value="data"/>
+                    <property name="printToXmlWhenCollectionOrMap"  value="false"/>
+                    <property name="indented"                       value="false"/>
+                </bean>
+            </list>
+        </entry>
+
+
+        <entry key="INTERFACE_CONTROL">
+            <list>
+                <bean class="mb.dnm.service.general.TransformData">
+                    <property name="input"              value="$http_body"/>
+                    <property name="inputDataType"      value="JSON"/>
+                    <property name="outputDataType"     value="MAP"/>
+                    <property name="output"             value="$http_body"/>
+                </bean>
+                <bean class="mb.dnm.service.general.ControlInterfaceActivation">
+                    <property name="input"              value="$http_body"/>
+                </bean>
+                <bean class="mb.dnm.service.http.SetHttpResponseBody">
+                    <property name="input"      value="$$COMMAND_RESULT"/>
+                </bean>
+            </list>
+        </entry>
+
+    </util:map>
+
+</beans>
+
+
+
+
+
+
+
+
+
+
+

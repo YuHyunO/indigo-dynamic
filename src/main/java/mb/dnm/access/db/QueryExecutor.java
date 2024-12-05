@@ -158,6 +158,7 @@ public class QueryExecutor implements Serializable {
             Object obj = executor.selectList(sqlId, commonParam);
             if (obj != null)
                 result = (List<Map<String, Object>>) obj;
+            result.add(commonParam);
         } else {
             for (Map<String, Object> param : callParam) {
                 Map<String, Object> addParam = new HashMap<>();
@@ -168,6 +169,7 @@ public class QueryExecutor implements Serializable {
                 Object obj = executor.selectList(sqlId, addParam);
                 if (obj != null)
                     result.addAll((List<Map<String, Object>>) obj);
+                result.add(addParam);
             }
         }
 

@@ -28,7 +28,7 @@ import java.util.Map;
  * @Input Stored procedure 또는 Function 호출 시 사용될 parameter
  * @InputType <code>Map&lt;String, Object&gt;</code> or <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
  * @Output Stored procedure 또는 Function 의 호출 결과
- * @OutputType <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
+ * @OutputType <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
  *
  * @Throws <code>IllegalArgumentException</code>: Input parameter의 type이 지원되지 않는 타입인 경우 <br> <code>InvalidServiceConfigurationException</code>: QuerySequnce queue에서 더 이상 실행할 query를 찾지 못했을 때
  * */

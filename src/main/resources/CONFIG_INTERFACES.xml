@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+    <util:list id="interfaces">
+
+        <bean class="mb.dnm.storage.InterfaceInfo"  name="DB2DB default">
+            <property name="interfaceId"                 value="TEST"/>
+            <property name="interfaceName"               value="프로시저 테스트"/>
+            <property name="sourceCode"                  value="HAT"/>
+            <property name="targetCode"                  value="LOEX"/>
+            <property name="loggingWhenNormal"           value="true"/>
+            <property name="loggingWhenError"            value="true"/>
+            <property name="sourceAliases"               value="MQ:ESB"/>
+            <property name="querySequence"               value="DEV$RA0-STEP1_1433.CALL_T"/>
+            <property name="serviceId"                   value="$TEST"/>
+        </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="INTERFACE_CONTROLLER"/>
+            <property name="controllerInterface"    value="true"/>
+            <property name="frontHttpUrl"           value="/indigo/adapter/control-interface"/>
+            <property name="frontHttpMethod"        value="POST"/>
+            <property name="loggingWhenNormal"      value="false"/>
+            <property name="loggingWhenError"       value="false"/>
+            <property name="serviceId"              value="INTERFACE_CONTROL"/>
+        </bean>
+    </util:list>
+
+
+</beans>
+
+
+
+
+
+
+

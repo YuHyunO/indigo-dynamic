@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RA0-STEP1_1433">
+
+    <select id="SELECT" resultType="java.util.HashMap">
+        SELECT ITEM_CD
+             ,DESCR
+             ,RETAILSKU
+             ,ALTSKU
+             ,SPAC
+             ,VENDOR_CD
+             ,VENDOR_NM
+             ,SKUPROD
+             ,MAJOR_CL_CD
+             ,MAJOR_CL_NM
+             ,SKUGROUP
+             ,STDNETWGT
+             ,STDCUBE
+             ,CUBE_WIDTH
+             ,CUBE_LENGTH
+             ,CUBE_HIGH
+             ,INNERPACK
+             ,CARRYCOST
+             ,BOM
+             ,SALE_PRICE
+             ,SKU_STATUS
+             ,ITEM_ETC_CD
+             ,DURATION
+             ,ADDDATE
+             ,EDITDATE
+             ,MODIFYCNT
+             ,TRANSDATE
+        FROM HX_V_SKU_DWL
+    </select>
+
+    <insert id="INSERT">
+
+    </insert>
+
+    <select id="CALL_T" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+            CALL DWNGL_EAI.TEST_HX_PR_SKU_GET(
+                #{ITEM_CD, jdbcType=VARCHAR, mode=IN},
+
+                #{o_DESCR, jdbcType=VARCHAR, mode=OUT},
+                #{o_RETAILSKU, jdbcType=VARCHAR, mode=OUT},
+                #{o_ALTSKU, jdbcType=VARCHAR, mode=OUT},
+                #{o_SPAC, jdbcType=VARCHAR, mode=OUT},
+                #{o_VENDOR_CD, jdbcType=VARCHAR, mode=OUT},
+                #{o_VENDOR_NM, jdbcType=VARCHAR, mode=OUT},
+                #{o_SKUPROD, jdbcType=VARCHAR, mode=OUT},
+                #{o_MAJOR_CL_CD, jdbcType=VARCHAR, mode=OUT},
+                #{o_MAJOR_CL_NM, jdbcType=VARCHAR, mode=OUT},
+                #{o_SKUGROUP, jdbcType=VARCHAR, mode=OUT},
+                #{o_STDNETWGT, jdbcType=INTEGER, mode=OUT},
+                #{o_STDCUBE, jdbcType=INTEGER, mode=OUT},
+                #{o_CUBE_WIDTH, jdbcType=INTEGER, mode=OUT},
+                #{o_CUBE_LENGTH, jdbcType=INTEGER, mode=OUT},
+                #{o_CUBE_HIGH, jdbcType=INTEGER, mode=OUT},
+                #{o_INNERPACK, jdbcType=INTEGER, mode=OUT},
+                #{o_CARRYCOST, jdbcType=INTEGER, mode=OUT},
+                #{o_BOX_IPQTY, jdbcType=INTEGER, mode=OUT},
+                #{o_BOL_IPQTY, jdbcType=INTEGER, mode=OUT},
+                #{o_BOM, jdbcType=VARCHAR, mode=OUT},
+                #{o_SALE_PRICE, jdbcType=INTEGER, mode=OUT},
+                #{o_SKU_STATUS, jdbcType=VARCHAR, mode=OUT},
+                #{o_ADDDATE, jdbcType=VARCHAR, mode=OUT},
+                #{o_EDITDATE, jdbcType=VARCHAR, mode=OUT},
+                #{o_MODIFYCNT, jdbcType=INTEGER, mode=OUT},
+                #{o_TRANSDATE, jdbcType=DATE, mode=OUT},
+                #{o_ITEM_ETC_CD, jdbcType=VARCHAR, mode=OUT},
+                #{o_DURATION, jdbcType=INTEGER, mode=OUT},
+
+                #{o_RESULT, jdbcType=VARCHAR, mode=OUT},
+                #{o_RESULT_MSG_USR, jdbcType=VARCHAR, mode=OUT},
+                #{o_RESULT_MSG_SYS, jdbcType=VARCHAR, mode=OUT}
+                 )
+            }
+    </select>
+
+    <!--   	<select id="CALL" statementType="CALLABLE" resultType="java.util.HashMap">
+          {
+          CALL HX_PR_SKU_GET(
+                          #{ITEM_CD, jdbcType=VARCHAR, mode=IN},
+
+                          #{O_DESCR, jdbcType=VARCHAR, mode=OUT},
+                          #{O_RETAILSKU, jdbcType=VARCHAR, mode=OUT},
+                          #{O_ALTSKU, jdbcType=VARCHAR, mode=OUT},
+                          #{O_SPAC, jdbcType=VARCHAR, mode=OUT},
+                          #{O_VENDOR_CD, jdbcType=VARCHAR, mode=OUT},
+                          #{O_VENDOR_NM, jdbcType=VARCHAR, mode=OUT},
+                          #{O_SKUPROD, jdbcType=VARCHAR, mode=OUT},
+                          #{O_MAJOR_CL_CD, jdbcType=VARCHAR, mode=OUT},
+                          #{O_MAJOR_CL_NM, jdbcType=VARCHAR, mode=OUT},
+                          #{O_SKUGROUP, jdbcType=VARCHAR, mode=OUT},
+                          #{O_STDNETWGT, jdbcType=NUMBER, mode=OUT},
+                          #{O_STDCUBE, jdbcType=NUMBER, mode=OUT},
+                          #{O_CUBE_WIDTH, jdbcType=NUMBER, mode=OUT},
+                          #{O_CUBE_LENGTH, jdbcType=NUMBER, mode=OUT},
+                          #{O_CUBE_HIGH, jdbcType=NUMBER, mode=OUT},
+                          #{O_INNERPACK, jdbcType=NUMBER, mode=OUT},
+                          #{O_CARRYCOST, jdbcType=NUMBER, mode=OUT},
+                          #{O_BOX_IPQTY, jdbcType=NUMBER, mode=OUT},
+                          #{O_BOL_IPQTY, jdbcType=NUMBER, mode=OUT},
+                          #{O_BOM, jdbcType=VARCHAR, mode=OUT},
+                          #{O_SALE_PRICE, jdbcType=NUMBER, mode=OUT},
+                          #{O_SKU_STATUS, jdbcType=VARCHAR, mode=OUT},
+                          #{O_ADDDATE, jdbcType=VARCHAR, mode=OUT},
+                          #{O_EDITDATE, jdbcType=VARCHAR, mode=OUT},
+                          #{O_MODIFYCNT, jdbcType=NUMBER, mode=OUT},
+                          #{O_TRANSDATE, jdbcType=DATE, mode=OUT},
+                          #{O_ITEM_ETC_CD, jdbcType=VARCHAR, mode=OUT},
+                          #{O_DURATION, jdbcType=NUMBER, mode=OUT},
+
+                          #{O_RESULT, jdbcType=VARCHAR, mode=OUT},
+                          #{O_RESULT_MSG_USR, jdbcType=VARCHAR, mode=OUT},
+                          #{O_RESULT_MSG_SYS, jdbcType=VARCHAR, mode=OUT}
+                      )
+          }
+          </select> -->
+
+</mapper>
+
+
+
+
+

@@ -1,0 +1,23 @@
+#namespace: RA0-STEP1_1433
+
+
+
+#code_id: CHECK_RESULT
+#{
+
+	Map<String, Object> callResult = ((List<Map<String, Object>>) getInput(ctx, "result")).get(0);
+    Object resultCode = callResult.get("O_RESULT");
+    if (resultCode.equals("OK"))
+        return;
+
+    Map<String, Object> errorData = (Map<String, Object>) getInput(ctx, "data");
+    String ITEM_CD = String.valueOf(errorData.get("ITEM_CD"));
+    String O_RESULT_MSG_USR = String.valueOf(callResult.get("O_RESULT_MSG_USR"));
+    String O_RESULT_MSG_SYS = String.valueOf(callResult.get("O_RESULT_MSG_SYS"));
+
+    StringBuilder errMsg = new StringBuilder();
+    errMsg.append(ITEM_CD).append(": ").append(O_RESULT_MSG_USR).append(",").append(O_RESULT_MSG_SYS);
+    ctx.setMsg(errMsg.toString());
+    throw new Exception(errMsg.toString());
+
+}#
