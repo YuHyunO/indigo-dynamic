@@ -413,6 +413,8 @@ public class ServiceContext implements Serializable {
         infoMap.put("$YYYYMM", TimeUtil.curDate(TimeUtil.YYYYMM));
         infoMap.put("$YYYYMMDD", TimeUtil.curDate(TimeUtil.YYYYMMDD));
         infoMap.put("$YYYYMMDDHHmmss", TimeUtil.curDate(TimeUtil.YYYYMMDDHHmmss));
+        infoMap.put("$HHmmss", TimeUtil.curDate(TimeUtil.HHmmss));
+        infoMap.put("$HHmm", TimeUtil.curDate(TimeUtil.HHmm));
         return infoMap;
     }
 
