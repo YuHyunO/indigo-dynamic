@@ -33,6 +33,7 @@ public class ContinueIteration extends ParameterAssignableService {
             if (!whenInputNotEquals.equals(String.valueOf(inputVal))) {
                 log.debug("[{}]Continue iteration", ctx.getTxId());
                 ctx.addContextParam("$iter_continue", true);
+                Object iterPosition = ctx.getContextParam("$iter_position");
             }
         }
     }

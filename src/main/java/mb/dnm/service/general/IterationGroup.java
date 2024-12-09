@@ -223,6 +223,7 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                                 try {
                                     if ((Boolean) continueIterFlag) {
                                         log.debug("[{}]Breaking current element iteration and fetching next iter element", txId);
+                                        --iter_position;
                                         break;
                                     }
                                 } finally {
@@ -446,6 +447,7 @@ public class IterationGroup extends ParameterAssignableService implements Serial
                                 try {
                                     if ((Boolean) continueIterFlag) {
                                         log.debug("[{}]Breaking current element iteration and fetching next iter element", txId);
+                                        --iter_position;
                                         break;
                                     }
                                 } finally {
