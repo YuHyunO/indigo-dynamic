@@ -37,4 +37,9 @@ public class TypeTest {
         Character ch = new Character('a');
         log.info("ch: {}", ch.charValue());
     }
+
+    @Test
+    public void null_test() {
+        log.info("{}", "null".equals(null));
+    }
 }
