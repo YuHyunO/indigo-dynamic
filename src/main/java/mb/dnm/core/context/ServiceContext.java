@@ -416,6 +416,7 @@ public class ServiceContext implements Serializable {
         infoMap.put("$HHmmss", TimeUtil.curDate(TimeUtil.HHmmss));
         infoMap.put("$HHmm", TimeUtil.curDate(TimeUtil.HHmm));
         infoMap.put("$iter_position", contextParams.get("$iter_position"));
+        infoMap.put("$total_iter_position", contextParams.get("$total_iter_position"));
         return infoMap;
     }
 
