@@ -1,12 +1,11 @@
 package mb.dnm.access.db;
 
-import mb.dnm.core.context.TransactionContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.core.context.TransactionContext;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 
@@ -113,7 +112,7 @@ public class QueryExecutor implements Serializable {
     public int doHandleSelect(TransactionContext txCtx, String sqlId, List<Map<String, Object>> selectParam, Map<String, Object> commonParam, ResultHandlingSupport resultHandlingSupport) {
         int fetchedCnt = 0;
         SqlSessionTemplate executor = getDefaultExecutor();
-
+        txCtx.setConstant(true); /*ResultHandling 이 진행되는 동안 내부 프로세스에서 doHandleSelect(...) 에서 사용되는 트랜잭션을 종료시키지 않기 위한 flag 추가. 2024-12-11 오유현*/
         if (selectParam == null || selectParam.isEmpty()) {
             executor.select(sqlId, commonParam, resultHandlingSupport.getHandler());
             resultHandlingSupport.flushBuffer();
@@ -373,9 +372,16 @@ public class QueryExecutor implements Serializable {
             return 0;
         int count = 0;
         int[] updateCounts = batchResults.get(0).getUpdateCounts();
+
         for (int i : updateCounts) {
-            count += i;
+            if (i == -2) {//Statement.SUCCESS_NO_INFO
+                ++count;
+            } else {
+                count += i;
+            }
         }
+
+
         return count;
     }
 
