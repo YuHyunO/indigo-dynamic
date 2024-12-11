@@ -56,9 +56,12 @@ public class Delete extends ParameterAssignableService implements Serializable {
             }
             queryMap = ctx.nextQueryMap();
         }
-
+        String executorName = queryMap.getExecutorName();
+        if (executorName.equals(ctx.getContextParam("$constant_executor"))) {
+            throw new InvalidServiceConfigurationException(this.getClass(), "The transaction named '" + executorName + "' is not mutable because it has been marked as constant. Use another query executor instead.");
+        }
         TransactionContext txContext = ctx.getTransactionContext(queryMap);
-        QueryExecutor executor = DataSourceProvider.access().getExecutor(queryMap.getExecutorName());
+        QueryExecutor executor = DataSourceProvider.access().getExecutor(executorName);
 
         //(2) Get parameter
         Object inValue = getInputValue(ctx);
