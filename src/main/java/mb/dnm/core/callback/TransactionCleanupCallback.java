@@ -43,6 +43,8 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
         try {
             for (Map.Entry<String, TransactionContext> entry : txCtxMap.entrySet()) {
                 String executorName = entry.getKey();
+                if (executorName.equals(ctx.getContextParam("$constant_executor")))
+                    continue;
                 TransactionContext txCtx = entry.getValue();
                 TransactionStatus txStatus = txCtx.getTransactionStatus();
                 TransactionContext.LastTransactionStatus lastTxStatus = txCtx.getLastTxStatus();
