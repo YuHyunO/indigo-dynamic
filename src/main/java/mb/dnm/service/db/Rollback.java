@@ -70,6 +70,9 @@ public class Rollback extends SourceAccessService implements Serializable {
                 }
             }
 
+            if (executorName.equals(ctx.getContextParam("$constant_executor")))
+                continue;
+
             TransactionContext txContext = txContextMap.get(executorName);
             if (txContext == null) {
                 log.warn("[{}]The transaction context named '{}' does not exist for termination. It may have already been terminated or not created.", txId, executorName);
