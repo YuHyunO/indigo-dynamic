@@ -64,6 +64,8 @@ public class StartTransaction extends SourceAccessService implements Serializabl
                     continue;
                 }
             }
+            if (executorName.equals(ctx.getContextParam("$constant_executor")))
+                continue;
 
             boolean result = ctx.setGroupTransaction(executorName, true);
             if (result) {
