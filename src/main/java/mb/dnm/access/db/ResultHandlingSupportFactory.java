@@ -30,12 +30,13 @@ public class ResultHandlingSupportFactory implements Serializable {
         ResultHandlingSupport support = new ResultHandlingSupport(ctx);
         support.setFetchSize(fetchSize);
         support.setFetchedInputName(fetchedInputName);
+        support.setEnforcePassTransactionToContexts(enforcePassTransactionToContexts);
+
         if (resultHandlingProcessor != null) {
             resultHandlingProcessor.setInput(fetchedInputName);
             resultHandlingProcessor.setIterationInputName(fetchedInputName);
-            if (enforcePassTransactionToContexts) {
-                resultHandlingProcessor.setPassTransactionToContexts(true);
-            }
+            resultHandlingProcessor.setPassTransactionToContexts(enforcePassTransactionToContexts);
+
             support.setResultHandlingProcessor(resultHandlingProcessor);
         }
         return support;
