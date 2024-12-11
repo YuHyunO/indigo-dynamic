@@ -1,6 +1,7 @@
 package mb.dnm.core.context;
 
 import lombok.Getter;
+import lombok.Setter;
 import mb.dnm.util.MessageUtil;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -21,6 +22,8 @@ public class TransactionContext implements Serializable {
     private DefaultTransactionDefinition txDef;
     private List<String> queryHistory;
     private Throwable error;
+    @Setter @Getter
+    private boolean constant = false;
     @Getter
     private LastTransactionStatus lastTxStatus;
 
