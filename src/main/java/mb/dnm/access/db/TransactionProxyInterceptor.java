@@ -65,12 +65,12 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
         TransactionStatus txStatus = null;
         String executorName = null;
         TransactionContext.LastTransactionStatus lastTxStatus = null;
-        Object dataSource = null;
+        //Object dataSource = null;
         try {
             txCtx = (TransactionContext) args[0];
             txManager = DataSourceProvider.access().getTransactionManager(txCtx.getName());
             executorName = txCtx.getName();
-            dataSource = txManager.getDataSource();
+            //dataSource = txManager.getDataSource();
 
             if (txCtx.isGroupTxEnabled()) {//트랜잭션이 그룹으로 묶인 경우, 명시적인 commit 또는 rollback 명령이 있기전까지 하나의 트랜잭션을 유지
                 lastTxStatus = txCtx.getLastTxStatus();
@@ -125,6 +125,10 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
                 Object rtVal = methodProxy.invoke(target, args);
 
                 if (!txStatus.isCompleted()) {
+                    if (txCtx.isConstant()) {
+                        txStatus = txManager.getTransaction(txDef);
+                    }
+                    log.debug("Committing non group transaction '{}'", executorName);
                     txManager.commit(txStatus);
                 }
                 return rtVal;
