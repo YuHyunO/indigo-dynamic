@@ -54,9 +54,12 @@ public class OpenCursor extends ParameterAssignableService implements Serializab
             }
             queryMap = ctx.nextQueryMap();
         }
-
+        String executorName = queryMap.getExecutorName();
+        if (executorName.equals(ctx.getContextParam("$constant_executor"))) {
+            throw new InvalidServiceConfigurationException(this.getClass(), "The transaction named '" + executorName + "' is not mutable because it has been marked as constant. Use another query executor instead.");
+        }
         TransactionContext txContext = ctx.getTransactionContext(queryMap);
-        QueryExecutor executor = DataSourceProvider.access().getExecutor(queryMap.getExecutorName());
+        QueryExecutor executor = DataSourceProvider.access().getExecutor(executorName);
 
         //(2) Prepare object for result and do fetch
         executor.doOpenCursor(txContext, queryMap.getQueryId());
