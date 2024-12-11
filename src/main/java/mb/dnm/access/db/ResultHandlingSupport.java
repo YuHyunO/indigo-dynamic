@@ -23,8 +23,11 @@ public class ResultHandlingSupport implements Serializable {
     private int totalFetchedCount = 0;
     private int currentBufferSize = 0;
     private int resultSetIdx = 0;
+    private int totalIterPosition = 0;
     private List<Map<String, Object>> resultSetBuffer;
     private final ServiceContext context;
+    @Setter
+    private String executorName;
     private final int currentQueryOrder;
     private final int currentErrorQueryOrder;
     private final int currentDynamicCodeOrder;
@@ -69,10 +72,14 @@ public class ResultHandlingSupport implements Serializable {
                 context.setCurrentErrorDynamicCodeOrder(currentErrorDynamicCodeOrder);
 
                 context.addContextParam("$fetchSize", fetchSize);
-
+                context.addContextParam("$constant_executor", executorName);
+                context.addContextParam("$total_iter_position", totalIterPosition);
                 resultHandlingProcessor.process(context);
+                totalIterPosition = (Integer) context.getContextParam("$total_iter_position");
             } catch (Throwable t) {
                 throw new RuntimeException(t);
+            } finally {
+                context.deleteContextParam("$constant_executor");
             }
             return fetched;
         } else {
