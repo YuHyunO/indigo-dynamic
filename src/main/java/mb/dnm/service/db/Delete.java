@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Input으로 받은 데이터를 파라미터로 하여 DELETE query를 처리한다.
@@ -57,8 +58,11 @@ public class Delete extends ParameterAssignableService implements Serializable {
             queryMap = ctx.nextQueryMap();
         }
         String executorName = queryMap.getExecutorName();
-        if (executorName.equals(ctx.getContextParam("$constant_executor"))) {
-            throw new InvalidServiceConfigurationException(this.getClass(), "The transaction named '" + executorName + "' is not mutable because it has been marked as constant. Use another query executor instead.");
+        Object constantExecutors = ctx.getContextParam("$constant_executor");
+        if (constantExecutors instanceof Set) {
+            if ( ((Set) constantExecutors).contains(executorName) ) {
+                throw new InvalidServiceConfigurationException(this.getClass(), "The transaction named '" + executorName + "' is not mutable because it has been marked as constant. Use another query executor instead.");
+            }
         }
         TransactionContext txContext = ctx.getTransactionContext(queryMap);
         QueryExecutor executor = DataSourceProvider.access().getExecutor(executorName);
