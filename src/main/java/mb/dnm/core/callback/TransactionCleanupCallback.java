@@ -14,10 +14,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 하나의 서비스 프로세스가 종료될 때 마다 commit 또는 rollback 되지 않은 DB 트랜잭션을 처리하는 Callback 클래스이다.<br>
@@ -40,11 +37,21 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
         ConnectionHolder conHolder = null;
         Connection connection = null;
 
+        Object constantExecutor = ctx.getContextParam("$constant_executor");
+        Set constantExecutors = new HashSet<>();
+        if (constantExecutor instanceof Set) {
+            constantExecutors = (Set) constantExecutor;
+        }
+
         try {
             for (Map.Entry<String, TransactionContext> entry : txCtxMap.entrySet()) {
                 String executorName = entry.getKey();
-                if (executorName.equals(ctx.getContextParam("$constant_executor")))
+
+                /*if (executorName.equals(ctx.getContextParam("$constant_executor")))
+                    continue;*/
+                if (constantExecutors.contains(executorName))
                     continue;
+
                 TransactionContext txCtx = entry.getValue();
                 TransactionStatus txStatus = txCtx.getTransactionStatus();
                 TransactionContext.LastTransactionStatus lastTxStatus = txCtx.getLastTxStatus();
