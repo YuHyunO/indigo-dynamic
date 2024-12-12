@@ -63,6 +63,8 @@ public class Commit extends SourceAccessService implements Serializable {
             targetSourceName = getSourceName(info);
         }
 
+        Object constantExecutors = ctx.getContextParam("$constant_executor");
+
         for (String executorName : executorNames) {
             if (targetSourceName != null) {
                 if (!executorName.equals(targetSourceName)) {
@@ -70,8 +72,10 @@ public class Commit extends SourceAccessService implements Serializable {
                 }
             }
 
-            if (executorName.equals(ctx.getContextParam("$constant_executor")))
-                continue;
+            if (constantExecutors instanceof Set) {
+                if ( ((Set) constantExecutors).contains(executorName) )
+                    continue;
+            }
 
             TransactionContext txContext = txContextMap.get(executorName);
             if (txContext == null) {
