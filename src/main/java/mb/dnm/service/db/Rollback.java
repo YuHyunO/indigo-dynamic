@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.io.Serializable;
 import java.sql.Connection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +64,8 @@ public class Rollback extends SourceAccessService implements Serializable {
             targetSourceName = getSourceName(info);
         }
 
+        Object constantExecutors = ctx.getContextParam("$constant_executor");
+
         for (String executorName : executorNames) {
             if (targetSourceName != null) {
                 if (!executorName.equals(targetSourceName)) {
@@ -70,8 +73,10 @@ public class Rollback extends SourceAccessService implements Serializable {
                 }
             }
 
-            if (executorName.equals(ctx.getContextParam("$constant_executor")))
-                continue;
+            if (constantExecutors instanceof Set) {
+                if ( ((Set) constantExecutors).contains(executorName) )
+                    continue;
+            }
 
             TransactionContext txContext = txContextMap.get(executorName);
             if (txContext == null) {
