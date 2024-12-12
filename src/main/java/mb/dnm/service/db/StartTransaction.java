@@ -57,6 +57,7 @@ public class StartTransaction extends SourceAccessService implements Serializabl
         } else if (sourceAlias != null) {
             targetSourceName = getSourceName(info);
         }
+        Object constantExecutors = ctx.getContextParam("$constant_executor");
 
         for (String executorName : executorNames) {
             if (targetSourceName != null) {
@@ -64,8 +65,10 @@ public class StartTransaction extends SourceAccessService implements Serializabl
                     continue;
                 }
             }
-            if (executorName.equals(ctx.getContextParam("$constant_executor")))
-                continue;
+            if (constantExecutors instanceof Set) {
+                if ( ((Set) constantExecutors).contains(executorName) )
+                    continue;
+            }
 
             boolean result = ctx.setGroupTransaction(executorName, true);
             if (result) {
