@@ -69,6 +69,7 @@ public class EndTransaction extends SourceAccessService implements Serializable 
         }
 
         boolean errorOccurred = ctx.isErrorExist();
+        Object constantExecutors = ctx.getContextParam("$constant_executor");
 
         for (String executorName : executorNames) {
             if (targetSourceName != null) {
@@ -77,8 +78,10 @@ public class EndTransaction extends SourceAccessService implements Serializable 
                 }
             }
 
-            if (executorName.equals(ctx.getContextParam("$constant_executor")))
-                continue;
+            if (constantExecutors instanceof Set) {
+                if ( ((Set) constantExecutors).contains(executorName) )
+                    continue;
+            }
 
             TransactionContext txContext = txContextMap.get(executorName);
             if (txContext == null) {
