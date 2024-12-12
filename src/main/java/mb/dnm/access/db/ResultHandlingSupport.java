@@ -9,9 +9,7 @@ import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 //<!>ResultHandlingSupport 를 static 한 객체로 사용하지 말 것
 
@@ -54,7 +52,10 @@ public class ResultHandlingSupport implements Serializable {
 
     private int executeInternal() {
         int fetched = resultSetBuffer.size();
+
         if (resultHandlingProcessor != null) {
+            //nested ResultHandling 을 위해 constantExecutors 를 Set 으로 정의
+            Set<String> executorNames = null;
             try {
                 context.addContextParam(fetchedInputName, resultSetBuffer);
                 //ResultHandlingSupport 에서 사용되는 IterationGroup의 Input 과 IterationInputName 을 fetchedInputName으로 강제하였음
@@ -72,14 +73,31 @@ public class ResultHandlingSupport implements Serializable {
                 context.setCurrentErrorDynamicCodeOrder(currentErrorDynamicCodeOrder);
 
                 context.addContextParam("$fetchSize", fetchSize);
-                context.addContextParam("$constant_executor", executorName);
+
+                Object constantExecutors = context.getContextParam("$constant_executor");
+
+
+                if (constantExecutors instanceof Set) {
+                    executorNames = (Set<String>) constantExecutors;
+                } else {
+                    executorNames = new LinkedHashSet<>();
+                }
+                executorNames.add(executorName);
+                context.addContextParam("$constant_executor", executorNames);
+                //context.addContextParam("$constant_executor", executorName);
+
                 context.addContextParam("$total_iter_position", totalIterPosition);
                 resultHandlingProcessor.process(context);
                 totalIterPosition = (Integer) context.getContextParam("$total_iter_position");
             } catch (Throwable t) {
                 throw new RuntimeException(t);
             } finally {
-                context.deleteContextParam("$constant_executor");
+                if (executorNames != null) {
+                    executorNames.remove(executorName);
+                    if (executorNames.isEmpty()) {
+                        context.deleteContextParam("$constant_executor");
+                    }
+                }
             }
             return fetched;
         } else {
