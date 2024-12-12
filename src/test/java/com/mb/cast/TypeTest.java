@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Slf4j
 public class TypeTest {
@@ -41,5 +43,15 @@ public class TypeTest {
     @Test
     public void null_test() {
         log.info("{}", "null".equals(null));
+    }
+
+    @Test
+    public void set_test() {
+        Set set = new LinkedHashSet<String>();
+        set.add("asd");
+        log.info(">{}", set.contains("asd"));
+        log.info(">{}", set.contains(1));
+        log.info(">{}", set.contains(1L));
+        log.info(">{}", set.contains(null));
     }
 }
