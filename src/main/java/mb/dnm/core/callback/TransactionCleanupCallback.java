@@ -49,8 +49,10 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
 
                 /*if (executorName.equals(ctx.getContextParam("$constant_executor")))
                     continue;*/
-                if (constantExecutors.contains(executorName))
+                if (constantExecutors.contains(executorName)) {
+                    log.debug("[{}]Constant executor '{}' detected. Passing cleaning up", ctx.getTxId(), executorName);
                     continue;
+                }
 
                 TransactionContext txCtx = entry.getValue();
                 TransactionStatus txStatus = txCtx.getTransactionStatus();

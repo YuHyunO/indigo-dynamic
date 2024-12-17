@@ -94,6 +94,7 @@ public class ResultHandlingSupport implements Serializable {
             } finally {
                 if (executorNames != null) {
                     executorNames.remove(executorName);
+                    log.debug("[{}]Removed constant executor '{}'", context.getTxId(), executorName);
                     if (executorNames.isEmpty()) {
                         context.deleteContextParam("$constant_executor");
                     }

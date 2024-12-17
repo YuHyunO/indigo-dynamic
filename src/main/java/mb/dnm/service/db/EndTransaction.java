@@ -99,7 +99,9 @@ public class EndTransaction extends SourceAccessService implements Serializable 
             TransactionContext.LastTransactionStatus lastTxStatus = txContext.getLastTxStatus();
             DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
             Object key = txManager.getDataSource();
-            log.trace("[{}]Retrieved the transaction manager [{}] managing the dataSource [{}]. Current executor name is [{}]", txId, txManager, key, executorName);
+            if (log.isTraceEnabled()) {
+                log.trace("[{}]Retrieved the transaction manager [{}] managing the dataSource [{}]. Current executor name is [{}]", txId, txManager, key, executorName);
+            }
             ConnectionHolder conHolder = null;
             Connection connection = null;
             try {
@@ -124,7 +126,9 @@ public class EndTransaction extends SourceAccessService implements Serializable 
                 }
 
                 String currentTxName = TransactionSynchronizationManager.getCurrentTransactionName();
-                log.trace("[{}]The current transaction name is [{}]", txId, currentTxName);
+                if (log.isTraceEnabled()) {
+                    log.trace("[{}]The current transaction name is [{}]", txId, currentTxName);
+                }
                 if (!(currentTxName != null
                         && currentTxName.equals(executorName))) {
                     DefaultTransactionDefinition def = txContext.getTransactionDefinition();
@@ -145,11 +149,15 @@ public class EndTransaction extends SourceAccessService implements Serializable 
                     if (synchs != null) {
                         for (TransactionSynchronization txSync : lastTxStatus.getSynchronizations()) {
                             TransactionSynchronizationManager.registerSynchronization(txSync);
-                            log.trace("[{}]Registering synchronization [{}]", txId, txSync);
+                            if (log.isTraceEnabled()) {
+                                log.trace("[{}]Registering synchronization [{}]", txId, txSync);
+                            }
                         }
                     }
                 }
-                log.trace("[{}]\n{}", txId, lastTxStatus.toString());
+                if (log.isTraceEnabled()) {
+                    log.trace("[{}]\n{}", txId, lastTxStatus.toString());
+                }
                 TransactionSynchronizationManager.setActualTransactionActive(true);
 
                 if (errorOccurred) {
@@ -172,7 +180,9 @@ public class EndTransaction extends SourceAccessService implements Serializable 
                 if (key != null) {
                     Object unboundResource = TransactionSynchronizationManager.unbindResourceIfPossible(key);
                     if (unboundResource != null) {
-                        log.trace("[{}]The resource[{}] is removed by the '{}' service", txId, unboundResource, this.getClass().getSimpleName());
+                        if (log.isTraceEnabled()) {
+                            log.trace("[{}]The resource[{}] is removed by the '{}' service", txId, unboundResource, this.getClass().getSimpleName());
+                        }
                     }
                 }
 

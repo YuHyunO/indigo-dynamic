@@ -1,7 +1,7 @@
 package mb.dnm.access.db;
 
-import mb.dnm.core.context.TransactionContext;
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.core.context.TransactionContext;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.jdbc.datasource.ConnectionHandle;
@@ -10,7 +10,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -19,8 +18,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -121,12 +118,59 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
                 txDef.setName(executorName);
                 txDef.setTimeout(txCtx.getTimeoutSecond());
                 txStatus = txManager.getTransaction(txDef);
+
+                if (txCtx.isConstant()) {
+                    lastTxStatus = txCtx.getLastTxStatus();
+                }
                 log.debug("Executing query with id '{}'", args[1]);
                 Object rtVal = methodProxy.invoke(target, args);
 
                 if (!txStatus.isCompleted()) {
                     if (txCtx.isConstant()) {
-                        txStatus = txManager.getTransaction(txDef);
+                        Object key = txManager.getDataSource();
+                        ConnectionHolder conHolder = null;
+                        Connection connection = null;
+                        Object conHolderObj = TransactionSynchronizationManager.getResource(key);
+                        if (conHolderObj == null) {
+                            log.debug("The ConnectionHolder object of the executor [{}] is null. No transaction to commit.", executorName);
+                            return rtVal;
+                        }
+                        conHolder = (ConnectionHolder) conHolderObj;
+                        ConnectionHandle conHandle = conHolder.getConnectionHandle();
+                        if (conHandle == null) {
+                            log.debug("There is no JDBC connection of the executor[{}] to release", executorName);
+                            return rtVal;
+                        }
+                        connection = conHandle.getConnection();
+                        if (connection.isClosed()) {
+                            log.debug("The JDBC connection of the executor[{}] is already closed", executorName);
+                            return rtVal;
+                        }
+                        String currentTxName = TransactionSynchronizationManager.getCurrentTransactionName();
+                        log.debug("The current transaction name is [{}]", currentTxName);
+                        if (!(currentTxName != null
+                                && currentTxName.equals(executorName))) {
+                            if (lastTxStatus.isInitialized()) {
+                                TransactionSynchronizationManager.setCurrentTransactionName(lastTxStatus.getCurrentTransactionName());
+                                TransactionSynchronizationManager.setCurrentTransactionReadOnly(lastTxStatus.isCurrentTransactionReadOnly());
+                                TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(lastTxStatus.getCurrentTransactionIsolationLevel());
+                            } else {
+                                TransactionSynchronizationManager.setCurrentTransactionName(txDef.getName());
+                                TransactionSynchronizationManager.setCurrentTransactionReadOnly(txDef.isReadOnly());
+                                TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(txDef.getIsolationLevel());
+                            }
+                            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                                TransactionSynchronizationManager.clearSynchronization();
+                            }
+                            TransactionSynchronizationManager.initSynchronization();
+                            List<TransactionSynchronization> synchs = lastTxStatus.getSynchronizations();
+                            if (synchs != null) {
+                                for (TransactionSynchronization txSync : lastTxStatus.getSynchronizations()) {
+                                    TransactionSynchronizationManager.registerSynchronization(txSync);
+                                }
+                            }
+                        }
+                        TransactionSynchronizationManager.setActualTransactionActive(true);
                     }
                     log.debug("Committing non group transaction '{}'", executorName);
                     txManager.commit(txStatus);
