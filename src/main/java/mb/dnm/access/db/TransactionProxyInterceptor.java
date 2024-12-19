@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  *
- * 어댑터 자체적으로 Transaction을 관리하기 위한 클래스
+ * Transaction 을 관리하기 위한 클래스
  * <br>
  * <code>QueryExecutor</code> 의 <code>do*(**)</code> 메소드와 관련해서만 proxy 로 실행됨
  * 
@@ -47,8 +47,8 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
     @Override
     public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         String methodName = method.getName();
+
         if (!methodName.startsWith("do")) {
-            log.debug("Executing query with id '{}'", args[1]);
             return methodProxy.invoke(target, args);
         }
 
@@ -119,9 +119,9 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
                 txDef.setTimeout(txCtx.getTimeoutSecond());
                 txStatus = txManager.getTransaction(txDef);
 
-                if (txCtx.isConstant()) {
-                    lastTxStatus = txCtx.getLastTxStatus();
-                }
+                txCtx.setLastTransactionStatus();
+                lastTxStatus = txCtx.getLastTxStatus();
+
                 log.debug("Executing query with id '{}'", args[1]);
                 Object rtVal = methodProxy.invoke(target, args);
 
@@ -148,8 +148,7 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
                         }
                         String currentTxName = TransactionSynchronizationManager.getCurrentTransactionName();
                         log.debug("The current transaction name is [{}]", currentTxName);
-                        if (!(currentTxName != null
-                                && currentTxName.equals(executorName))) {
+                        if (!(executorName.equals(currentTxName))) {
                             if (lastTxStatus.isInitialized()) {
                                 TransactionSynchronizationManager.setCurrentTransactionName(lastTxStatus.getCurrentTransactionName());
                                 TransactionSynchronizationManager.setCurrentTransactionReadOnly(lastTxStatus.isCurrentTransactionReadOnly());

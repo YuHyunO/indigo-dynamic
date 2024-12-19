@@ -1,9 +1,11 @@
 package mb.dnm.core.callback;
 
 import mb.dnm.access.db.DataSourceProvider;
+import mb.dnm.access.db.QueryExecutor;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.core.context.TransactionContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.jdbc.datasource.ConnectionHandle;
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -13,6 +15,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.*;
 
@@ -31,7 +34,7 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
     @Override
     public void afterProcess(ServiceContext ctx) {
         Map<String, TransactionContext> txCtxMap = ctx.getTransactionContextMap();
-
+        String txId = ctx.getTxId();
         boolean errorExist = ctx.isErrorExist();
 
         ConnectionHolder conHolder = null;
@@ -162,14 +165,38 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
             }
 
             Map<Object, Object> resourceMap = TransactionSynchronizationManager.getResourceMap();
+            List<Object> doNotUnbindResources = new ArrayList<>();
+
+            for (Object executor : constantExecutors) {
+                String executorName = String.valueOf(executor);
+                QueryExecutor queryExecutor = DataSourceProvider.access().getExecutor(executorName);
+                if (queryExecutor == null)
+                    continue;
+
+                Object doNotUnbindKey1 = queryExecutor.getSqlSessionFactory();
+                doNotUnbindResources.add(doNotUnbindKey1);
+
+                DataSourceTransactionManager txManager = DataSourceProvider.access().getTransactionManager(executorName);
+                if (txManager != null) {
+                    Object doNotUnbindKey2 = txManager.getDataSource();
+                    if (doNotUnbindKey2 != null) {
+                        doNotUnbindResources.add(doNotUnbindKey2);
+                    }
+                }
+            }
+
             if (resourceMap != null) {
                 List<Object> keys = new ArrayList<>(resourceMap.keySet());
                 for (Object key : keys) {
+                    if (key != null && doNotUnbindResources.contains(key)) {
+                        log.debug("[{}]Resource[{}] is constant. Keep the resource.", txId, key);
+                        continue;
+                    }
                     TransactionSynchronizationManager.unbindResourceIfPossible(key);
                 }
             }
         } catch (Exception e) {
-            log.error("[{}]", ctx.getTxId(), e);
+            log.error("[{}]", txId, e);
         }
     }
 
