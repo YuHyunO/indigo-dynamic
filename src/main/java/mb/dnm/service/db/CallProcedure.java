@@ -35,13 +35,17 @@ import java.util.*;
 public class CallProcedure extends ParameterAssignableService implements Serializable {
     private static final long serialVersionUID = 3712270692445286154L;
     private boolean errorQueryMode = false;
+    private String queryId;
 
     @Override
     public void process(ServiceContext ctx) {
         //(1) Get QueryMap and QueryExecutor.
         QueryMap queryMap = null;
 
-        if (errorQueryMode) {
+        if (queryId != null) {
+            queryMap = ctx.getQueryMap(queryId);
+
+        } if (errorQueryMode) {
             if (!ctx.hasMoreErrorQueryMaps()) {
                 throw new InvalidServiceConfigurationException(this.getClass(), "No more error query found in the query sequence queue");
             }

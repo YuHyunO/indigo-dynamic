@@ -44,6 +44,7 @@ public class Select extends ParameterAssignableService implements Serializable {
     private boolean errorQueryMode = false;
     private boolean handleResultSet = false;
     private ResultHandlingSupportFactory resultHandlingSupportFactory;
+    private String queryId;
 
     @Override
     public void process(ServiceContext ctx) {
@@ -51,7 +52,10 @@ public class Select extends ParameterAssignableService implements Serializable {
         //(1) Get QueryMap and QueryExecutor.
         QueryMap queryMap = null;
 
-        if (errorQueryMode) {
+        if (queryId != null) {
+            queryMap = ctx.getQueryMap(queryId);
+
+        } if (errorQueryMode) {
             if (!ctx.hasMoreErrorQueryMaps()) {
                 throw new InvalidServiceConfigurationException(this.getClass(), "No more error query found in the query sequence queue");
             }

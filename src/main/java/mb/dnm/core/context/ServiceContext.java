@@ -263,6 +263,39 @@ public class ServiceContext implements Serializable {
         return false;
     }
 
+    public QueryMap getQueryMap(String id) {
+        String[] querySequence = info.getQuerySequence();
+        if (querySequence == null) {
+            throw new NoSuchElementException("Query sequence is null");
+        }
+
+        if (id == null) {
+            throw new NullPointerException("The parameter 'queryId' must not be null.");
+        }
+
+        String query = null;
+        String checkId = "." + id.replace(" ", "");
+        for (String q : querySequence) {
+            if (q.endsWith(checkId)) {
+                query = q;
+                break;
+            }
+        }
+        if (query == null) {
+            throw new NoSuchElementException("There is no query with id " + id);
+        }
+
+        int executorNameIdx = query.indexOf('$');
+        String executorName = query.substring(0, executorNameIdx);
+        String queryId = query.substring(executorNameIdx + 1);
+
+        QueryMap qmap = new QueryMap(executorName, queryId);
+        qmap.setTimeoutSecond(info.getTxTimeoutSecond());
+        addTransactionContext(qmap);
+
+        return qmap;
+    }
+
     public QueryMap nextQueryMap() {
         String[] querySequence = info.getQuerySequence();
         if (querySequence == null) {
@@ -283,7 +316,8 @@ public class ServiceContext implements Serializable {
         qmap.setTimeoutSecond(info.getTxTimeoutSecond());
         addTransactionContext(qmap);
 
-        return new QueryMap(executorName, queryId);
+        return qmap;
+        //return new QueryMap(executorName, queryId);
     }
 
     public boolean hasMoreErrorQueryMaps() {
@@ -314,7 +348,8 @@ public class ServiceContext implements Serializable {
         qmap.setTimeoutSecond(info.getTxTimeoutSecond());
         addTransactionContext(qmap);
 
-        return new QueryMap(executorName, queryId);
+        return qmap;
+        //return new QueryMap(executorName, queryId);
     }
 
     void addTransactionContext(QueryMap queryMap) {

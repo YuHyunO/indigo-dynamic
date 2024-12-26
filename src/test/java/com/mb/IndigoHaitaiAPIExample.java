@@ -69,18 +69,22 @@ public class IndigoHaitaiAPIExample {
         conn.setConnectTimeout(connectTimeout);
         conn.setReadTimeout(readTimeout);
 
-        if (requestBody != null && !requestBody.isEmpty()) {
-            try (BufferedOutputStream bos
-                         = new BufferedOutputStream(conn.getOutputStream())) {
-                bos.write(requestBody.getBytes());
-            } catch (IOException ie) {
-                throw ie;
+        try {
+            if (requestBody != null && !requestBody.isEmpty()) {
+                try (BufferedOutputStream bos
+                             = new BufferedOutputStream(conn.getOutputStream())) {
+                    bos.write(requestBody.getBytes());
+                } catch (IOException ie) {
+                    throw ie;
+                }
+            } else {
+                conn.connect();
             }
-        } else {
-            conn.connect();
-        }
 
-        return readResponse(conn);
+            return readResponse(conn);
+        } finally {
+            conn.disconnect();
+        }
     }
 
     private static String readResponse(HttpURLConnection conn) throws IOException {

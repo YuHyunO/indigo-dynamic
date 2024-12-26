@@ -39,13 +39,17 @@ import java.util.Set;
 public class Update extends ParameterAssignableService implements Serializable {
     private static final long serialVersionUID = -7949550931817011848L;
     private boolean errorQueryMode = false;
+    private String queryId;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         //(1) Get QueryMap and QueryExecutor.
         QueryMap queryMap = null;
 
-        if (errorQueryMode) {
+        if (queryId != null) {
+            queryMap = ctx.getQueryMap(queryId);
+
+        } if (errorQueryMode) {
             if (!ctx.hasMoreErrorQueryMaps()) {
                 throw new InvalidServiceConfigurationException(this.getClass(), "No more error query found in the query sequence queue");
             }

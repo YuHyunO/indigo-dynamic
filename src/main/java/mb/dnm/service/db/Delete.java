@@ -40,13 +40,17 @@ public class Delete extends ParameterAssignableService implements Serializable {
 
     private static final long serialVersionUID = -1231931765629075941L;
     private boolean errorQueryMode = false;
+    private String queryId;
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         //(1) Get QueryMap and QueryExecutor.
         QueryMap queryMap = null;
 
-        if (errorQueryMode) {
+        if (queryId != null) {
+            queryMap = ctx.getQueryMap(queryId);
+
+        } if (errorQueryMode) {
             if (!ctx.hasMoreErrorQueryMaps()) {
                 throw new InvalidServiceConfigurationException(this.getClass(), "No more error query found in the query sequence queue");
             }

@@ -43,13 +43,17 @@ import java.util.Set;
 public class Fetch extends ParameterAssignableService implements Serializable {
     private static final long serialVersionUID = 5622752435835680706L;
     private boolean errorQueryMode = false;
+    private String queryId;
 
     @Override
     public void process(ServiceContext ctx) {
         //(1) Get QueryMap and QueryExecutor.
         QueryMap queryMap = null;
 
-        if (errorQueryMode) {
+        if (queryId != null) {
+            queryMap = ctx.getQueryMap(queryId);
+
+        } if (errorQueryMode) {
             if (!ctx.hasMoreErrorQueryMaps()) {
                 throw new InvalidServiceConfigurationException(this.getClass(), "No more error query found in the query sequence queue");
             }

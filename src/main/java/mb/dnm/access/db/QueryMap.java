@@ -20,5 +20,13 @@ public class QueryMap implements Serializable {
         this.timeoutSecond = timeoutSecond;
     }
 
-
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("QueryMap{");
+        sb.append("executorName='").append(executorName).append('\'');
+        sb.append(", queryId='").append(queryId).append('\'');
+        sb.append(", timeoutSecond=").append(timeoutSecond);
+        sb.append('}');
+        return sb.toString();
+    }
 }

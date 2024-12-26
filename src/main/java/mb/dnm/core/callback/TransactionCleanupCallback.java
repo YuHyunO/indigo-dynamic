@@ -1,21 +1,18 @@
 package mb.dnm.core.callback;
 
+import lombok.extern.slf4j.Slf4j;
 import mb.dnm.access.db.DataSourceProvider;
 import mb.dnm.access.db.QueryExecutor;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.core.context.TransactionContext;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.jdbc.datasource.ConnectionHandle;
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.*;
 
@@ -189,7 +186,7 @@ public class TransactionCleanupCallback implements AfterProcessCallback {
                 List<Object> keys = new ArrayList<>(resourceMap.keySet());
                 for (Object key : keys) {
                     if (key != null && doNotUnbindResources.contains(key)) {
-                        log.debug("[{}]Resource[{}] is constant. Keep the resource.", txId, key);
+                        log.debug("[{}]The resource[{}] is constant. Keep the resource.", txId, key);
                         continue;
                     }
                     TransactionSynchronizationManager.unbindResourceIfPossible(key);
