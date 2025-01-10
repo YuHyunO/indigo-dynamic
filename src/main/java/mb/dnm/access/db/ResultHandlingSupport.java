@@ -11,8 +11,12 @@ import org.apache.ibatis.session.ResultHandler;
 import java.io.Serializable;
 import java.util.*;
 
-//<!>ResultHandlingSupport 를 static 한 객체로 사용하지 말 것
 
+/**
+ * The type Result handling support.
+ *
+ * @author Yuhyun O
+ */
 @Slf4j
 @Getter
 public class ResultHandlingSupport implements Serializable {
@@ -39,6 +43,11 @@ public class ResultHandlingSupport implements Serializable {
     private String fetchedInputName = "$RESULT_HANDLING_BUFFER";
     private IterationGroup resultHandlingProcessor;
 
+    /**
+     * Instantiates a new Result handling support.
+     *
+     * @param context the context
+     */
     ResultHandlingSupport(ServiceContext context) {
         this.context = context;
         this.currentQueryOrder = context.getCurrentQueryOrder();
@@ -106,6 +115,11 @@ public class ResultHandlingSupport implements Serializable {
         }
     }
 
+    /**
+     * Fill result.
+     *
+     * @param resultContext the result context
+     */
     void fillResult(ResultContext<? extends Map<String, Object>> resultContext) {
         if (currentBufferSize >= fetchSize) {
             throw new IllegalStateException("Result buffer is full. Please call flushBuffer(ServiceContext) first.");
@@ -116,10 +130,20 @@ public class ResultHandlingSupport implements Serializable {
         ++currentBufferSize;
     }
 
+    /**
+     * Is buffer full boolean.
+     *
+     * @return the boolean
+     */
     boolean isBufferFull() {
         return currentBufferSize == fetchSize;
     }
 
+    /**
+     * Flush buffer int.
+     *
+     * @return the int
+     */
     int flushBuffer() {
         try {
             if (!resultSetBuffer.isEmpty()) {
@@ -136,6 +160,11 @@ public class ResultHandlingSupport implements Serializable {
         }
     }
 
+    /**
+     * Sets fetch size.
+     *
+     * @param fetchSize the fetch size
+     */
     void setFetchSize(int fetchSize) {
         if (fetchSize < 1) {
             fetchSize = 1;
@@ -143,10 +172,18 @@ public class ResultHandlingSupport implements Serializable {
         this.fetchSize = fetchSize;
     }
 
+    /**
+     * Gets handler.
+     *
+     * @return the handler
+     */
     ResultHandler<Map<String, Object>> getHandler() {
         return new BufferedResultHandler();
     }
 
+    /**
+     * The type Buffered result handler.
+     */
     class BufferedResultHandler implements ResultHandler<Map<String, Object>> {
 
         @Override
@@ -163,6 +200,11 @@ public class ResultHandlingSupport implements Serializable {
 
     }
 
+    /**
+     * Sets result handling processor.
+     *
+     * @param resultHandlingProcessor the result handling processor
+     */
     void setResultHandlingProcessor(IterationGroup resultHandlingProcessor) {
         if (resultHandlingProcessor == null) {
             return;

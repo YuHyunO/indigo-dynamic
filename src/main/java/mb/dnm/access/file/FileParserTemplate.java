@@ -4,6 +4,9 @@ import lombok.Getter;
 
 import java.io.Serializable;
 
+/**
+ * The type File parser template.
+ */
 @Getter
 public class FileParserTemplate implements Serializable {
     private static final long serialVersionUID = -8496697747879161631L;
@@ -17,6 +20,19 @@ public class FileParserTemplate implements Serializable {
     private final boolean headerExist;
     private final boolean handleBinaryData;
 
+    /**
+     * Instantiates a new File parser template.
+     *
+     * @param recordSeparator             the record separator
+     * @param delimiter                   the delimiter
+     * @param qualifier                   the qualifier
+     * @param replacementOfNullValue      the replacement of null value
+     * @param replacementOfEmptyValue     the replacement of empty value
+     * @param replacementOfLineFeed       the replacement of line feed
+     * @param replacementOfCarriageReturn the replacement of carriage return
+     * @param headerExist                 the header exist
+     * @param handleBinaryData            the handle binary data
+     */
     public FileParserTemplate(String recordSeparator, String delimiter, String qualifier,
                               String replacementOfNullValue, String replacementOfEmptyValue,
                               String replacementOfLineFeed, String replacementOfCarriageReturn,

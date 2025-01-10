@@ -41,6 +41,123 @@
             </list>
         </entry>
 
+        <!-- DB to DB [Select-Insert-Update]-->
+        <entry key="$P_DB2DB_Sel_Ins_Upd">
+            <list>
+                <description>DB to DB 프로세스[Select-Insert-Update]</description>
+                <bean class="mb.dnm.service.db.Select">
+                    <description>Source DB 에서 연계 대상 데이터를 조회한다.</description>
+                    <property name="output"             value="data_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <description>Source DB 에서 조회된 데이터가 없으면 프로세스를 종료한다.</description>
+                    <property name="input"              value="data_list"/>
+                    <property name="output"             value="no_logging_flag"/>
+                    <property name="outputValue"        value="Y"/>
+                </bean>
+                <bean class="mb.dnm.service.general.GetSize">
+                    <description>Source DB 에서 조회한 데이터의 개수를 확인한다.</description>
+                    <property name="input"              value="data_list"/>
+                    <property name="output"             value="tx_count"/>
+                </bean>
+                <bean class="mb.dnm.service.db.StartTransaction"/>
+                <bean class="mb.dnm.service.db.Insert">
+                    <property name="description"        value="Target DB 에 데이터를 Insert 한다."/>
+                    <property name="input"              value="data_list"/>
+                </bean>
+                <bean class="mb.dnm.service.db.Update">
+                    <property name="description"        value="Source DB 에 성공 결과를 Update 한다."/>
+                    <property name="input"              value="data_list"/>
+                </bean>
+                <bean class="mb.dnm.service.db.EndTransaction"/>
+            </list>
+        </entry>
+
+        <!-- DB to DB [Sel-Mapping-Ins-Upd]-->
+        <entry key="$P_DB2DB_Sel_Mapping_Ins_Upd">
+            <list>
+                <description>DB to DB 프로세스[Select-Mapping-Insert-Update]</description>
+                <bean class="mb.dnm.service.db.Select">
+                    <description>Source DB 에서 연계 대상 데이터를 조회한다.</description>
+                    <property name="output"             value="data_list"/>
+                </bean>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <description>Source DB 에서 조회된 데이터가 없으면 프로세스를 종료한다.</description>
+                    <property name="input"              value="data_list"/>
+                    <property name="output"             value="no_logging_flag"/>
+                    <property name="outputValue"        value="Y"/>
+                </bean>
+                <bean class="mb.dnm.service.general.GetSize">
+                    <description>Source DB 에서 조회한 데이터의 개수를 확인한다.</description>
+                    <property name="input"              value="data_list"/>
+                    <property name="output"             value="tx_count"/>
+                </bean>
+                <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode">
+                    <description>data_list 를 변환한다.</description>
+                    <property name="codeId"             value="@{if_id}.MAP_DATA"/>
+                </bean>
+                <bean class="mb.dnm.service.db.StartTransaction"/>
+                <bean class="mb.dnm.service.db.Insert">
+                    <property name="description"        value="Target DB 에 데이터를 Insert 한다."/>
+                    <property name="input"              value="data_list"/>
+                </bean>
+                <bean class="mb.dnm.service.db.Update">
+                    <property name="description"        value="Source DB 에 성공 결과를 Update 한다."/>
+                    <property name="input"              value="data_list"/>
+                </bean>
+                <bean class="mb.dnm.service.db.EndTransaction"/>
+            </list>
+        </entry>
+
+        <!-- DB to DB [Sel(Large)-Ins-Upd]-->
+        <entry key="$P_DB2DB_Sel_Ins_Upd_Large">
+            <list>
+                <description>DB to DB 프로세스[Select(Large)-Insert-Update]</description>
+                <bean class="mb.dnm.service.db.StartTransaction"/>
+                <bean class="mb.dnm.service.db.Select">
+                    <property name="output"             value="tx_count"/>
+                    <property name="handleResultSet"    value="true"/>
+                    <property name="resultHandlingSupportFactory">
+                        <bean class="mb.dnm.access.db.ResultHandlingSupportFactory">
+                            <description>1000건 씩 데이터를 처리한다.</description>
+                            <property name="fetchedInputName"   				value="data_list"/>
+                            <property name="fetchSize"          				value="1000"/>
+                            <property name="enforcePassTransactionToContexts"   value="true"/>
+                            <property name="resultHandlingProcessor">
+                                <bean class="mb.dnm.service.general.IterationGroup">
+                                    <property name="createNewContextEachLoop"       value="false"/>
+                                    <property name="services">
+                                        <list>
+                                            <bean class="mb.dnm.service.db.Insert">
+                                                <property name="description"        value="Target DB 에 데이터를 Insert 한다."/>
+                                                <property name="input"              value="data_list"/>
+                                            </bean>
+                                            <bean class="mb.dnm.service.db.Update">
+                                                <property name="description"        value="Source DB 에 성공 결과를 Update 한다."/>
+                                                <property name="input"              value="data_list"/>
+                                            </bean>
+                                        </list>
+                                    </property>
+                                </bean>
+                            </property>
+                        </bean>
+                    </property>
+                </bean>
+                <bean class="mb.dnm.service.db.Commit"/>
+                <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+                    <property name="input"              value="tx_count"/>
+                    <property name="output"             value="no_logging_flag"/>
+                    <property name="outputValue"        value="Y"/>
+                </bean>
+            </list>
+        </entry>
+
+        <!-- DB to DB [Sel(Large)-Mapping-Ins-Upd]-->
+
+        <!-- DB to DB [Sel(Master)-Sel(Detail)-Ins-Upd]-->
+
+        <!-- DB to DB [Sel(Master)-Sel(Detail)-Mapping-Ins-Upd]-->
+
 
         <entry key="INTERFACE_CONTROL">
             <list>

@@ -103,6 +103,13 @@ public class Update extends ParameterAssignableService implements Serializable {
         }
     }
 
+    public void setQueryId(String queryId) {
+        if (queryId == null)
+            return;
+        if (queryId.trim().isEmpty())
+            return;
+        this.queryId = queryId;
+    }
 
     @Override
     public void setExceptionHandlingMode(boolean exceptionHandlingMode) {

@@ -88,4 +88,12 @@ public class Fetch extends ParameterAssignableService implements Serializable {
         this.errorQueryMode = exceptionHandlingMode;
         this.exceptionHandlingMode = exceptionHandlingMode;
     }
+
+    public void setQueryId(String queryId) {
+        if (queryId == null)
+            return;
+        if (queryId.trim().isEmpty())
+            return;
+        this.queryId = queryId;
+    }
 }

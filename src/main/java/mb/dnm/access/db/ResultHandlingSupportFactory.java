@@ -13,6 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * The type Result handling support factory.
+ *
+ * @author Yuhyun O
+ */
 @Slf4j
 @Getter @Setter
 public class ResultHandlingSupportFactory implements Serializable {
@@ -25,6 +31,12 @@ public class ResultHandlingSupportFactory implements Serializable {
     private IterationGroup resultHandlingProcessor;
     private boolean enforcePassTransactionToContexts = true;
 
+    /**
+     * Gets result handling support.
+     *
+     * @param ctx the ctx
+     * @return the result handling support
+     */
     public ResultHandlingSupport getResultHandlingSupport(ServiceContext ctx) {
         log.debug("Creating a new ResultHandlingSupport object[fetchSize: {}, fetchedInputName: {}]", fetchSize, fetchedInputName);
         ResultHandlingSupport support = new ResultHandlingSupport(ctx);

@@ -4,5 +4,8 @@
     <import resource="CONFIG_CORE.xml"/>
     <import resource="classpath:commons_configures.xml"/>
 
+    <import resource="classpath:config_CORE.xml"/>
+
+    <bean class="mb.dnm.dispatcher.SimpleDispatcher" id="SimpleDispatcher"/>
 
 </beans>

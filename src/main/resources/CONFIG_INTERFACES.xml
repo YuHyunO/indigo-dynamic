@@ -7,16 +7,29 @@
 
     <util:list id="interfaces">
 
-        <bean class="mb.dnm.storage.InterfaceInfo"  name="DB2DB default">
-            <property name="interfaceId"                 value="TEST"/>
-            <property name="interfaceName"               value="프로시저 테스트"/>
-            <property name="sourceCode"                  value="HAT"/>
-            <property name="targetCode"                  value="LOEX"/>
+        <bean class="mb.dnm.storage.InterfaceInfo"  name="DB2DB Sel-Ins-Upd">
+            <property name="interfaceId"                 value="?{인터페이스ID}"/>
+            <property name="interfaceName"               value="?{인터페이스명}"/>
+            <property name="sourceCode"                  value="?{송신시스템코드}"/>
+            <property name="targetCode"                  value="?{수신시스템코드}"/>
             <property name="loggingWhenNormal"           value="true"/>
             <property name="loggingWhenError"            value="true"/>
-            <property name="sourceAliases"               value="MQ:ESB"/>
-            <property name="querySequence"               value="DEV$RA0-STEP1_1433.CALL_T"/>
-            <property name="serviceId"                   value="$TEST"/>
+            <property name="querySequence"               value="?{송신DB템플릿명}$@{if_id}.SELECT, ?{수신DB템플릿명}$@{if_id}.INSERT, ?{송신DB템플릿명}$@{if_id}.SUCCESS_UPDATE"/>
+            <property name="errorDynamicCodeSequence"    value="COMMON.CHECK_ERROR_TYPE"/>
+            <property name="errorQuerySequence"          value="?{송신DB템플릿명}$@{if_id}.ERROR_UPDATE"/>
+            <property name="serviceId"                   value="$P_DB2DB_Sel_Ins_Upd"/>
+            <property name="errorHandlerId"              value="$EH_DB2DB"/>
+        </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo"  name="DB2DB Sel(Large)-Ins-Upd">
+            <property name="interfaceId"                 value="?{인터페이스ID}"/>
+            <property name="interfaceName"               value="?{인터페이스명}"/>
+            <property name="sourceCode"                  value="?{송신시스템코드}"/>
+            <property name="targetCode"                  value="?{수신시스템코드}"/>
+            <property name="loggingWhenNormal"           value="true"/>
+            <property name="loggingWhenError"            value="true"/>
+            <property name="querySequence"               value="?{송신DB템플릿명}$@{if_id}.SELECT, ?{수신DB템플릿명}$@{if_id}.INSERT, ?{송신DB템플릿명}$@{if_id}.SUCCESS_UPDATE"/>
+            <property name="serviceId"                   value="$P_DB2DB_Sel_Ins_Upd_Large"/>
         </bean>
 
         <bean class="mb.dnm.storage.InterfaceInfo">
@@ -27,6 +40,35 @@
             <property name="loggingWhenNormal"      value="false"/>
             <property name="loggingWhenError"       value="false"/>
             <property name="serviceId"              value="INTERFACE_CONTROL"/>
+        </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo" 	name="File2DB default">
+            <property name="activated"                  value="true"/>
+            <property name="controllerInterface"        value="true"/>
+            <property name="interfaceId"                value=""/>
+            <property name="interfaceName"              value=""/>
+            <property name="description"                value=""/>
+            <property name="frontHttpUrl"               value=""/>
+            <property name="frontHttpMethod"            value=""/>
+            <property name="sourceCode"                 value=""/>
+            <property name="targetCode"                 value=""/>
+            <property name="loggingWhenNormal"          value="true"/>
+            <property name="loggingWhenError"           value="true"/>
+            <property name="sourceAliases"              value="SRC:LTR_FTP, MQ:ESB"/>
+            <property name="querySequence"         	    value="LOEX$@{if_id}.INSERT"/>
+            <property name="errorQuerySequence"         value="LOEX$@{if_id}.INSERT"/>
+            <property name="dynamicCodeSequence"        value="@{if_id}.MAP_DATA"/>
+            <property name="errorDynamicCodeSequence"   value="@{if_id}.MAP_DATA"/>
+            <property name="serviceId"                  value="$P_FTP2DB_default"/>
+            <property name="errorHandlerId"             value="$P_FTP2DB_default"/>
+            <property name="fileTemplates">
+                <list>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"        value="LTR_FTP"/>
+
+                    </bean>
+                </list>
+            </property>
         </bean>
     </util:list>
 

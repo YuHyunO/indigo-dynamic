@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
  * <code>FileList</code> 탐색을 시작한 최상위 디렉터리 경로(baseDirectory)와 탐색한 파일/디렉터리 경로에 대한 결과를 담고있는 객체이다.<br>
  * 탐색을 시작한 최상위 디렉터리는 <code>setBaseDirectory(String)</code> 메소드와 <code>getBaseDirectory()</code> 메소드를 통해 값 지정과 값에 대한 접근이 가능하다.
  * <code>filiList</code> 는 탐색을 시작한 최상위 경로인 <code>baseDirectory</code> 를 제외한 파일 및 디렉터리의 경로를 담고있는 변수이다.
@@ -21,14 +20,18 @@ import java.util.List;
  *
  * @author Yuhyun O
  * @version 2024.09.15
- *
- * */
+ */
 @Setter @Getter
 public class FileList implements SizeCheckable, Iterable, Serializable {
     private static final long serialVersionUID = -5133279606054445225L;
     private String baseDirectory;
     private List<String> fileList;
 
+    /**
+     * Gets full file list.
+     *
+     * @return the full file list
+     */
     public List<String> getFullFileList() {
         if (fileList == null) {
             return fileList;

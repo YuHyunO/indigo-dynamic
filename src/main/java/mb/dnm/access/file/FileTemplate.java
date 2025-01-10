@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import mb.dnm.code.DataType;
 import mb.dnm.code.DirectoryType;
-import mb.dnm.code.FileContentType;
 import mb.dnm.code.FileType;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.storage.InterfaceInfo;
@@ -13,6 +12,51 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * File 인터페이스 관련 설정 정보(파일 경로/파일명 등)를 저장하는 객체이다.<br><br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ *&lt;bean class="mb.dnm.access.file.FileTemplate"&gt;
+ *	&lt;property name="templateName"        value="<span style="color: black; background-color: #FAF3D4;">Template 명</span>"/&gt;
+ *	&lt;property name="localSendDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="localReceiveDir"     value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="localTempDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="localSuccessDir"     value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="localErrorDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="localBackupDir"      value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="localMoveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="localCopyDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="localWriteDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="remoteSendDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="remoteReceiveDir"    value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="remoteTempDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="remoteSuccessDir"    value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="remoteErrorDir"      value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="remoteBackupDir"     value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="remoteMoveDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="remoteCopyDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="remoteWriteDir"      value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="fileNamePattern"     value="<span style="color: black; background-color: #FAF3D4;">파일명 패턴</span>"/&gt;
+ *	&lt;property name="type"                value="<span style="color: black; background-color: #FAF3D4;">파일 타입</span>"/&gt;
+ *	&lt;property name="dataType"            value="<span style="color: black; background-color: #FAF3D4;">파일 데이터 타입</span>"/&gt;
+ *	&lt;property name="charset"             value="<span style="color: black; background-color: #FAF3D4;">파일 인코딩</span>"/&gt;
+ *&lt;/bean&gt;
+ *</pre>
+ * <br><br>
+ * <i>Example</i>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ *&lt;bean class="mb.dnm.access.file.FileTemplate"&gt;
+ * 	&lt;property name="templateName"        value="LTR_FTP"/&gt;
+ * 	&lt;property name="remoteSendDir"       value="/rec/cur"/&gt;
+ * 	&lt;property name="remoteSuccessDir"    value="/rec/cur/succ/@{YYYYMMDD}"/&gt;
+ * 	&lt;property name="remoteErrorDir"      value="/rec/cur/err/@{YYYYMMDD}"/&gt;
+ * 	&lt;property name="localTempDir"        value="/app/indigo/FILE_WORK/LTR/@{if_id}"/&gt;
+ * 	&lt;property name="fileNamePattern"     value="RA0*"/&gt;
+ * 	&lt;property name="type"                value="FILE"/&gt;
+ * 	&lt;property name="dataType"            value="STRING"/&gt;
+ * 	&lt;property name="charset"             value="MS949"/&gt;
+ *&lt;/bean&gt;
+ *</pre>
+ */
 @Setter @Getter
 public class FileTemplate implements Serializable {
     private static final long serialVersionUID = -5683892050317874131L;
@@ -23,30 +67,88 @@ public class FileTemplate implements Serializable {
      * @see InterfaceInfo
      * @see mb.dnm.access.ftp.FTPSourceProvider
      * @see mb.dnm.access.ftp.FTPClientTemplate
+     * @see DirectoryType
      * */
     private String templateName; // FTP관련 서비스에서 사용하는 경우에는 FTPClientTemplate의 templateName 과 동일하게 작성
-
+    /**
+     * {@link DirectoryType#LOCAL_SEND}
+     * */
     private String localSendDir;
+    /**
+     {@link DirectoryType#LOCAL_RECEIVE}
+     * */
     private String localReceiveDir;
+    /**
+     {@link DirectoryType#LOCAL_TEMP}
+     * */
     private String localTempDir;
+    /**
+     {@link DirectoryType#LOCAL_SUCCESS}
+     * */
     private String localSuccessDir;
+    /**
+     {@link DirectoryType#LOCAL_ERROR}
+     * */
     private String localErrorDir;
+    /**
+     {@link DirectoryType#LOCAL_BACKUP}
+     * */
     private String localBackupDir;
+    /**
+     {@link DirectoryType#LOCAL_MOVE}
+     * */
     private String localMoveDir;
+    /**
+     {@link DirectoryType#LOCAL_COPY}
+     * */
     private String localCopyDir;
+    /**
+     {@link DirectoryType#LOCAL_WRITE}
+     * */
     private String localWriteDir;
-
+    /**
+     {@link DirectoryType#REMOTE_SEND}
+     * */
     private String remoteSendDir;
+    /**
+     {@link DirectoryType#REMOTE_RECEIVE}
+     * */
     private String remoteReceiveDir;
+    /**
+     {@link DirectoryType#REMOTE_TEMP}
+     * */
     private String remoteTempDir;
+    /**
+     {@link DirectoryType#REMOTE_SUCCESS}
+     * */
     private String remoteSuccessDir;
+    /**
+     {@link DirectoryType#REMOTE_ERROR}
+     * */
     private String remoteErrorDir;
+    /**
+     {@link DirectoryType#REMOTE_BACKUP}
+     * */
     private String remoteBackupDir;
+    /**
+     {@link DirectoryType#REMOTE_MOVE}
+     * */
     private String remoteMoveDir;
+    /**
+     {@link DirectoryType#REMOTE_COPY}
+     * */
     private String remoteCopyDir;
+    /**
+     {@link DirectoryType#REMOTE_WRITE}
+     * */
     private String remoteWriteDir;
 
     private String fileNamePattern = "*";
+    /**
+     {@link FileType#DIRECTORY}
+     {@link FileType#FILE}
+     {@link FileType#ALL}
+     * */
     private FileType type = FileType.ALL;
 
     /**
@@ -63,43 +165,292 @@ public class FileTemplate implements Serializable {
 
     private DataType dataType = DataType.BYTE_ARRAY;
 
+    /**
+     * {@code FileTemplate}에 설정된 파일명을 가져온다.<br><br>
+     *<pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *public String getFileName(ServiceContext ctx) {
+     *    if (fileName == null)
+     *        return null;
+     *    return fileName.replace("@{if_id}", ctx.getInterfaceId());
+     *}</pre>
+     * @param ctx the ctx({@link ServiceContext})
+     * @return the file name
+     */
     public String getFileName(ServiceContext ctx) {
         if (fileName == null)
             return null;
-        String tmpFileName = fileName.replace("@{if_id}", ctx.getInterfaceId());
-        //PlaceHolderMapper를 적용
-
-        return fileName;
+        return fileName.replace("@{if_id}", ctx.getInterfaceId());
     }
 
+    /**
+     * {@link DirectoryType#LOCAL_SEND} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="localSendDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param localSendDir the local send dir
+     * @see DirectoryType#LOCAL_SEND
+     */
+    public void setLocalSendDir(String localSendDir) {
+        this.localSendDir = localSendDir;
+    }
+
+    /**
+     * {@link DirectoryType#LOCAL_RECEIVE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="localReceiveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param localReceiveDir the local receive dir
+     * @see DirectoryType#LOCAL_RECEIVE
+     */
+    public void setLocalReceiveDir(String localReceiveDir) {
+        this.localReceiveDir = localReceiveDir;
+    }
+
+    /**
+     * {@link DirectoryType#LOCAL_TEMP} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="localTempDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param localTempDir the local temp dir
+     * @see DirectoryType#LOCAL_TEMP
+     */
+    public void setLocalTempDir(String localTempDir) {
+        this.localTempDir = localTempDir;
+    }
+
+    /**
+     * {@link DirectoryType#LOCAL_SUCCESS} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="localSuccessDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param localSuccessDir the local success dir
+     * @see DirectoryType#LOCAL_SUCCESS
+     */
+    public void setLocalSuccessDir(String localSuccessDir) {
+        this.localSuccessDir = localSuccessDir;
+    }
+
+    /**
+     * {@link DirectoryType#LOCAL_ERROR} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="localErrorDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param localErrorDir the local error dir
+     * @see DirectoryType#LOCAL_ERROR
+     */
+    public void setLocalErrorDir(String localErrorDir) {
+        this.localErrorDir = localErrorDir;
+    }
+
+    /**
+     * {@link DirectoryType#LOCAL_BACKUP} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="localBackupDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param localBackupDir the local backup dir
+     * @see DirectoryType#LOCAL_BACKUP
+     */
+    public void setLocalBackupDir(String localBackupDir) {
+        this.localBackupDir = localBackupDir;
+    }
+
+    /**
+     * {@link DirectoryType#LOCAL_MOVE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="localMoveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param localMoveDir the local move dir
+     * @see DirectoryType#LOCAL_MOVE
+     */
+    public void setLocalMoveDir(String localMoveDir) {
+        this.localMoveDir = localMoveDir;
+    }
+
+    /**
+     * {@link DirectoryType#LOCAL_COPY} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="localCopyDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param localCopyDir the local copy dir
+     * @see DirectoryType#LOCAL_COPY
+     */
+    public void setLocalCopyDir(String localCopyDir) {
+        this.localCopyDir = localCopyDir;
+    }
+
+    /**
+     * {@link DirectoryType#LOCAL_WRITE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="localWriteDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param localWriteDir the local write dir
+     * @see DirectoryType#LOCAL_WRITE
+     */
+    public void setLocalWriteDir(String localWriteDir) {
+        this.localWriteDir = localWriteDir;
+    }
+
+    /**
+     * {@link DirectoryType#REMOTE_SEND} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="remoteSendDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param remoteSendDir the remote send dir
+     * @see DirectoryType#REMOTE_SEND
+     */
+    public void setRemoteSendDir(String remoteSendDir) {
+        this.remoteSendDir = remoteSendDir;
+    }
+
+    /**
+     * {@link DirectoryType#REMOTE_RECEIVE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="remoteReceiveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param remoteReceiveDir the remote receive dir
+     * @see DirectoryType#REMOTE_RECEIVE
+     */
+    public void setRemoteReceiveDir(String remoteReceiveDir) {
+        this.remoteReceiveDir = remoteReceiveDir;
+    }
+
+    /**
+     * {@link DirectoryType#REMOTE_TEMP} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="remoteTempDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param remoteTempDir the remote temp dir
+     * @see DirectoryType#REMOTE_TEMP
+     */
+    public void setRemoteTempDir(String remoteTempDir) {
+        this.remoteTempDir = remoteTempDir;
+    }
+
+    /**
+     * {@link DirectoryType#REMOTE_SUCCESS} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="remoteSuccessDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param remoteSuccessDir the remote success dir
+     * @see DirectoryType#REMOTE_SUCCESS
+     */
+    public void setRemoteSuccessDir(String remoteSuccessDir) {
+        this.remoteSuccessDir = remoteSuccessDir;
+    }
+
+    /**
+     * {@link DirectoryType#REMOTE_ERROR} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="remoteErrorDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param remoteErrorDir the remote error dir
+     * @see DirectoryType#REMOTE_ERROR
+     */
+    public void setRemoteErrorDir(String remoteErrorDir) {
+        this.remoteErrorDir = remoteErrorDir;
+    }
+
+    /**
+     * {@link DirectoryType#REMOTE_BACKUP} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="remoteBackupDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param remoteBackupDir the remote backup dir
+     * @see DirectoryType#REMOTE_BACKUP
+     */
+    public void setRemoteBackupDir(String remoteBackupDir) {
+        this.remoteBackupDir = remoteBackupDir;
+    }
+
+    /**
+     * {@link DirectoryType#REMOTE_MOVE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="remoteMoveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param remoteMoveDir the remote move dir
+     * @see DirectoryType#REMOTE_MOVE
+     */
+    public void setRemoteMoveDir(String remoteMoveDir) {
+        this.remoteMoveDir = remoteMoveDir;
+    }
+
+    /**
+     * {@link DirectoryType#REMOTE_COPY} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="remoteCopyDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param remoteCopyDir the remote copy dir
+     * @see DirectoryType#REMOTE_COPY
+     */
+    public void setRemoteCopyDir(String remoteCopyDir) {
+        this.remoteCopyDir = remoteCopyDir;
+    }
+
+    /**
+     * {@link DirectoryType#REMOTE_WRITE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *&lt;property name="remoteWriteDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
+     * @param remoteWriteDir the remote write dir
+     * @see DirectoryType#REMOTE_WRITE
+     */
+    public void setRemoteWriteDir(String remoteWriteDir) {
+        this.remoteWriteDir = remoteWriteDir;
+    }
+
+    /**
+     * 파일의 인코딩을 지정한다.<br><br>
+     *<pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *public void setCharset(String charset) {
+     *    this.charset = Charset.forName(charset);
+     *}</pre>
+     * @param charset the charset
+     */
     public void setCharset(String charset) {
         this.charset = Charset.forName(charset);
     }
 
+    /**
+     * {@link DirectoryType}을 사용하여 매핑되는 디렉터리 경로를 가져온다.<br><br>
+     *<pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *public String getFilePath(DirectoryType dirType) {
+     *    switch (dirType) {
+     *        case LOCAL_SEND: return getLocalSendDir();
+     *        case LOCAL_RECEIVE: return getLocalReceiveDir();
+     *        case LOCAL_TEMP: return getLocalTempDir();
+     *        case LOCAL_SUCCESS: return getLocalSuccessDir();
+     *        case LOCAL_ERROR: return getLocalErrorDir();
+     *        case LOCAL_BACKUP: return getLocalBackupDir();
+     *        case LOCAL_MOVE: return getLocalMoveDir();
+     *        case LOCAL_COPY: return getLocalCopyDir();
+     *        case LOCAL_WRITE: return getLocalWriteDir();
+     *        case REMOTE_SEND: return getRemoteSendDir();
+     *        case REMOTE_RECEIVE: return getRemoteReceiveDir();
+     *        case REMOTE_TEMP: return getRemoteTempDir();
+     *        case REMOTE_SUCCESS: return getRemoteSuccessDir();
+     *        case REMOTE_ERROR: return getRemoteErrorDir();
+     *        case REMOTE_BACKUP: return getRemoteBackupDir();
+     *        case REMOTE_MOVE: return getRemoteMoveDir();
+     *        case REMOTE_COPY: return getRemoteCopyDir();
+     *        case REMOTE_WRITE: return getRemoteWriteDir();
+     *        default: return null;
+     *    }
+     *}</pre>
+     * @param dirType the dir type
+     * @return the file path
+     */
     public String getFilePath(DirectoryType dirType) {
         switch (dirType) {
-            case LOCAL_SEND: return localSendDir;
-            case LOCAL_RECEIVE: return localReceiveDir;
-            case LOCAL_TEMP: return localTempDir;
-            case LOCAL_SUCCESS: return localSuccessDir;
-            case LOCAL_ERROR: return localErrorDir;
-            case LOCAL_BACKUP: return localBackupDir;
-            case LOCAL_MOVE: return localMoveDir;
-            case LOCAL_COPY: return localCopyDir;
-            case LOCAL_WRITE: return localWriteDir;
-            case REMOTE_SEND: return remoteSendDir;
-            case REMOTE_RECEIVE: return remoteReceiveDir;
-            case REMOTE_TEMP: return remoteTempDir;
-            case REMOTE_SUCCESS: return remoteSuccessDir;
-            case REMOTE_ERROR: return remoteErrorDir;
-            case REMOTE_BACKUP: return remoteBackupDir;
-            case REMOTE_MOVE: return remoteMoveDir;
-            case REMOTE_COPY: return remoteCopyDir;
-            case REMOTE_WRITE: return remoteWriteDir;
+            case LOCAL_SEND: return getLocalSendDir();
+            case LOCAL_RECEIVE: return getLocalReceiveDir();
+            case LOCAL_TEMP: return getLocalTempDir();
+            case LOCAL_SUCCESS: return getLocalSuccessDir();
+            case LOCAL_ERROR: return getLocalErrorDir();
+            case LOCAL_BACKUP: return getLocalBackupDir();
+            case LOCAL_MOVE: return getLocalMoveDir();
+            case LOCAL_COPY: return getLocalCopyDir();
+            case LOCAL_WRITE: return getLocalWriteDir();
+            case REMOTE_SEND: return getRemoteSendDir();
+            case REMOTE_RECEIVE: return getRemoteReceiveDir();
+            case REMOTE_TEMP: return getRemoteTempDir();
+            case REMOTE_SUCCESS: return getRemoteSuccessDir();
+            case REMOTE_ERROR: return getRemoteErrorDir();
+            case REMOTE_BACKUP: return getRemoteBackupDir();
+            case REMOTE_MOVE: return getRemoteMoveDir();
+            case REMOTE_COPY: return getRemoteCopyDir();
+            case REMOTE_WRITE: return getRemoteWriteDir();
             default: return null;
         }
     }
 
+    /**
+     * Sets file path.
+     * @param dirType the dir type
+     * @param dir     the dir
+     */
+    @Deprecated
     public void setFilePath(DirectoryType dirType, String dir) {
         switch (dirType) {
             case LOCAL_SEND: this.localSendDir = dir; break;
@@ -123,10 +474,17 @@ public class FileTemplate implements Serializable {
         }
     }
 
+    /**
+     * 파일명 패턴을 지정한다.
+     *
+     * @param fileNamePattern the file name pattern
+     */
     public void setFileNamePattern(String fileNamePattern) {
         if (fileNamePattern == null) {
             throw new NullPointerException("fileNamePattern is null");
         }
         this.fileNamePattern = fileNamePattern;
     }
+
+
 }

@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The type Dynamic code provider.
  *
  * @author Yuhyun O
  * @version 2024.10.01
- *
- * */
+ */
 @Slf4j
 public class DynamicCodeProvider implements Serializable {
     private static final long serialVersionUID = 4285587685416187268L;
@@ -31,6 +31,9 @@ public class DynamicCodeProvider implements Serializable {
     private boolean initializingLock = false;
     private int compilerThreadCount = 0;
 
+    /**
+     * Instantiates a new Dynamic code provider.
+     */
     /*
      * Spring version 만 맞다면 private 으로 변경해도 bean으로 등록 가능함
      * */
@@ -42,6 +45,11 @@ public class DynamicCodeProvider implements Serializable {
 
     }
 
+    /**
+     * Access dynamic code provider.
+     *
+     * @return the dynamic code provider
+     */
     public static DynamicCodeProvider access() {
         if (instance == null) {
             new DynamicCodeProvider();
@@ -49,6 +57,12 @@ public class DynamicCodeProvider implements Serializable {
         return instance;
     }
 
+    /**
+     * Sets code locations.
+     *
+     * @param codeLocations the code locations
+     * @throws Exception the exception
+     */
     public void setCodeLocations(Resource[] codeLocations) throws Exception {
         boolean error = false;
 
@@ -79,20 +93,42 @@ public class DynamicCodeProvider implements Serializable {
 
     }
 
+    /**
+     * Sets javac tools paths.
+     *
+     * @param javacToolsPath the javac tools path
+     */
     public void setJavacToolsPaths(String javacToolsPath) {
 
         this.javacToolsPath = javacToolsPath;
     }
 
+    /**
+     * Gets dynamic code.
+     *
+     * @param dnm the dnm
+     * @return the dynamic code
+     */
     public DynamicCodeInstance getDynamicCode(String dnm) {
         return dnmCodes.get(dnm);
     }
 
+    /**
+     * Sets standalone mode.
+     *
+     * @param standaloneMode the standalone mode
+     * @throws Exception the exception
+     */
     public void setStandaloneMode(boolean standaloneMode) throws Exception {
         this.standaloneMode = standaloneMode;
         DynamicCodeCompiler.getInstance().setStandaloneMode(standaloneMode);
     }
 
+    /**
+     * Sets compiler thread count.
+     *
+     * @param compilerThreadCount the compiler thread count
+     */
     public void setCompilerThreadCount(int compilerThreadCount) {
         if (compilerThreadCount < 0) {
             compilerThreadCount = 0;
@@ -100,6 +136,11 @@ public class DynamicCodeProvider implements Serializable {
         this.compilerThreadCount = compilerThreadCount;
     }
 
+    /**
+     * Gets compiler thread count.
+     *
+     * @return the compiler thread count
+     */
     public int getCompilerThreadCount() {
         return compilerThreadCount;
     }

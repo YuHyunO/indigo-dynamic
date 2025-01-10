@@ -80,4 +80,12 @@ public class OpenCursor extends ParameterAssignableService implements Serializab
         this.errorQueryMode = exceptionHandlingMode;
         this.exceptionHandlingMode = exceptionHandlingMode;
     }
+
+    public void setQueryId(String queryId) {
+        if (queryId == null)
+            return;
+        if (queryId.trim().isEmpty())
+            return;
+        this.queryId = queryId;
+    }
 }

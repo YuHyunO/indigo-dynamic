@@ -1,0 +1,87 @@
+#namespace: COMMON
+
+데이터베이스 에러 유형을 확인하여 Source DB에 에러 결과 업데이트를 처리할 지에 대한 여부를 결정한다.
+
+#code_id : CHECK_ERROR_TYPE 
+#{
+	final String[] ERROR_FILTER = {
+		"ORA-00001", //무결성 제약 조건
+		"ORA-01400", //NULL to NOT NULL COLUMN
+		"ORA-01407", //NULL to NOT NULL COLUMN
+		"ORA-01438", //Data 길이
+		"ORA-01722", //Data 길이
+		"ORA-12899"  //Data 길이
+	};
+	
+	List<ErrorTrace> errorList = ctx.getErrorTraces();
+	
+	boolean updateSrcTableYn = false;
+	for (ErrorTrace error : errorList) {
+		String errMsg = error.getMessage();
+		if (errMsg != null) {
+			errMsg = errMsg.toUpperCase();
+			for (String code : ERROR_FILTER) {
+				if (errMsg.contains(code)) {
+					updateSrcTableYn = true;
+					log.info("[{}]Error handling condition is detected. Error code: {}", ctx.getTxId(), code);
+					ctx.setMsg(StringUtil.substring(errMsg, 200));
+					break;
+				}
+			}
+            if (updateSrcTableYn) {
+                break;
+            }					
+		}
+	}
+	
+    if (!updateSrcTableYn) {
+        ctx.setProcessOn(false);
+    }	
+	
+}#
+
+
+SAP HANA DB 에러코드 참고 사이트 "https://help.sap.com/docs/HANA_SERVICE_CF/7c78579ce9b14a669c1f3295b0d8ca16/20a78d3275191014b41bae7c4a46d835.html"
+
+#code_id : CHECK_HANA_DB_ERROR 
+#{
+	//final String EXCEPTION_CLASS_NAME = "jdbc.exceptions";
+	final String[] ERROR_FILTER = {
+		"[273]", //not a single character string
+		"[267]", //specified length too long for its datatype
+		"[274]", //inserted value too large for column
+		"[301]", //unique constraint violated
+		"[302]", //invalid CHAR or VARCHAR value
+		"[303]", //invalid DATE TIME or TIMESTAMP value	
+		"[339]", //invalid number
+		"[359]", //string is too long
+	};
+	
+	
+	List<ErrorTrace> errorList = ctx.getErrorTraces();
+	
+	boolean updateSrcTableYn = false;
+	for (ErrorTrace error : errorList) {
+		String errMsg = error.getMessage();
+		if (errMsg != null) {
+			errMsg = errMsg.toUpperCase();
+			
+			for (String code : ERROR_FILTER) {
+				if (errMsg.contains(code)) {
+					updateSrcTableYn = true;
+					log.info("[{}]Error handling condition is detected. Error code: {}", ctx.getTxId(), code);
+					ctx.setMsg(StringUtil.substring(errMsg, 0, 199));
+					break;
+				}
+			}
+            if (updateSrcTableYn) {
+                break;
+            }					
+		}
+	}
+	
+    if (!updateSrcTableYn) {
+        ctx.setProcessOn(false);
+    }	
+	
+}#

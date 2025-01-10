@@ -7,6 +7,9 @@ import mb.dnm.code.HttpMethod;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * The type Http api template.
+ */
 @Setter
 @Getter
 public class HttpAPITemplate implements Serializable {
@@ -22,11 +25,19 @@ public class HttpAPITemplate implements Serializable {
     private String contentEncoding;
     private Map<String, String> responseHeaders;
 
+    /**
+     * Instantiates a new Http api template.
+     */
     public HttpAPITemplate() {
         contentTypes = new ArrayList<>();
         responseHeaders = new HashMap<>();
     }
 
+    /**
+     * Sets front methods.
+     *
+     * @param frontMethods the front methods
+     */
     public void setFrontMethods(String frontMethods) {
         if (this.frontMethods == null) {
             this.frontMethods = new HashSet<>();
@@ -56,6 +67,12 @@ public class HttpAPITemplate implements Serializable {
         }
     }
 
+    /**
+     * Is permitted front method boolean.
+     *
+     * @param frontMethod the front method
+     * @return the boolean
+     */
     public boolean isPermittedFrontMethod(String frontMethod) {
         if (frontMethods != null) {
             return frontMethods.contains(HttpMethod.valueOf(frontMethod.toUpperCase()));
@@ -63,6 +80,11 @@ public class HttpAPITemplate implements Serializable {
         return false;
     }
 
+    /**
+     * Sets content types.
+     *
+     * @param contentTypes the content types
+     */
     public void setContentTypes(String contentTypes) {
         String[] contentTypesArr = contentTypes.trim().split(",");
         for (String contentType : contentTypesArr) {
@@ -73,6 +95,11 @@ public class HttpAPITemplate implements Serializable {
         }
     }
 
+    /**
+     * Gets preferential content type.
+     *
+     * @return the preferential content type
+     */
     public String getPreferentialContentType() {
         if (!contentTypes.isEmpty()) {
             return contentTypes.get(0);
@@ -80,6 +107,11 @@ public class HttpAPITemplate implements Serializable {
         return "text/plain";
     }
 
+    /**
+     * Sets content encoding.
+     *
+     * @param contentEncoding the content encoding
+     */
     public void setContentEncoding(String contentEncoding) {
         contentEncoding = contentEncoding.trim();
         if (contentEncoding.equalsIgnoreCase("gzip")) {

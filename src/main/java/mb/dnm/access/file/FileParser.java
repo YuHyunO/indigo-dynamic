@@ -4,11 +4,24 @@ import java.io.Serializable;
 import java.util.*;
 
 
+/**
+ * The type File parser.
+ */
 public class FileParser implements Serializable {
 
     private static final long serialVersionUID = 4255889394521379039L;
+    /**
+     * The constant BINARY_DATA_WRAPPER.
+     */
     public static final String BINARY_DATA_WRAPPER = "<![BINARY[]]>";
 
+    /**
+     * Read header list.
+     *
+     * @param data     the data
+     * @param template the template
+     * @return the list
+     */
     public static List<String> readHeader(String data, FileParserTemplate template) {
         String recordSeparator = template.getRecordSeparator();
         String qualifier = template.getQualifier();
@@ -100,6 +113,13 @@ public class FileParser implements Serializable {
         return result;
     }
 
+    /**
+     * Read data to list list.
+     *
+     * @param data     the data
+     * @param template the template
+     * @return the list
+     */
     public static List<List<Object>> readDataToList(String data, FileParserTemplate template) {
         String recordSeparator = template.getRecordSeparator();
         String qualifier = template.getQualifier();
@@ -278,10 +298,25 @@ public class FileParser implements Serializable {
         return resultList;
     }
 
+    /**
+     * Read data to record list.
+     *
+     * @param data     the data
+     * @param template the template
+     * @return the list
+     */
     public static List<Map<String, Object>> readDataToRecord(String data, FileParserTemplate template) {
         return readDataToRecord(data, readHeader(data, template), template);
     }
 
+    /**
+     * Read data to record list.
+     *
+     * @param data     the data
+     * @param headers  the headers
+     * @param template the template
+     * @return the list
+     */
     public static List<Map<String, Object>> readDataToRecord(String data, List<String> headers, FileParserTemplate template) {
         String recordSeparator = template.getRecordSeparator();
         String qualifier = template.getQualifier();

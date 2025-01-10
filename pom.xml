@@ -6,7 +6,7 @@
 
     <groupId>com.metabuild</groupId>
     <artifactId>indigo-dynamic</artifactId>
-    <version>1.31</version>
+    <version>1.32</version>
     <packaging>jar</packaging>
 
     <repositories>
@@ -334,6 +334,15 @@
                 <version>2.12.4</version>
                 <configuration>
                     <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <source>1.7</source>
+<!--                    <target>1.7</target>-->
                 </configuration>
             </plugin>
         </plugins>

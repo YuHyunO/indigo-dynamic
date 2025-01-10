@@ -21,25 +21,28 @@ import java.util.List;
 
 
 /**
- *
- * Transaction 을 관리하기 위한 클래스
+ * Transaction 을 관리하기 위한 proxy 클래스
+ * QueryExecutor에서 메소드명이 do 로 시작되는 메소드는 이 proxy 클래스에 의해 관리된다.
  * <br>
  * <code>QueryExecutor</code> 의 <code>do*(**)</code> 메소드와 관련해서만 proxy 로 실행됨
- * 
- * @see QueryExecutor
- * @see DataSourceProvider
- * @see TransactionContext
  *
  * @author Yuhyun O
  * @version 2024.09.05
- *
- * */
+ * @see QueryExecutor
+ * @see DataSourceProvider
+ * @see TransactionContext
+ */
 @Slf4j
 public class TransactionProxyInterceptor implements MethodInterceptor, Serializable {
 
     private static final long serialVersionUID = -6562784215800920896L;
     private final QueryExecutor target;
 
+    /**
+     * Instantiates a new Transaction proxy interceptor.
+     *
+     * @param target the target
+     */
     public TransactionProxyInterceptor(QueryExecutor target) {
         this.target = target;
     }
@@ -48,11 +51,13 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
     public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         String methodName = method.getName();
 
+        //메소드명이 do로 시작되지 않는 경우 그냥 실행
         if (!methodName.startsWith("do")) {
             return methodProxy.invoke(target, args);
         }
 
-        if (args[0] == null) {//TransactionContext 객체가 null 인 경우
+        //args[1] = TransactionContext 객체가 null 인 경우 그냥 실행
+        if (args[0] == null) {
             log.debug("Executing query with id '{}'", args[1]);
             return methodProxy.invoke(target, args);
         }
@@ -229,6 +234,11 @@ public class TransactionProxyInterceptor implements MethodInterceptor, Serializa
         }
     }
 
+    /**
+     * Clear transaction.
+     *
+     * @param key the key
+     */
     void clearTransaction(Object key) {
 
         if (key != null) {

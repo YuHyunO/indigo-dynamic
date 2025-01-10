@@ -1,43 +1,47 @@
 <?xml version="1.0" encoding="euc-kr"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd" >
 
-    <import resource="commons_configures.xml"/>
-    <import resource="CONFIG_INTERFACES.xml"/>
-    <import resource="CONFIG_SERVICES.xml"/>
+    <import resource="commons_configure.xml"/>
+    <import resource="config_INTERFACES.xml"/>
+    <import resource="config_SERVICES.xml"/>
+    <import resource="config_ERROR_HANDLERS.xml"/>
 
     <!-- Storage Manager -->
     <bean class="mb.dnm.storage.StorageManager">
+        <property name="defaultInterfaceEnabled" value="true"/>
         <property name="interfaceRegistry" ref="interfaces"/>
         <property name="serviceRegistry" ref="serviceStrategies"/>
-        <property name="defaultInterfaceEnabled" value="true"/>
+        <property name="errorHandlerRegistry" ref="errorHandlers"/>
     </bean>
-
-
+    <!-- * MS949, UTF-8, etc -->
+    <!--* UNIX, UNIX_LTRIM, VMS, WINDOWS, OS/2, OS/400, AS/400, MVS, TYPE: L8, NETWARE, MACOS PETER -->
     <!-- ※DB Access Component -->
     <bean class="mb.dnm.access.db.DataSourceProvider">
         <property name="queryExecutors">
             <list>
-                <bean class="mb.dnm.access.db.ExecutorTemplate">
-                    <property name="templateName"       value="DEV"/>
-                    <property name="dataSource"         ref="DEV_DWNGL_EAI"/>
-                    <property name="configLocation"     value="classpath:mybatis-confiuration.xml"/>
-                    <property name="mapperLocations"    value="classpath:SQL_*.xml"/>
-                </bean>
+
+            </list>
+        </property>
+    </bean>
+
+    <!-- ※FTP Access Component -->
+    <bean class="mb.dnm.access.ftp.FTPSourceProvider">
+        <property name="ftpClients">
+            <list>
             </list>
         </property>
     </bean>
 
     <!-- ※Adapter Web Server -->
     <bean class="mb.dnm.dispatcher.http.HttpDispatcherServer" init-method="start">
-        <property name="port"       value="28116"/><!-- * 권장포트: 어댑터 포트 + 100 -->
+        <property name="port"       value="?{어댑터 포트 + 100}"/><!-- * 권장포트: 어댑터 포트 + 100 -->
     </bean>
 
 
     <!-- ※DynamicCode Repository -->
-
+    <bean class="mb.dnm.access.dynamic.DynamicCodeProvider">
+        <property name="compilerThreadCount"  value="5"/>
+        <property name="codeLocations"      value="classpath*:*.dnc"/>
+    </bean>
 
 </beans>
-
-
-
-

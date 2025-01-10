@@ -75,4 +75,12 @@ public class ExecuteDynamicCode extends AbstractService implements Serializable 
 
     }
 
+    public void setCodeId(String codeId) {
+        if (codeId == null)
+            return;
+        if (codeId.trim().isEmpty())
+            return;
+        this.codeId = codeId;
+    }
+
 }
