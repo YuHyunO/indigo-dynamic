@@ -24,46 +24,31 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 접근 가능한 디스크의 파일 또는 디렉터리 목록을 가져온다.
- * 어느 경로의 어떤 파일 목록을 가져올 지에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.
- *
+ * 파일 또는 디렉터리 목록을 가져온다.
+ * 가져올 파일의 디렉터리, 파일명 패턴 등에 대한 정보는 {@code InterfaceInfo} 에 저장된 {@code FileTemplate} 의 속성들로부터 가져온다.
+ * <br>
+ * <br>
+ * *<b>Input</b>: 목록을 가져올 디렉터리 경로<br>
+ * *<b>Input type</b>: {@code String}
+ * <br>
+ * <br>
+ * *<b>Output</b>: 파일 또는 디렉터리 목록<br>
+ * *<b>Output type</b>: {@code FileList}
+ * <br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.file.ListFiles"&gt;
+ *     &lt;property name="sourceAlias"            value="<span style="color: black; background-color: #FAF3D4;">source alias</span>"/&gt;
+ *     &lt;property name="directoryType"          value="<span style="color: black; background-color: #FAF3D4;">DirectoryType</span>"/&gt;
+ *     &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ * &lt;/bean&gt;</pre>
  * @see mb.dnm.access.file.FileList
- *
- * @author Yuhyun O
- * @version 2024.09.15
- *
- * @Input List를 가져올 Directory의 경로
- * @InputType <code>String</code>
- * @Output File 또는 Directory 경로
- * @OutputType <code>FileList</code>
  * */
 
 @Slf4j
 @Setter
 public class ListFiles extends SourceAccessService implements Serializable  {
     private static final long serialVersionUID = -7104229118012902809L;
-    /**
-     * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 가져올 경로로써 사용할 지 결정된다.<br><br>
-     * -기본값: <code>LOCAL_SEND</code><br>
-     * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -REMOTE_RECEIVE → <code>FileTemplate#remoteReceiveDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -REMOTE_TEMP → <code>FileTemplate#remoteTempDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -REMOTE_SUCCESS → <code>FileTemplate#remoteSuccessDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -REMOTE_ERROR → <code>FileTemplate#remoteErrorDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -REMOTE_WRITE → <code>FileTemplate#remoteWriteDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -LOCAL_SUCCESS → <code>FileTemplate#localSuccessDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -LOCAL_ERROR → <code>FileTemplate#localErrorDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * -LOCAL_WRITE → <code>FileTemplate#localWriteDir</code> 을 파일목록을 가져올 경로로 사용함<br>
-     * */
     private DirectoryType directoryType = DirectoryType.LOCAL_SEND;
     private String listDirectory;
     private String fileNamePattern = "*";
@@ -71,8 +56,8 @@ public class ListFiles extends SourceAccessService implements Serializable  {
     /**
      * 기본값: false<br>
      * 파일 목록을 탐색할 경로가 디렉터리인 경우 그 디렉터리의 하부 파일들을 재귀적으로 탐색할 지에 대한 여부를 결정한다.
-     * <code>type</code> 속성이 ALL 또는 DIRECTORY 인 경우에만 유효하다.
-     * <code>type</code> 속성이 DIRECTORY 인 경우에 이 속성을 사용하면 파일목록을 가져올 경로로 지정한 최상위 경로에서는 디렉터리만 탐색을 하고,
+     * {@code type} 속성이 ALL 또는 DIRECTORY 인 경우에만 유효하다.
+     * {@code type} 속성이 DIRECTORY 인 경우에 이 속성을 사용하면 파일목록을 가져올 경로로 지정한 최상위 경로에서는 디렉터리만 탐색을 하고,
      * 다시 그 디렉터리의 하위를 탐색할 때는 파일과 디렉터리 구분에 대한 필터링이 적용되지 않는다.
      * */
     private boolean searchRecursively = false;

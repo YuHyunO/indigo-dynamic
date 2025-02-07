@@ -22,52 +22,86 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
- * HTTP request 를 처리하는 handler 이다.
- * HttpServletRequest 의 요청 URL 및 HTTP Method 와 맵핑되는 InterfaceInfo 가  <code>StorageManager</code>에 존재하는 지 확인한 후
- * <code>ServiceProcess</code> 의 process 를 수행한다.<br><br>
+ * Http request 를 수신하여 {@link ServiceProcessor} 로 dispatch 한다.<br>
+ * 지원되는 HTTP Methods : {@code OPTIONS} {@code HEAD} {@code GET} {@code POST} {@code PUT} {@code DELETE} {@code PATCH}<br>
+ * <br>
+ * HTTP 요청 처리 순서:
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ *   1. 클라이언트로부터 특정 URL 과 HTTP Method 로 요청을 받는다.
+ *   2. 요청받은 URL 과 Method 가 맵핑된 {@link InterfaceInfo} 존재하는 지 확인한다.
+ *   3. 요청받은 HTTP 데이터를 아래와 같이 {@link ServiceContext} 에 저장한다.
+ *     -HTTP header ->  $http_headers ({@code Map<String, String>})
+ *     -HTTP parameter ->  $http_parameters ({@code Map<String, String>})
+ *     -HTTP body ->  $http_body ({@code byte[]})
+ *     -{@link HttpServletResponse} ->  $http_servlet_response({@code HttpServletResponse})
+ *   4. {@link ServiceProcessor}로 {@code ServiceContext}를 전달한다.
+ *   5. {@code ServiceProcessor}에서 service-processing 이 완료되면 {@code ServiceContext}에 저장된 HTTP Response body 를 가져와 클라이언트에게 응답한다.
+ *     -HTTP Response body -> $http_response_body
+ * </pre>
+ * <br>
+ * <br>
+ * 활용예제 : DNC_HTTP_HANDLING.dnc
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ *  #namespace: IF_HTTP
+ *  #import mb.dnm.dispatcher.http.HttpRequestDispatcher;
+ *  #import mb.dnm.util.MessageUtil;
+ *  #import javax.servlet.http.HttpServletResponse;
+ *  #code_id : HANDLE_HTTP
+ *  #{
+ *     //1.Http header 정보 가져오기
+ *     {@code Map<String, String>} headers = ctx.getContextParam(HttpRequestDispatcher.HTTP_HEADERS);
+ *     //2.Http parameter 정보 가져오기
+ *     {@code Map<String, String>} parameters = ctx.getContextParam(HttpRequestDispatcher.HTTP_PARAMETERS);
+ *     //3.Http body 정보 가져오기
+ *     {@code byte[]} byteBody = ctx.getContextParam(HttpRequestDispatcher.HTTP_BODY);
+ *     //4.HttpServletResponse 가져오기
+ *     {@code HttpServletResponse} response = ctx.getContextParam(HttpRequestDispatcher.SERVLET_RESPONSE);
  *
- * URL이 존재하지 않는 경우 404 응답을, URL은 존재하지만 요청 메소드가 유효하지 않은 경우 405 를 응답한다.<br><br>
+ *     //4.Http body 를 JSON 으로 형변환
+ *     if (body != null) {
+ *        {@code Map<String, Object>} jsonMap = MessageUtil.jsonToMap(new String(byteBody));
  *
- * <code>ServiceProcess</code>의 process 메소드를 호출하여 서비스 프로세스를 수행하기 전, <code>ServiceContext</code> 객체에 input으로
- * Http headers, Http parameters, Http body를 전달하며, 수행되는 각 서비스에서
- * HTTP_HEADERS, HTTP_PARAMETERS, HTTP_BODY 으로 접근가능하다.<br><br>
+ *         //업무로직 작성
  *
- * @author Yuhyun O
- * @version 2024.09.27
+ *         {@code Map<String, Object>} responseMap = {@code new LinkedHashMap<>()}
+ *          responseMap.put("result", "성공");
  *
- * */
+ *          ctx.addContextParam(HttpRequestDispatcher.RESPONSE_BODY, responseMap);
+ *     } else {
+ *          response.setStatus(400) //Bad request
+ *          return;
+ *     }
+ *
+ *  }#
+ * </pre>
+ * @see HttpDispatcherServer
+ */
 @Slf4j
 public class HttpRequestDispatcher extends HttpServlet {
+
     /**
-     * HTTP 요청 헤더에 대한 정보이다.<br>
-     * $http_headers 라는 이름으로 <code>ServiceContext</code>에 input 된다.
-     * 
-     * @Type <code>Map&lt;String, String&gt;</code>
-     * */
+     * The constant HTTP_HEADERS. ($http_headers, {@code Map<String, String>})
+     */
     public static final String HTTP_HEADERS = "$http_headers";
+
     /**
-     * HTTP 요청 파라미터 대한 정보이다.<br>
-     * $http_parameters 라는 이름으로 <code>ServiceContext</code>에 input 된다.
-     * 
-     * @Type <code>Map&lt;String, String&gt;</code>
-     * */
+     * The constant HTTP_PARAMETERS. ($http_parameters, {@code Map<String, String>})
+     */
     public static final String HTTP_PARAMETERS = "$http_parameters";
+
     /**
-     * HTTP 요청 바디에 대한 정보이다.<br>
-     * $http_body 라는 이름으로 <code>ServiceContext</code>에 input 된다.
-     * 
-     * @Type <code>byte[]</code>
-     * */
+     * The constant HTTP_BODY. ($http_body, {@code byte[]})
+     */
     public static final String HTTP_BODY = "$http_body";
+
     /**
-     * HttpServletResponse 객체이다.<br>
-     * $http_servlet_response 라는 이름으로 <code>ServiceContext</code>에 input 된다.
-     * 
-     * @Type <code>javax.servlet.http.HttpServletResponse</code>
-     * */
+     * The constant SERVLET_RESPONSE. ($http_servlet_response, {@code HttpServletResponse})
+     */
     public static final String SERVLET_RESPONSE = "$http_servlet_response";
+    /**
+     * The constant RESPONSE_BODY. ($http_response_body)
+     */
     public static final String RESPONSE_BODY = "$http_response_body";
 
     @Override

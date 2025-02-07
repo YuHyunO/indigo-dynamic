@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Execute service error handler.
+ */
 @Slf4j
 public class ExecuteServiceErrorHandler extends AbstractErrorHandler implements Serializable {
     private static final long serialVersionUID = 6590938203097560200L;
@@ -25,6 +28,11 @@ public class ExecuteServiceErrorHandler extends AbstractErrorHandler implements 
 
     }
 
+    /**
+     * Sets service.
+     *
+     * @param service the service
+     */
     public void setService(Service service) {
         if (AbstractService.class.isAssignableFrom(service.getClass())) {
             ((AbstractService) service).setExceptionHandlingMode(true);

@@ -17,24 +17,24 @@ import java.nio.charset.StandardCharsets;
  * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
  *&lt;bean class="mb.dnm.access.file.FileTemplate"&gt;
  *	&lt;property name="templateName"        value="<span style="color: black; background-color: #FAF3D4;">Template 명</span>"/&gt;
- *	&lt;property name="localSendDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="localReceiveDir"     value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="localTempDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="localSuccessDir"     value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="localErrorDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="localBackupDir"      value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="localMoveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="localCopyDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="localWriteDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="remoteSendDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="remoteReceiveDir"    value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="remoteTempDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="remoteSuccessDir"    value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="remoteErrorDir"      value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="remoteBackupDir"     value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="remoteMoveDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="remoteCopyDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
- *	&lt;property name="remoteWriteDir"      value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;
+ *	&lt;property name="localSendDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- LOCAL_SEND --&gt;
+ *	&lt;property name="localReceiveDir"     value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- LOCAL_RECEIVE --&gt;
+ *	&lt;property name="localTempDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- LOCAL_TEMP --&gt;
+ *	&lt;property name="localSuccessDir"     value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- LOCAL_SUCCESS --&gt;
+ *	&lt;property name="localErrorDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- LOCAL_ERROR --&gt;
+ *	&lt;property name="localBackupDir"      value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- LOCAL_BACKUP --&gt;
+ *	&lt;property name="localMoveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- LOCAL_MOVE --&gt;
+ *	&lt;property name="localCopyDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- LOCAL_COPY --&gt;
+ *	&lt;property name="localWriteDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- LOCAL_WRITE --&gt;
+ *	&lt;property name="remoteSendDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- REMOTE_SEND --&gt;
+ *	&lt;property name="remoteReceiveDir"    value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- REMOTE_RECEIVE --&gt;
+ *	&lt;property name="remoteTempDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- REMOTE_TEMP --&gt;
+ *	&lt;property name="remoteSuccessDir"    value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- REMOTE_SUCCESS --&gt;
+ *	&lt;property name="remoteErrorDir"      value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- REMOTE_ERROR --&gt;
+ *	&lt;property name="remoteBackupDir"     value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- REMOTE_BACKUP --&gt;
+ *	&lt;property name="remoteMoveDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- REMOTE_MOVE --&gt;
+ *	&lt;property name="remoteCopyDir"       value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- REMOTE_COPY --&gt;
+ *	&lt;property name="remoteWriteDir"      value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt; &lt;!-- REMOTE_WRITE --&gt;
  *	&lt;property name="fileNamePattern"     value="<span style="color: black; background-color: #FAF3D4;">파일명 패턴</span>"/&gt;
  *	&lt;property name="type"                value="<span style="color: black; background-color: #FAF3D4;">파일 타입</span>"/&gt;
  *	&lt;property name="dataType"            value="<span style="color: black; background-color: #FAF3D4;">파일 데이터 타입</span>"/&gt;
@@ -71,7 +71,7 @@ public class FileTemplate implements Serializable {
      * */
     private String templateName; // FTP관련 서비스에서 사용하는 경우에는 FTPClientTemplate의 templateName 과 동일하게 작성
     /**
-     * {@link DirectoryType#LOCAL_SEND}
+     * {@code DirectoryType.LOCAL_SEND}
      * */
     private String localSendDir;
     /**
@@ -183,7 +183,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#LOCAL_SEND} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.LOCAL_SEND} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="localSendDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param localSendDir the local send dir
@@ -194,7 +194,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#LOCAL_RECEIVE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.LOCAL_RECEIVE} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="localReceiveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param localReceiveDir the local receive dir
@@ -205,7 +205,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#LOCAL_TEMP} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.LOCAL_TEMP} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="localTempDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param localTempDir the local temp dir
@@ -216,7 +216,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#LOCAL_SUCCESS} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.LOCAL_SUCCESS} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="localSuccessDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param localSuccessDir the local success dir
@@ -227,7 +227,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#LOCAL_ERROR} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.LOCAL_ERROR} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="localErrorDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param localErrorDir the local error dir
@@ -238,7 +238,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#LOCAL_BACKUP} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.LOCAL_BACKUP} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="localBackupDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param localBackupDir the local backup dir
@@ -249,7 +249,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#LOCAL_MOVE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.LOCAL_MOVE} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="localMoveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param localMoveDir the local move dir
@@ -260,7 +260,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#LOCAL_COPY} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.LOCAL_COPY} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="localCopyDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param localCopyDir the local copy dir
@@ -271,7 +271,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#LOCAL_WRITE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.LOCAL_WRITE} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="localWriteDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param localWriteDir the local write dir
@@ -282,7 +282,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#REMOTE_SEND} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.REMOTE_SEND} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="remoteSendDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param remoteSendDir the remote send dir
@@ -293,7 +293,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#REMOTE_RECEIVE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.REMOTE_RECEIVE} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="remoteReceiveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param remoteReceiveDir the remote receive dir
@@ -304,7 +304,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#REMOTE_TEMP} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.REMOTE_TEMP} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="remoteTempDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param remoteTempDir the remote temp dir
@@ -315,7 +315,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#REMOTE_SUCCESS} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.REMOTE_SUCCESS} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="remoteSuccessDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param remoteSuccessDir the remote success dir
@@ -326,7 +326,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#REMOTE_ERROR} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.REMOTE_ERROR} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="remoteErrorDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param remoteErrorDir the remote error dir
@@ -337,7 +337,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#REMOTE_BACKUP} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.REMOTE_BACKUP} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="remoteBackupDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param remoteBackupDir the remote backup dir
@@ -348,7 +348,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#REMOTE_MOVE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.REMOTE_MOVE} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="remoteMoveDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param remoteMoveDir the remote move dir
@@ -359,7 +359,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#REMOTE_COPY} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.REMOTE_COPY} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="remoteCopyDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param remoteCopyDir the remote copy dir
@@ -370,7 +370,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType#REMOTE_WRITE} 에 매핑되는 디렉터리 경로를 지정한다.
+     * {@code DirectoryType.REMOTE_WRITE} 에 매핑되는 디렉터리 경로를 지정한다.
      * <br><br><pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *&lt;property name="remoteWriteDir"        value="<span style="color: black; background-color: #FAF3D4;">파일 경로</span>"/&gt;</pre>
      * @param remoteWriteDir the remote write dir
@@ -393,7 +393,7 @@ public class FileTemplate implements Serializable {
     }
 
     /**
-     * {@link DirectoryType}을 사용하여 매핑되는 디렉터리 경로를 가져온다.<br><br>
+     * {@code DirectoryType}을 사용하여 매핑되는 디렉터리 경로를 가져온다.<br><br>
      *<pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      *public String getFilePath(DirectoryType dirType) {
      *    switch (dirType) {

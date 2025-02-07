@@ -8,67 +8,67 @@ import java.util.Date;
  */
 public class TimeUtil {
     /**
-     * The constant YYYY.
+     * The constant time format yyyy.
      */
     public static final String YYYY = "yyyy";
     /**
-     * The constant MMDD.
+     * The constant time format MMdd.
      */
     public static final String MMDD = "MMdd";
     /**
-     * The constant HHmm.
+     * The constant time format HHmm.
      */
     public static final String HHmm = "HHmm";
     /**
-     * The constant mmss.
+     * The constant time format mmss.
      */
     public static final String mmss = "mmss";
     /**
-     * The constant YYYYMM.
+     * The constant time format yyyyMM.
      */
     public static final String YYYYMM = "yyyyMM";
     /**
-     * The constant YYYYMMDD.
+     * The constant time format yyyyMMdd.
      */
     public static final String YYYYMMDD = "yyyyMMdd";
     /**
-     * The constant YYYYMMDDHH.
+     * The constant time format yyyyMMddHH.
      */
     public static final String YYYYMMDDHH = "yyyyMMddHH";
     /**
-     * The constant YYYYMMDDHHmm.
+     * The constant time format yyyyMMddHHmm.
      */
-    public static final String YYYYMMDDHHmm = "yyyyMMddHHmm";
+    public static final String yyyyMMddHHmm = "yyyyMMddHHmm";
     /**
-     * The constant YYYYMMDDHHmmss.
+     * The constant time format yyyyMMddHHmmss.
      */
     public static final String YYYYMMDDHHmmss = "yyyyMMddHHmmss";
     /**
-     * The constant YYYYMMDDHHmmssSSS.
+     * The constant time format yyyyMMddHHmmssSSS.
      */
     public static final String YYYYMMDDHHmmssSSS = "yyyyMMddHHmmssSSS";
     /**
-     * The constant TIMESTAMP_FORMAT.
+     * The constant time format yyyyMMddHHmmssSSS.
      */
     public static final String TIMESTAMP_FORMAT = "yyyyMMddHHmmssSSS";
     /**
-     * The constant DATETIME_FORMAT.
+     * The constant time format yyyyMMddHHmmss.
      */
     public static final String DATETIME_FORMAT = "yyyyMMddHHmmss";
     /**
-     * The constant DATE_FORMAT.
+     * The constant time format yyyyMMdd.
      */
     public static final String DATE_FORMAT = "yyyyMMdd";
     /**
-     * The constant HHmmss.
+     * The constant time format HHmmss.
      */
     public static final String HHmmss = "HHmmss";
     /**
-     * The constant JDBC_TIMESTAMP_FORMAT.
+     * The constant time format yyyy-MM-dd HH:mm:sss.SSSSSSSSS.
      */
     public static final String JDBC_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:sss.SSSSSSSSS";
     /**
-     * The constant JDBC_DATE_FORMAT.
+     * The constant time format yyyy-MM-dd HH:mm:ss.
      */
     public static final String JDBC_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
@@ -76,7 +76,9 @@ public class TimeUtil {
 
     /**
      * Gets formatted time.
-     *
+     * <br>
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     * TimeUtil.getFormattedTime(new Date(), TimeUtil.DATETIME_FORMAT)</pre>
      * @param date   the date
      * @param format the format
      * @return the formatted time
@@ -91,7 +93,10 @@ public class TimeUtil {
 
     /**
      * Cur time stamp string.
-     *
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *     public static String curTimeStamp() {
+     *         return new SimpleDateFormat(TIMESTAMP_FORMAT).format(new Date());
+     *     }</pre>
      * @return the string
      */
     public static String curTimeStamp() {
@@ -100,7 +105,10 @@ public class TimeUtil {
 
     /**
      * Cur date string.
-     *
+     *<pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *     public static String curDate(String timeFormat) {
+     *         return new SimpleDateFormat(timeFormat).format(new Date());
+     *     }</pre>
      * @param timeFormat the time format
      * @return the string
      */
@@ -121,7 +129,10 @@ public class TimeUtil {
 
     /**
      * To long datetime long.
-     *
+     *<pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *     public static long toLongDatetime(Date date) {
+     *         return Long.parseLong(new SimpleDateFormat(DATETIME_FORMAT).format(date));
+     *     }</pre>
      * @param date the date
      * @return the long
      */

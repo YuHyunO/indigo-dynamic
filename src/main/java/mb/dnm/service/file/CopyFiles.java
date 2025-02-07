@@ -17,49 +17,35 @@ import java.nio.file.*;
 import java.util.*;
 
 /**
- * 파일 Storage 의 파일을 복사한다.
- * 어느 경로로 파일을 복사할 지에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.
- *
+ * 파일 Storage 의 파일을 복사한다.<br>
+ * 어느 경로로 파일을 복사할 지에 대한 정보는 {code InterfaceInfo} 에 저장된 {@code FileTemplate} 의 속성들로부터 가져온다.
+ * <br>
+ * <br>
+ * *<b>Input</b>: 복사할 파일의 경로<br>
+ * *<b>Input type</b>: {@code String}, {@code List<String>}, {@code Set<String>}, {@code FileList}
+ * <br>
+ * <br>
+ * *<b>Output</b>: 파일이 복사된 경로<br>
+ * *<b>Output type</b>: {@code List<String>}
+ * <br>
+ * <br>
+ * *<b>Error Output</b>: 복사를 실패한 파일 경로<br>
+ * *<b>Error Output type</b>: {@code List<String>}
+ * <br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.file.CopyFiles"&gt;
+ *     &lt;property name="sourceAlias"            value="<span style="color: black; background-color: #FAF3D4;">source alias</span>"/&gt;
+ *     &lt;property name="directoryType"          value="<span style="color: black; background-color: #FAF3D4;">DirectoryType</span>"/&gt;
+ *     &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ * &lt;/bean&gt;</pre>
  * @see ListFiles
  * @see FileList
- *
- * @author Yuhyun O
- * @version 2024.09.16
- *
- * @Input 복사할 파일의 경로
- * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code><br>
- * input이 List로 전달되는 경우 중복된 경로가 존재하더라도 내부적으로 Set 객체에 다시 담기게 되므로 중복값이 제거된다.
- * @Output 복사한 파일의 복사 후 경로 리스트
- * @OutputType <code>List&lt;String&gt;</code>
- * @ErrorOutput 파일을 복사 하는 중 에러가 발생하여 복사에 실패하는 경우 에러가 발생한 파일의 경로
- * @ErrorOutputType <code>List&lt;String&gt;</code>
  * */
 @Slf4j
 @Setter
 public class CopyFiles extends SourceAccessService implements Serializable {
     private static final long serialVersionUID = -4307329321493254334L;
-    /**
-     * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 복사할 경로로써 사용할 지 결정된다.<br><br>
-     * -기본값: <code>LOCAL_COPY</code><br>
-     * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -REMOTE_RECEIVE → <code>FileTemplate#remoteReceiveDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -REMOTE_TEMP → <code>FileTemplate#remoteTempDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -REMOTE_SUCCESS → <code>FileTemplate#remoteSuccessDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -REMOTE_ERROR → <code>FileTemplate#remoteErrorDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -REMOTE_WRITE → <code>FileTemplate#remoteWriteDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -LOCAL_SUCCESS → <code>FileTemplate#localSuccessDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -LOCAL_ERROR → <code>FileTemplate#localErrorDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * -LOCAL_WRITE → <code>FileTemplate#localWriteDir</code> 을 파일목록을 복사할 경로로 사용함<br>
-     * */
     
     private DirectoryType directoryType = DirectoryType.LOCAL_COPY;
     /**

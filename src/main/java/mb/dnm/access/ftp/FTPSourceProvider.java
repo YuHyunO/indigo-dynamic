@@ -6,12 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The type Ftp source provider.
+ */
 public class FTPSourceProvider implements Serializable {
     private static final long serialVersionUID = 6799547639065870156L;
     private static FTPSourceProvider instance;
     private Map<String, FTPClientTemplate> templateMap;
     private boolean initialized = false;
 
+    /**
+     * Instantiates a new Ftp source provider.
+     */
     /*
      * Spring version 만 맞다면 private 으로 변경해도 bean으로 등록 가능함
      * */
@@ -23,6 +29,11 @@ public class FTPSourceProvider implements Serializable {
 
     }
 
+    /**
+     * Access ftp source provider.
+     *
+     * @return the ftp source provider
+     */
     public static FTPSourceProvider access() {
         if (instance == null) {
             new FTPSourceProvider();
@@ -30,6 +41,13 @@ public class FTPSourceProvider implements Serializable {
         return instance;
     }
 
+    /**
+     * Gets new session.
+     *
+     * @param name the name
+     * @return the new session
+     * @throws IOException the io exception
+     */
     public FTPSession getNewSession(String name) throws IOException {
         FTPClientTemplate template = templateMap.get(name);
         if (template == null) {
@@ -38,6 +56,11 @@ public class FTPSourceProvider implements Serializable {
         return new FTPSession(template.login());
     }
 
+    /**
+     * Sets ftp clients.
+     *
+     * @param ftpClientTemplates the ftp client templates
+     */
     public void setFtpClients(List<FTPClientTemplate> ftpClientTemplates) {
         if (!initialized) {
             for (FTPClientTemplate template : ftpClientTemplates) {
@@ -63,10 +86,21 @@ public class FTPSourceProvider implements Serializable {
         }
     }
 
+    /**
+     * Gets ftp client template.
+     *
+     * @param name the name
+     * @return the ftp client template
+     */
     public FTPClientTemplate getFtpClientTemplate(String name) {
         return templateMap.get(name);
     }
 
+    /**
+     * Gets ftp client template map.
+     *
+     * @return the ftp client template map
+     */
     public Map<String, FTPClientTemplate> getFtpClientTemplateMap() {
         return templateMap;
     }

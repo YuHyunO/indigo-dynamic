@@ -17,19 +17,28 @@ import java.util.*;
 
 /**
  * FTP서버의 파일 또는 디렉터리를 삭제한다.
+ * <br>
+ * <br>
+ * *<b>Input</b>: 삭제할 파일의 경로<br>
+ * *<b>Input type</b>: {@code String}, {@code List<String>}, {@code Set<String>}, {@code FileList}
+ * <br>
+ * <br>
+ * *<b>Output</b>: 삭제된 파일의 삭제 전 경로<br>
+ * *<b>Output type</b>: {@code List<String>}
+ * <br>
+ * <br>
+ * *<b>Error Output</b>: 삭제를 실패한 파일 경로<br>
+ * *<b>Error Output type</b>: {@code List<String>}
+ * <br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.ftp.DeleteFiles"&gt;
+ *     &lt;property name="sourceAlias"            value="<span style="color: black; background-color: #FAF3D4;">source alias</span>"/&gt;
+ *     &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ * &lt;/bean&gt;</pre>
  *
  * @see mb.dnm.access.file.FileList
  *
- * @author Yuhyun O
- * @version 2024.09.17
- *
- * @Input 삭제할 파일의 경로
- * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code><br>
- * input이 List로 전달되는 경우 중복된 경로가 존재하더라도 내부적으로 Set 객체에 다시 담기게 되므로 중복값이 제거된다.
- * @Output 삭제된 파일의 삭제 전 경로
- * @OutputType <code>List&lt;String&gt;</code>
- * @ErrorOutput 파일을 삭제하는 중 에러가 발생하여 삭제에 실패하는 경우 에러가 발생한 파일의 경로
- * @ErrorOutputType <code>List&lt;String&gt;</code>
  * */
 @Slf4j
 @Setter

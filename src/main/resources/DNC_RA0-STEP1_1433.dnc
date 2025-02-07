@@ -1,23 +1,36 @@
-#namespace: RA0-STEP1_1433
+#namespace: DynamicCode의 namespace(어댑터 내에서 고유해야함)
 
+/*
 
+※ input Object를 가져오는 법 (1) : getInput(ctx, "파라미터 명");
+※ input Object를 가져오는 법 (2) : ctx.getContextParam("파라미터 명");
+※ Object value를 output 하는 법 (1) : setOutputValue(ctx, "파라미터 명", value);
+※ Object value를 output 하는 법 (2) : ctx.addContextParam("파라미터 명", value);
+※ input 또는 output 된 Object를 삭제하는 법 : ctx.deleteContextParam("파라미터 명");
 
-#code_id: CHECK_RESULT
+※ 트랜잭션 ID (인터페이스 트랜잭션 별 고유아이디) : String txId = ctx.getTxId();
+※ 인터페이스 시작 시간 : Date startTime = ctx.getStartTime();
+※ 인터페이스(각 서비스) 종료 시간 : Date endTime = ctx.getEndTime();
+
+※ Log 남기기: org.slf4j.Logger 인터페이스를 변수명 log 로 사용 가능함
+※ Process 를 중단하는 법 : ctx.processOn(false);
+※ 메시지를 기록하는 법 : ctx.setMsg(StringBuilder msg); 또는 ctx.setMsg(String msg);
+※ 메시지를 가져오는 법 : String msg = ctx.getMsg();
+※ Context 정보를 가져오는 법 : Map<String, Object> contextInfoMap = ctx.getContextInformation();
+
+*/
+
+코드아이디는 동일한 namespace 에서 고유해야한다.
+#code_id: 코드아이디_1
 #{
 
-	Map<String, Object> callResult = ((List<Map<String, Object>>) getInput(ctx, "result")).get(0);
-    Object resultCode = callResult.get("O_RESULT");
-    if (resultCode.equals("OK"))
-        return;
+	//Java 코드를 작성
 
-    Map<String, Object> errorData = (Map<String, Object>) getInput(ctx, "data");
-    String ITEM_CD = String.valueOf(errorData.get("ITEM_CD"));
-    String O_RESULT_MSG_USR = String.valueOf(callResult.get("O_RESULT_MSG_USR"));
-    String O_RESULT_MSG_SYS = String.valueOf(callResult.get("O_RESULT_MSG_SYS"));
+}#
 
-    StringBuilder errMsg = new StringBuilder();
-    errMsg.append(ITEM_CD).append(": ").append(O_RESULT_MSG_USR).append(",").append(O_RESULT_MSG_SYS);
-    ctx.setMsg(errMsg.toString());
-    throw new Exception(errMsg.toString());
+#code_id: 코드아이디_2
+#{
+
+	//Java 코드를 작성
 
 }#

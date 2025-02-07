@@ -14,6 +14,9 @@ import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 import java.io.*;
 import java.nio.file.Files;
 
+/**
+ * The type Decrypt.
+ */
 @Slf4j
 @Setter
 public class Decrypt extends ParameterAssignableService implements Serializable {
@@ -100,6 +103,12 @@ public class Decrypt extends ParameterAssignableService implements Serializable 
         }
     }
 
+    /**
+     * Sets key.
+     *
+     * @param keyLoc the key loc
+     * @throws IOException the io exception
+     */
     public void setKey(File keyLoc) throws IOException {
         this.key = new String(Files.readAllBytes(keyLoc.toPath()));
     }

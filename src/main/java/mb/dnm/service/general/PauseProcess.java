@@ -6,6 +6,14 @@ import mb.dnm.service.AbstractService;
 
 import java.io.Serializable;
 
+/**
+ * Service-Chaining을 {@code millisecond}만큼 일시중지한다.
+ * <br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.general.PauseProcess"&gt;
+ *     &lt;property name="millisecond"                 value="<span style="color: black; background-color: #FAF3D4;">millisecond</span>"/&gt;
+ * &lt;/bean&gt;</pre>
+ */
 @Slf4j
 public class PauseProcess extends AbstractService implements Serializable {
     private static final long serialVersionUID = -8689374111009769407L;
@@ -20,6 +28,11 @@ public class PauseProcess extends AbstractService implements Serializable {
         log.info("[{}]Resume process", ctx.getTxId());
     }
 
+    /**
+     * Sets millisecond.
+     *
+     * @param millisecond the millisecond
+     */
     public void setMillisecond(int millisecond) {
         if (millisecond < 0)
             millisecond = 0;

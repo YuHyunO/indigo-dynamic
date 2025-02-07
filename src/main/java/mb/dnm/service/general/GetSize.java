@@ -15,30 +15,36 @@ import java.util.Map;
  * Input 파라미터로 전달된 변수의 크기를 output 한다.<br><br>
  *
  * 변수의 타입에 따라 크기 확인은 다음과 같이 이루어진다.<br>
- * -<code>java.util.Collection</code>: <code>Collection#size()</code><br>
- * -<code>java.util.Map</code>: <code>Collection#size()</code><br>
- * -<code>Arrays</code>: <code>Array#length</code><br>
- * -<code>java.lang.CharSequence</code>: <code>CharSequence#length()</code><br>
- * -<code>java.lang.Number</code>: <code>value of itself</code><br>
- * -<code>java.lang.Character</code>: <code>value of itself</code><br>
- * -<code>Primitive types</code>: <code>value of itself</code><br>
- * -<code>Other objects or when null</code>: <code>0</code><br>
+ * * {@code Collection}: {@code Collection#size()}<br>
+ * * {@code Map}: {@code Map#size()}<br>
+ * * {@code Array}: {@code Array#length}<br>
+ * * {@code CharSequence}: {@code CharSequence#length()}<br>
+ * * {@code Number}: {@code value of itself}<br>
+ * * {@code Character}: {@code value of itself}<br>
+ * * {@code Primitive types}: {@code value of itself}<br>
+ * * {@code Other objects or when null}: {@code 0}<br>
+ * <br>
+ * <br>
+ * *<b>Input</b>: 크기를 확인할 input 파라미터명<br>
+ * *<b>Input type</b>: {@code Obct}
+ * <br>
+ * <br>
+ * *<b>Output</b>: 타입별 객체의 크기<br>
+ * *<b>Output type</b>:
+ * * {@code Collection}: {@code Collection#size()}<br>
+ * * {@code Map}: {@code Map#size()}<br>
+ * * {@code Array}: {@code Array#length}<br>
+ * * {@code CharSequence}: {@code CharSequence#length()}<br>
+ * * {@code Number}: {@code value of itself}<br>
+ * * {@code Character}: {@code value of itself}<br>
+ * * {@code Primitive types}: {@code value of itself}<br>
+ * * {@code Other objects or when null}: {@code 0}<br>
  *
- * @author Yuhyun O
- * @version 2024.09.25
- *
- * @Input 크기를 확인할 변수
- * @InputType <code>Object</code>
- * @Output 파라미터로 전달된 변수의 크기를 반환한다.
- * @OutputType <br>
- * -<code>java.util.Collection</code>: <code>Collection#size()</code><br>
- * -<code>java.util.Map</code>: <code>Collection#size()</code><br>
- * -<code>Arrays</code>: <code>Array#length</code><br>
- * -<code>java.lang.CharSequence</code>: <code>CharSequence#length()</code><br>
- * -<code>java.lang.Number</code>: <code>value of itself</code><br>
- * -<code>Primitive types</code>: <code>value of itself</code><br>
- * -<code>Other objects</code>: <code>0</code><br>
- *
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.general.GetSize"&gt;
+ *     &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ * &lt;/bean&gt;</pre>
  * */
 @Slf4j
 public class GetSize extends ParameterAssignableService implements Serializable {

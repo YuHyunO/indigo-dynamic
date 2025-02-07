@@ -23,24 +23,36 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <code>StartTransaction</code> 에 의해 시작된 트랜잭션 Commit 한다.<br>
- * 트랜잭션 그룹이 존재하지 않으면 이 서비스의 호출은 아무런 효과도 없다.<br>
-
+ * {@link StartTransaction} 에 의해 시작된 트랜잭션을 Commit 한다.<br>
+ * 트랜잭션 그룹이 존재하지 않으면 이 서비스의 호출은 아무런 효과도 없다.
+ * <br>
+ * <br>
+ *<pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;!-- 인터페이스가 사용하는 모든 트랜잭션을 commit --&gt;
+ * &lt;bean class="mb.dnm.service.db.Commit"/&gt;
+ *
+ * &lt;!-- Alias로 지정된 Database의 트랜잭션만 commit --&gt;
+ * &lt;bean class="mb.dnm.service.db.Commit"&gt;
+ *     &lt;property name="sourceAlias"              value="<span style="color: black; background-color: #FAF3D4;">DB source alias</span>"/&gt;
+ * &lt;/bean&gt;</pre>
+ *
  * @see StartTransaction
+ * @see EndTransaction
+ * @see Rollback
  * @see Select
  * @see Insert
  * @see Delete
  * @see Update
  * @see CallProcedure
  *
- * @author Yuhyun O
- * @version 2024.10.02
- *
  * */
 @Slf4j
 public class Commit extends SourceAccessService implements Serializable {
     private static final long serialVersionUID = 7569451561169113126L;
 
+    /**
+     * DB 트랜잭션을 커밋한다.
+     * */
     @Override
     public void process(ServiceContext ctx) throws Throwable {
         String txId = ctx.getTxId();

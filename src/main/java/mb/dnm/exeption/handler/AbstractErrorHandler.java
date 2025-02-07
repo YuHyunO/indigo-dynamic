@@ -5,6 +5,9 @@ import mb.dnm.core.ErrorHandler;
 
 import java.util.List;
 
+/**
+ * The type Abstract error handler.
+ */
 @Setter
 public abstract class AbstractErrorHandler implements ErrorHandler {
     private List<Class> exceptionToHandle;
@@ -18,6 +21,11 @@ public abstract class AbstractErrorHandler implements ErrorHandler {
         return exceptionToHandle.contains(clazz);
     }
 
+    /**
+     * Sets exception to handle.
+     *
+     * @param exceptionToHandle the exception to handle
+     */
     public void setExceptionToHandle(List<Class> exceptionToHandle) {
         this.handleAllExceptions = false;
         this.exceptionToHandle = exceptionToHandle;

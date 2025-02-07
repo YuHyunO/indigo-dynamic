@@ -892,8 +892,8 @@ public class ServiceContext implements Serializable {
     }
 
     /**
-     * Sets process on.
-     *
+     * 프로세스의 진행여부를 결정한다.
+     * {@code false}로 설정하는 경우 프로세스가 중단된다.
      * @param processOn the process on
      */
     public void setProcessOn(boolean processOn) {
@@ -901,7 +901,7 @@ public class ServiceContext implements Serializable {
     }
 
     /**
-     * Gets process status.
+     * 이 메소드를 사용하는 시점의 프로세스의 상태 코드를 가져온다.
      *
      * @return the process status
      */
@@ -946,13 +946,14 @@ public class ServiceContext implements Serializable {
     }
 
     /**
-     * Is process on boolean.
+     * 프로세스의 중단/진행 여부를 확인한다.
      *
      * @return the boolean
      */
     public boolean isProcessOn() {
         return processOn;
     }
+
 
     @Override
     public String toString() {

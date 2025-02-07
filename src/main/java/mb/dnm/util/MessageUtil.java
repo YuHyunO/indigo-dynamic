@@ -15,9 +15,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The message util class.
+ */
 public class MessageUtil {
     private MessageUtil() {}
 
+    /**
+     * Throwable to StringBuffer
+     *
+     * @param throwable the throwable
+     * @return the string buffer
+     */
     public static StringBuffer toStringBuf(Throwable throwable) {
         if (throwable == null)
             return null;
@@ -28,15 +37,38 @@ public class MessageUtil {
         return sw.getBuffer();
     }
 
+    /**
+     * Throwable to String
+     *
+     * @param throwable the throwable
+     * @return the string
+     */
     public static String toString(Throwable throwable) {
         return toStringBuf(throwable).toString();
     }
 
+    /**
+     * Map to json string.
+     *
+     * @param map          the map
+     * @param prettyFormat the pretty format
+     * @return the string
+     * @throws JsonProcessingException the json processing exception
+     */
     public static String mapToJson(Map map, boolean prettyFormat) throws JsonProcessingException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return mapToJson(map, prettyFormat, dateFormat);
     }
 
+    /**
+     * Map to json string.
+     *
+     * @param map          the map
+     * @param prettyFormat the pretty format
+     * @param dateFormat   the date format
+     * @return the string
+     * @throws JsonProcessingException the json processing exception
+     */
     public static String mapToJson(Map map, boolean prettyFormat, SimpleDateFormat dateFormat) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(dateFormat);
@@ -51,6 +83,13 @@ public class MessageUtil {
         return jsonString;
     }
 
+    /**
+     * Json to map map.
+     *
+     * @param jsonData the json data
+     * @return the map
+     * @throws JsonProcessingException the json processing exception
+     */
     public static Map<String, Object> jsonToMap(String jsonData) throws JsonProcessingException{
         if (jsonData == null)
             return null;
@@ -59,15 +98,42 @@ public class MessageUtil {
         return objectMapper.readValue(jsonData, typeReference);
     }
 
+    /**
+     * Map to xml string.
+     *
+     * @param map          the map
+     * @param prettyFormat the pretty format
+     * @return the string
+     * @throws JsonProcessingException the json processing exception
+     */
     public static String mapToXml (Map map, boolean prettyFormat) throws JsonProcessingException {
         return mapToXml(map, null, prettyFormat);
     }
 
+    /**
+     * Map to xml string.
+     *
+     * @param map          the map
+     * @param rootName     the root name
+     * @param prettyFormat the pretty format
+     * @return the string
+     * @throws JsonProcessingException the json processing exception
+     */
     public static String mapToXml (Map map, String rootName, boolean prettyFormat) throws JsonProcessingException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return mapToXml(map, rootName, prettyFormat, dateFormat);
     }
 
+    /**
+     * Map to xml string.
+     *
+     * @param map          the map
+     * @param rootName     the root name
+     * @param prettyFormat the pretty format
+     * @param dateFormat   the date format
+     * @return the string
+     * @throws JsonProcessingException the json processing exception
+     */
     public static String mapToXml (Map map, String rootName, boolean prettyFormat, SimpleDateFormat dateFormat) throws JsonProcessingException {
         XmlMapper xmlMapper = XmlMapper.builder().build();
         xmlMapper.setDateFormat(dateFormat);

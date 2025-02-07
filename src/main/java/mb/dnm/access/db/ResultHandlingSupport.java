@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mb.dnm.core.context.ServiceContext;
+import mb.dnm.core.context.TransactionContext;
 import mb.dnm.service.general.IterationGroup;
 import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
@@ -13,7 +14,8 @@ import java.util.*;
 
 
 /**
- * The type Result handling support.
+ * {@link QueryExecutor#doHandleSelect(TransactionContext, String, List, Map, ResultHandlingSupport)} 메소드 사용 시 DB 조회결과를 실시간으로 처리하는 Handler 객체이다.
+ * <br>조회 결과를 처리할 때 {@code resultHandlingProcessor}가 사용되며 {@code resultHandlingProcessor}로 {@link IterationGroup}을 사용한다.
  *
  * @author Yuhyun O
  */

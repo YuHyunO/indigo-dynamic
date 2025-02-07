@@ -30,15 +30,8 @@ import java.util.Map;
  *
  * @author Yuhyun O
  * @version 2024.09.27
- * 
- * @Input input으로 전달 받을 parameter의 이름
- * @InputType <code>inputDataType</code> 속성에 지정된 DataType
- * @Output 타입을 변환한 데이터를 다음 서비스로 전달할 output 파라미터 명
- * @OutputType <code>outputDataType</code> 속성에 지정된 DataType
  *
- * @Throws 
- * <code>InvalidServiceConfigurationException</code>: <code>input</code>, <code>output</code>, <code>inputDataType</code>, <code>outputDataType</code> 을 모두 지정하지 않은 경우
- * <code>IllegalStateException</code>: input 과 output 간의 타입변환이 지원되지 않는 경우
+ *
  * */
 @Slf4j
 @Setter

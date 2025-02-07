@@ -25,51 +25,35 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * Input으로 전달받은 파일 경로로부터 파일의 데이터를 업로드한다.<br>
- * dataType 속성이 FILE인 경우, 지정된 경로로 파일이 저장되며 업로드 받은 File이 저장된 경로가 리스트로 output 된다.(지정된 저장 경로가 존재하지 않는 경우 새로 생성함)
- * FTP 파일의 데이터가 파일로 저장되도록 설정된 경우, 어느 경로에 파일을 저장할 지에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.<br>
- *
- * 보통 <code>mb.dnm.service.ftp.ListFiles</code> 서비스와 연계해서 사용한다.
+ * FTP 서버에 파일을 업로드 한다.
+ * <br>
+ * <br>
+ * *<b>Input</b>: 업로드 할 파일의 로컬 경로<br>
+ * *<b>Input type</b>: {@code String}, {@code List<String>}, {@code Set<String>}, {@code FileList}
+ * <br>
+ * <br>
+ * *<b>Output</b>: 파일이 업로드된 FTP 서버 경로<br>
+ * *<b>Output type</b>: {@code List<String>}
+ * <br>
+ * *<b>Error Output</b>: 업로드를 실패한 파일의 FTP 경로<br>
+ * *<b>Error Output type</b>: {@code List<String>}
+ * <br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.ftp.UploadFiles"&gt;
+ *     &lt;property name="sourceAlias"            value="<span style="color: black; background-color: #FAF3D4;">source alias</span>"/&gt;
+ *     &lt;property name="directoryType"          value="<span style="color: black; background-color: #FAF3D4;">DirectoryType</span>"/&gt;
+ *     &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ * &lt;/bean&gt;</pre>
  *
  * @see mb.dnm.service.ftp.ListFiles
  * @see mb.dnm.access.file.FileList
- *
- * @author Yuhyun O
- * @version 2024.09.12
- *
- * @Input 업로드 할 파일의 로컬 경로
- * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code>
- * @Output 업로드된 파일의 FTP서버 경로가 리스트로 output 된다.
- * @OutputType <code>List&lt;String&gt;</code>
- * @ErrorOutput 파일을 업로드 하는 중 에러가 발생하여 업로드에 실패하는 경우 에러가 발생한 파일의 로컬 경로
- * @ErrorOutputType <code>List&lt;String&gt;</code>
  * */
 @Slf4j
 @Setter
 public class UploadFiles extends AbstractFTPService implements Serializable {
     private static final long serialVersionUID = -1038608024349166103L;
-    /**
-     * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 파일을 업로드할 경로로써 사용할 지 결정된다.<br><br>
-     * -기본값: <code>LOCAL_SEND</code><br>
-     * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -REMOTE_RECEIVE → <code>FileTemplate#remoteReceiveDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -REMOTE_TEMP → <code>FileTemplate#remoteTempDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -REMOTE_SUCCESS → <code>FileTemplate#remoteSuccessDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -REMOTE_ERROR → <code>FileTemplate#remoteErrorDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -REMOTE_WRITE → <code>FileTemplate#remoteWriteDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -LOCAL_SUCCESS → <code>FileTemplate#localSuccessDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -LOCAL_ERROR → <code>FileTemplate#localErrorDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * -LOCAL_WRITE → <code>FileTemplate#localWriteDir</code> 을 파일을 업로드할 경로로 사용함<br>
-     * */
+
     private DirectoryType directoryType = DirectoryType.LOCAL_SEND;
     /**
      * 기본값: false

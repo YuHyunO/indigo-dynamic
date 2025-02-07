@@ -6,11 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The type Jms source provider.
+ */
 public class JMSSourceProvider {
     private static JMSSourceProvider instance;
     private Map<String, JmsTemplateWrapper> templateMap;
     private boolean initialized = false;
 
+    /**
+     * Instantiates a new Jms source provider.
+     */
     /*
      * Spring version 만 맞다면 private 생성자로 변경해도 bean으로 등록 가능함
      * */
@@ -21,6 +27,11 @@ public class JMSSourceProvider {
         }
     }
 
+    /**
+     * Access jms source provider.
+     *
+     * @return the jms source provider
+     */
     public static JMSSourceProvider access() {
         if (instance == null) {
             new JMSSourceProvider();
@@ -28,10 +39,21 @@ public class JMSSourceProvider {
         return instance;
     }
 
+    /**
+     * Gets template.
+     *
+     * @param templateName the template name
+     * @return the template
+     */
     public JmsTemplate getTemplate(String templateName) {
         return templateMap.get(templateName);
     }
 
+    /**
+     * Sets jms templates.
+     *
+     * @param templates the templates
+     */
     public void setJmsTemplates(List<JmsTemplateWrapper> templates) {
         if (!initialized) {
             for (JmsTemplateWrapper template : templates) {

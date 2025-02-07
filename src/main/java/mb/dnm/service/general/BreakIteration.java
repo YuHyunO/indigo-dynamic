@@ -13,11 +13,6 @@ import java.util.Collection;
  * input 파라미터로 들어온 값이 Null 또는 Empty 인 경우(Iterable 객체일 때) Iteration을 멈춘다.
  *
  * @see mb.dnm.service.general.IterationGroup
- *
- * @author Yuhyun O
- * @version 2024.09.22
- * @Input
- * @InputType <code>String</code>
  * */
 @Slf4j
 @Setter

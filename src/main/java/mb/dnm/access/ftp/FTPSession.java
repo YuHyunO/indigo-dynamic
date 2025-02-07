@@ -6,14 +6,27 @@ import org.apache.commons.net.ftp.FTPClient;
 import java.io.IOException;
 import java.io.Serializable;
 
+/**
+ * The type Ftp session.
+ */
 public class FTPSession implements ClosableStreamWrapper, Serializable {
     private static final long serialVersionUID = -6338893611571699317L;
     private FTPClient ftp;
 
+    /**
+     * Instantiates a new Ftp session.
+     *
+     * @param ftp the ftp
+     */
     public FTPSession(FTPClient ftp) {
         this.ftp = ftp;
     }
 
+    /**
+     * Logout boolean.
+     *
+     * @return the boolean
+     */
     public boolean logout() {
         if (ftp == null || !ftp.isConnected()) {
             return true;
@@ -47,6 +60,11 @@ public class FTPSession implements ClosableStreamWrapper, Serializable {
         return true;
     }
 
+    /**
+     * Gets ftp client.
+     *
+     * @return the ftp client
+     */
     public FTPClient getFTPClient() {
         return ftp;
     }

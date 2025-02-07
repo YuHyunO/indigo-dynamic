@@ -24,18 +24,27 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <code>StartTransaction</code> 에 의해 시작된 트랜잭션 Rollback 한다.<br>
- * 트랜잭션 그룹이 존재하지 않으면 이 서비스의 호출은 아무런 효과도 없다.<br>
-
+ * {@link StartTransaction} 에 의해 시작된 트랜잭션을 Rollback 한다.<br>
+ * 트랜잭션 그룹이 존재하지 않으면 이 서비스의 호출은 아무런 효과도 없다.
+ * <br>
+ * <br>
+ *<pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;!-- 인터페이스가 사용하는 모든 트랜잭션을 rollback --&gt;
+ * &lt;bean class="mb.dnm.service.db.Rollback"/&gt;
+ *
+ * &lt;!-- Alias로 지정된 Database의 트랜잭션만 rollback --&gt;
+ * &lt;bean class="mb.dnm.service.db.Rollback"&gt;
+ *     &lt;property name="sourceAlias"              value="<span style="color: black; background-color: #FAF3D4;">DB source alias</span>"/&gt;
+ * &lt;/bean&gt;</pre>
+ *
  * @see StartTransaction
+ * @see EndTransaction
+ * @see Commit
  * @see Select
  * @see Insert
  * @see Delete
  * @see Update
  * @see CallProcedure
- *
- * @author Yuhyun O
- * @version 2024.10.02
  *
  * */
 @Slf4j

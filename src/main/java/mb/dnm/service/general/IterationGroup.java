@@ -19,26 +19,45 @@ import mb.dnm.util.MessageUtil;
 import java.io.Serializable;
 import java.util.*;
 
+
 /**
- * Input 파라미터로 Iterable 객체를 전달받아 <code>fetchSize</code> 만큼 반복하며 등록된 <code>List<Service> services</code>를 수행한다.<br>
- * <code>createNewContextEachLoop</code> 설정을 true로 한 경우에는 반복문이 수행되며 때마다 등록된 <code>List<Service> services</code>를 관통하는
- * <code>ServiceContext</code> 가 매번 새로 생성된다. 하지만 이렇게 반복마다 매번 생성되는 Context 객체는 하나의 반복문 안에서만 유효하다.<br><br>
- *
- * 이 서비스가 실행되기 전의 <code>ServiceContext</code> 객체는 사라지지 않는다.<br><br>
- *
- * IterationGroup 내의 Service를 관통하는 <code>ServiceContext</code>에는 현재의 반복횟수를 의미하는 변수가 전달되며, Context 파라미터에서 $iter_position 라는 명으로 확인이 가능하다.<br>
- * <code>Integer currentIterPosition = (Integer) ctx.getContextParam("$iter_position");</code>
+ * input 으로 전달받은 {@link Iterable} 객체를 {@code fetchSize} 만큼 Fetching 하며 Service-Chaining 을 실행한다.<br>
+ * {@link mb.dnm.core.ServiceProcessor} 의 역할을 하는 Service이다.
  *
  *
- * @author Yuhyun O
- * @version 2024.09.22
- * @Input 매번의 Iteration 에서 반복할 요소
- * @InputType <code>Iterable</code>
- * @Output <code>createNewContextEachLoop</code>가 true 인 경우 <code>List&lt;Service&gt; services</code>를 수행하며 output으로 지정된 값을 output으로 사용할 수 있다.
- * @OutputType Object
- * @Exceptions <code>InvalidServiceConfigurationException</code>: Input parameter의 타입이 Iterable 객체가 아닌 경우<br>
- *
- * */
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.general.IterationGroup"&gt;
+ *     &lt;property name="input"                                  value="<span style="color: black; background-color: #FAF3D4;">iterable_input_name</span>"/&gt;
+ *     &lt;property name="iterationInputName"                     value="<span style="color: black; background-color: #FAF3D4;">sub_input_name</span>"/&gt;
+ *     &lt;property name="fetchSize"                              value="<span style="color: black; background-color: #FAF3D4;">fetch size</span>"/&gt;
+ *     &lt;property name="createNewContextEachLoop"               value="<span style="color: black; background-color: #FAF3D4;">true or false</span>"/&gt;
+ *     &lt;property name="continueDespiteError"                   value="<span style="color: black; background-color: #FAF3D4;">true or false</span>"/&gt;
+ *     &lt;property name="passTransactionToContexts"              value="<span style="color: black; background-color: #FAF3D4;">true or false</span>"/&gt;
+ *     &lt;property name="passSessionToContexts"                  value="<span style="color: black; background-color: #FAF3D4;">true or false</span>"/&gt;
+ *     &lt;property name="services"&gt;
+ *         &lt;list&gt;
+ *                  .
+ *                  .
+ *                  .
+ *         &lt;/list&gt;
+ *     &lt;/property&gt;
+ *     &lt;property name="errorHandlers"&gt;
+ *         &lt;list&gt;
+ *                  .
+ *                  .
+ *                  .
+ *         &lt;/list&gt;
+ *     &lt;/property&gt;
+ *     &lt;property name="callbacks"&gt;
+ *         &lt;list&gt;
+ *                  .
+ *                  .
+ *                  .
+ *         &lt;/list&gt;
+ *     &lt;/property&gt;
+ * &lt;/bean&gt;
+ * </pre>
+ */
 @Slf4j
 @Setter
 public class IterationGroup extends ParameterAssignableService implements Serializable {
@@ -62,9 +81,9 @@ public class IterationGroup extends ParameterAssignableService implements Serial
 
     /**
      * 기본값: false<br>
-     * <code>BreakIteration</code> 서비스를 통해 Break 가 멈출 때 까지 반복을 수행한다.<br>
-     * 이 속성이 true 이지만 이 <code>IterationGroup</code> 에 등록된 서비스 중 <code>mb.dnm.service.general.BreakIteration</code> 이 존재하지 않는 경우 InvalidServiceConfigurationException 이 발생한다.<br>
-     * 또 이 속성이 true로 지정되었을 때 <code>iterationInputName</code> 속성 지정을 통한 input 파라미터 전달은 효력이 없다.
+     * {@code BreakIteration} 서비스를 통해 Break 가 멈출 때 까지 반복을 수행한다.<br>
+     * 이 속성이 true 이지만 이 {@code IterationGroup} 에 등록된 서비스 중 {@code mb.dnm.service.general.BreakIteration} 이 존재하지 않는 경우 InvalidServiceConfigurationException 이 발생한다.<br>
+     * 또 이 속성이 true로 지정되었을 때 {@code iterationInputName} 속성 지정을 통한 input 파라미터 전달은 효력이 없다.
      * */
     private boolean iterateUntilBreak = false;
     /**
@@ -98,15 +117,15 @@ public class IterationGroup extends ParameterAssignableService implements Serial
      * */
     private boolean passSessionToContexts = false;
 
+    /**
+     * Instantiates a new Iteration group.
+     */
     public IterationGroup() {
         this.callbacks = new ArrayList<>();
         callbacks.add(new TransactionCleanupCallback());
         callbacks.add(new SessionCleanupCallback());
     }
 
-    private void processInternal(ServiceContext ctx) throws Throwable {
-
-    }
 
     @Override
     public void process(ServiceContext ctx) throws Throwable {
@@ -598,18 +617,34 @@ public class IterationGroup extends ParameterAssignableService implements Serial
         }
     }
 
+    /**
+     * iterationInputName을 지정한다.<br>{@code IterationGroup}이 Input 으로 전달받은 {@link Iterable} 객체를 {@code fetchSize}만큼 fetch 할 때,
+     * fetch된 input 파라미터의 원소가 내부 service-strategy 에 내부적으로 input 될 파라미터명을 의미한다.
+     *
+     * @param iterationInputName the iteration input name
+     */
     public void setIterationInputName(String iterationInputName) {
         if (this.iterateUntilBreak)
             throw new InvalidServiceConfigurationException(this.getClass(), "The property 'iterateUntilBreak' can't be true when 'iterationInputName' is exist.");
         this.iterationInputName = iterationInputName;
     }
 
+    /**
+     * Sets iterate until break.
+     *
+     * @param iterateUntilBreak the iterate until break
+     */
     public void setIterateUntilBreak(boolean iterateUntilBreak) {
         if (iterationInputName != null && iterateUntilBreak)
             throw new InvalidServiceConfigurationException(this.getClass(), "The property 'iterationInputName' can't be exist when 'iterateUntilBreak' is true.");
         this.iterateUntilBreak = iterateUntilBreak;
     }
 
+    /**
+     * Sets fetch size.
+     *
+     * @param fetchSize the fetch size
+     */
     public void setFetchSize(int fetchSize) {
         if (fetchSize <= 0) {
             throw new InvalidServiceConfigurationException(this.getClass(), "Iteration fetch size must be greater than 0.");
@@ -617,10 +652,12 @@ public class IterationGroup extends ParameterAssignableService implements Serial
         this.fetchSize = fetchSize;
     }
 
-    private void SetInitialCheck(boolean initialCheck) {
-        this.initialCheck = initialCheck;
-    }
-
+    /**
+     * {@code IterationGroup}이 callback 으로 실행할 callback 객체를 등록한다.<br>
+     * 기본으로 {@link TransactionCleanupCallback} 과 {@link SessionCleanupCallback} 이 등록되어 있다.
+     *
+     * @param callbacks the callbacks
+     */
     public void setCallbacks(List<AfterProcessCallback> callbacks) {
         for (AfterProcessCallback callback : callbacks) {
             if (callback instanceof TransactionCleanupCallback
@@ -631,4 +668,69 @@ public class IterationGroup extends ParameterAssignableService implements Serial
         }
     }
 
+    /**
+     * {@code IterationGroup}에 Service-Chaining 의 대상인 serviceStrategy 를 등록한다.
+     *
+     * @param services the services
+     */
+    public void setServices(List<Service> services) {
+        this.services = services;
+    }
+
+    /**
+     * 매번의 fetch 과정에서 사용될 ErrorHandler를 등록한다.
+     *
+     * @param errorHandlers the error handlers
+     */
+    public void setErrorHandlers(List<ErrorHandler> errorHandlers) {
+        this.errorHandlers = errorHandlers;
+    }
+
+    /**
+     * 매번의 fetching 과정에서 {@link ServiceContext} 를 새롭게 생성하여 fetch 할 지에 대한 설정이다.<br>
+     * 이 설정이 true 인 경우, 매번의 반복과정에서는 새로운 {@link ServiceContext}가 사용되며, 모든 반복이 완료된 후 최초의 {@link ServiceContext}가 다시 사용된다.
+     *
+     * @param createNewContextEachLoop the create new context each loop
+     */
+    public void setCreateNewContextEachLoop(boolean createNewContextEachLoop) {
+        this.createNewContextEachLoop = createNewContextEachLoop;
+    }
+
+    /**
+     * 각 fetching 과정에서 Error 가 발생하더라도 무시하고 계속 진행할 지에 대한 설정이다.
+     *
+     * @param continueDespiteError the continue despite error
+     */
+    public void setContinueDespiteError(boolean continueDespiteError) {
+        this.continueDespiteError = continueDespiteError;
+    }
+
+    /**
+     * Sets initial check.
+     *
+     * @param initialCheck the initial check
+     */
+    public void setInitialCheck(boolean initialCheck) {
+        this.initialCheck = initialCheck;
+    }
+
+    /**
+     * DB 트랜잭션을 매번의 fetching 과정마다 종료시킬것인지에 대한 설정이다.<br>
+     * true 인 경우 {@link TransactionCleanupCallback} 이 실행되지 않는다.
+     *
+     * @param passTransactionToContexts the pass transaction to contexts
+     */
+    public void setPassTransactionToContexts(boolean passTransactionToContexts) {
+        this.passTransactionToContexts = passTransactionToContexts;
+    }
+
+    /**
+     * {@link mb.dnm.access.ftp.FTPSession} 등의 Session을 매번의 fetching 과정마다 유지할 지에 대한 설정이다.
+     * <br>true 인 경우 {@link SessionCleanupCallback}이 실행되지 않는다.
+     *
+     * @param passSessionToContexts the pass session to contexts
+     */
+    public void setPassSessionToContexts(boolean passSessionToContexts) {
+        this.passSessionToContexts = passSessionToContexts;
+    }
 }

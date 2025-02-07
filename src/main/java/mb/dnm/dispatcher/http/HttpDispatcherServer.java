@@ -5,12 +5,20 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 
+/**
+ * REST 인터페이스를 처리하기 위한 {@code HttpDispatcherServer}
+ */
 @Slf4j
 public class HttpDispatcherServer {
     private final String ROOT_PATH = "/";
     private int port;
     private static HttpDispatcherServer instance;
 
+    /**
+     * {@code HttpDispatcherServer} 서버를 시작한다.
+     *
+     * @throws Exception the exception
+     */
     public void start() throws Exception {
         if (port == -1) {
             throw new IllegalStateException("Set the server port number");
@@ -44,6 +52,11 @@ public class HttpDispatcherServer {
     }
 
 
+    /**
+     * Sets port.
+     *
+     * @param port the port
+     */
     public void setPort(int port) {
         if ((port >= 0 && port <= 1023)) {
             throw new IllegalArgumentException("You can not use a port between 0 and 1023 (well-known port)");

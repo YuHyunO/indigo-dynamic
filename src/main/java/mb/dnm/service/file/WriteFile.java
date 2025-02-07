@@ -25,10 +25,19 @@ import java.util.*;
 /**
  * 지정된 경로에 파일을 생성한다.
  * <br>
- * 파일의 저장 경로, 이름, 인코딩에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.
+ * <br>
+ * *<b>Input</b>: 생성할 파일의 데이터<br>
+ * *<b>Input type</b>: {@code byte[]}, {@code String}, {@code Map<String, Object>}, {@code List<Map<String, Object>>}
+ * <br>
+ * <br>
+ * *<b>Output</b>: 파일이 성성/저장된 경로<br>
+ * *<b>Output type</b>: {@code String}
+ * <br>
+ * <br>
+ * 파일의 저장 경로, 이름, 인코딩에 대한 정보는 {@code InterfaceInfo} 에 저장된 {@code FileTemplate} 의 속성들로부터 가져온다.
  * input 데이터의 타입에 따라 파일내용을 텍스트로 쓸 것인지 바이트배열로 쓸 것인지 또는 특정한 포맷으로 작성할 것인지 결정된다.
- * 파일의 내용으로 전달된 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 인 경우
- * <code>recordSeparator</code>, <code>delimiter</code>, <code>qualifier</code>, <code>replacementOfNullValue</code>, <code>replacementOfEmptyValue</code>, <code>addHeader</code>
+ * 파일의 내용으로 전달된 데이터의 타입이 {@code Map<String, Object>} 또는 {@code List<Map<String, Object>>} 인 경우
+ * {@code recordSeparator}, {@code delimiter}, {@code qualifier}, {@code replacementOfNullValue}, {@code replacementOfEmptyValue}, {@code addHeader}
  * 설정에 따라 파일의 내용이 구성되어 작성된다.
  * <br><br>
  * <i>예시)input 으로 Map[Name:Peter, Age:17, Hobby:Baseball, Phone:(null data), Address:(empty string)] 인 데이터가 이 서비스로 전달되었을 때</i>
@@ -41,26 +50,19 @@ import java.util.*;
  * </pre>
  * <i>위와 같이 설정되었다면 파일에는 다음처럼 내용이 쓰여진다.</i>
  * <pre>
- *
  *         $Name$|$Age$|$Hobby$|$Phone$|Address
- *         $Peter$|$17$|$Baseball$|$$|$?$
- * </pre>
- *
+ *         $Peter$|$17$|$Baseball$|$$|$?$</pre>
+ *<br>
+ *<br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ *   &lt;bean class="mb.dnm.service.file.WriteFile"&gt;
+ *       &lt;property name="sourceAlias"            value="<span style="color: black; background-color: #FAF3D4;">source alias</span>"/&gt;
+ *       &lt;property name="directoryType"          value="<span style="color: black; background-color: #FAF3D4;">DirectoryType</span>"/&gt;
+ *       &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *       &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ *   &lt;/bean&gt;</pre>
  * @see FileTemplate
  * @see ReadFile
- *
- * @author Yuhyun O
- * @version 2024.09.19
- *
- * @Input 생성할 파일의 데이터
- * @InputType
- * <code>byte[]</code><br>
- * <code>String <code><br>
- * <code>Map&lt;String, Object&gt; </code><br>
- * <code>List&lt;Map&lt;String, Object&gt; </code><br>
- *
- * @Output 생성한 파일의 저장 경로(파일명 포함)
- * @OutputType <code>String</code>
  * */
 @Slf4j
 @Setter
@@ -79,68 +81,68 @@ public class WriteFile extends SourceAccessService implements Serializable {
     private boolean allowCreateEmptyFile = false;
     /**
      * 기본값: \n (Line Feed)<br>
-     * 파일 내용으로 쓰일 Input value의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우
+     * 파일 내용으로 쓰일 Input value의 타입이 {@code List<Map<String, Object>>} 즉, {@code List<Map<컬럼명, 데이터>>} 인 경우
      * 각각의 레코드를 구분할 문자에 대한 설정이다.
      * */
     private String recordSeparator = "\n";
     /**
      * 기본값: | (Pipe, Vertical bar)<br>
      * 각각의 컬럼명과 컬럼의 데이터를 구분할 문자를 의미한다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
-     * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 {@code Map<String, Object>} 또는 {@code List<Map<String, Object>>}
+     * 즉, {@code Map<컬럼명, 데이터>} 또는 {@code List<Map<컬럼명, 데이터>>} 인 경우에만 유효하다</i>
      * */
     private String delimiter = "|";
     /**
      * 기본값: "" (빈값, empty string)<br>
      * 각각의 컬럼명과 데이터의 의미 단위를 제한해 줄 문자를 의미한다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
-     * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 {@code Map<String, Object>} 또는 {@code List<Map<String, Object>>}
+     * 즉, {@code Map<컬럼명, 데이터>} 또는 {@code List<Map<컬럼명, 데이터>>} 인 경우에만 유효하다</i>
      * */
     private String qualifier = "";
     /**
      * 기본값: (빈값, empty string)
      * 데이터가 null인 경우 파일에 어떤 문자로 대체하여 기입할 지에 대한 설정이다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
-     * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 {@code Map<String, Object>} 또는 {@code List<Map<String, Object>>}
+     * 즉, {@code Map<컬럼명, 데이터>} 또는 {@code List<Map<컬럼명, 데이터>>} 인 경우에만 유효하다</i>
      * */
     private String replacementOfNullValue = "";
     /**
      * 기본값: (빈값, empty string)
      * 데이터가 빈 문자열인 경우 파일에 어떤 문자로 대체하여 기입할 지에 대한 설정이다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
-     * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 {@code Map<String, Object>} 또는 {@code List<Map<String, Object>>}
+     * 즉, {@code Map<컬럼명, 데이터>} 또는 {@code List<Map<컬럼명, 데이터>>} 인 경우에만 유효하다</i>
      * */
     private String replacementOfEmptyValue = "";
     /**
      * 기본값: &lf;<br>
      * 파일의 데이터에 Line Feed (\n) 가 존재하는 경우 대체할 문자에 대한 설정이다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
-     * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 {@code Map<String, Object>} 또는 {@code List<Map<String, Object>>}
+     * 즉, {@code Map<컬럼명, 데이터>} 또는 {@code List<Map<컬럼명, 데이터>>} 인 경우에만 유효하다</i>
      * */
     private String replacementOfLineFeed = "&lf;";
     /**
      * 기본값: &cr;<br>
      * 파일의 데이터에 Carriage return (\r) 이 존재하는 경우 대체할 문자에 대한 설정이다.<br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
-     * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 {@code Map<String, Object>} 또는 {@code List<Map<String, Object>>}
+     * 즉, {@code Map<컬럼명, 데이터>} 또는 {@code List<Map<컬럼명, 데이터>>} 인 경우에만 유효하다</i>
      * */
     private String replacementOfCarriageReturn = "&cr;";
     /**
      * 기본값: true<br>
      * 파일의 상단에 컬럼명을 기입할 지에 대한 설정이다.(단 addMetadata = true 인 경우 그 하단에 기입됨)<br>
-     * <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉,  <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code>의 형태로 input이 전달되었을 때
+     * {@code List<Map<String, Object>>} 즉,  {@code List<Map<컬럼명, 데이터>>}의 형태로 input이 전달되었을 때
      * 리스트의 가장 첫번째 인덱스인 Map의 KeySet이 컬럼명으로 사용되고 그 이후 인덱스에서는 이미 추출된 컬럼명으로 데이터를 가져와 내용을 작성하게된다.<br><br>
      * <i>예시)</i>
      * <pre>
-     * &lt;![METADATA[
+     * <![METADATA[
      *         . . .
-     * ]]&gt;
+     * ]]>
      * Column1|Column2|Column3|...    ← Header 부분
      * Value|Value|Value|...
      *
      * </pre><br><br>
-     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
-     * 즉, <code>Map&lt;컬럼명, 데이터&gt;</code> 또는 <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 인 경우에만 유효하다</i>
+     * <i>이 속성은 파일 내용으로 쓰일 Input value의 타입이 {@code Map<String, Object>} 또는 {@code List<Map<String, Object>>}
+     * 즉, {@code Map<컬럼명, 데이터>} 또는 {@code List<Map<컬럼명, 데이터>>} 인 경우에만 유효하다</i>
      * */
     private boolean addHeader = true;
     /**
@@ -155,10 +157,10 @@ public class WriteFile extends SourceAccessService implements Serializable {
     /**
      * 기본값: false<br>
      * 파일의 내용 가장 상단에 파일 인코딩, Parsing 을 위한 정보 등을 기입할 지에 대한 설정이다.
-     * 메타데이터에 대한 설정은 input된 데이터의 타입이 <code>Map&lt;String, Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 인 경우에 적용된다.
+     * 메타데이터에 대한 설정은 input된 데이터의 타입이 {@code Map<String, Object>} 또는 {@code List<Map<String, Object>>} 인 경우에 적용된다.
      * 메타데이터는 다음과 같은 형식으로 작성된다.
      * <pre>
-     * &lt;![METADATA[...]]&gt;
+     * <![METADATA[...]]>
      *          ...      ← 파일의 Header 또는 본문 부분
      * </pre>
      * <br>
@@ -168,20 +170,20 @@ public class WriteFile extends SourceAccessService implements Serializable {
 
     /**
      * 기본값: false<br>
-     * 파일 내용으로 쓰일 Input value의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 이고
-     * <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code>의 데이터 타입이 바이트 배열(<code>byte[]</code>)인 경우 해당 데이터를 문자열로 변환하여 파일에 쓸지 결정하는 옵션이다.<br>
-     * handleBinaryToString 속성이 true인 경우 문자열의 인코딩은 <code>InterfaceInfo</code>가 참조하는 <code>FileTemplate</code> 의 charset 또는 이 서비스의 속성인 <code>commonCharset<</code> 의 설정을 따른다.
+     * 파일 내용으로 쓰일 Input value의 타입이 {@code List<Map<String, Object>>} 즉, {@code List<Map<컬럼명, 데이터>>} 이고
+     * {@code List<Map<컬럼명, 데이터>>}의 데이터 타입이 바이트 배열({@code byte[]})인 경우 해당 데이터를 문자열로 변환하여 파일에 쓸지 결정하는 옵션이다.<br>
+     * handleBinaryToString 속성이 true인 경우 문자열의 인코딩은 {@code InterfaceInfo}가 참조하는 {@code FileTemplate} 의 charset 또는 이 서비스의 속성인 {@code commonCharset<} 의 설정을 따른다.
      * */
     private boolean handleBinaryToString = false;
     /**
      * 기본값: true<br>
-     * 파일 내용으로 쓰일 Input value의 타입이 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code> 이고
-     * <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code>의 데이터 타입이 바이트 배열(<code>byte[]</code>)인 경우 해당 데이터를 바이트 배열 그대로 파일에 쓸지 결정하는 옵션이다. 기본값이 true 이다.<br>
-     * 바이너리 데이터가 파일에 작성될 때 데이터는 FileParser.BINARY_DATA_WRAPPER(&lt;![BINARY[...]]&gt;) 안에 쓰여지며 바이트 배열의 각 원소는 white space 로 구분된다.<br>
+     * 파일 내용으로 쓰일 Input value의 타입이 {@code List<Map<String, Object>>} 즉, {@code List<Map<컬럼명, 데이터>>} 이고
+     * {@code List<Map<컬럼명, 데이터>>}의 데이터 타입이 바이트 배열({@code byte[]})인 경우 해당 데이터를 바이트 배열 그대로 파일에 쓸지 결정하는 옵션이다. 기본값이 true 이다.<br>
+     * 바이너리 데이터가 파일에 작성될 때 데이터는 FileParser.BINARY_DATA_WRAPPER(<![BINARY[...]]>) 안에 쓰여지며 바이트 배열의 각 원소는 white space 로 구분된다.<br>
      * <i>예시)</i>
      * <pre>
      *    byte[] bytes = new String("ABCDEFGHIJKLMNOPQRSTUVWXYZ").getBytes("UTF-8")
-     *    → &lt;![BINARY[65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90]]&gt;
+     *    → <![BINARY[65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90]]>
      * </pre>
      * */
     private boolean handleBinaryAsItIs = true;
@@ -210,34 +212,12 @@ public class WriteFile extends SourceAccessService implements Serializable {
      * */
     private String filenameInput = null;
 
-    /**
-     * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 생성한 파일의 저장 경로로써 사용할 지 결정된다.<br><br>
-     * -기본값: <code>LOCAL_WRITE</code><br>
-     * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -REMOTE_RECEIVE → <code>FileTemplate#remoteReceiveDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -REMOTE_TEMP → <code>FileTemplate#remoteTempDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -REMOTE_SUCCESS → <code>FileTemplate#remoteSuccessDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -REMOTE_ERROR → <code>FileTemplate#remoteErrorDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -REMOTE_WRITE → <code>FileTemplate#remoteWriteDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -LOCAL_SUCCESS → <code>FileTemplate#localSuccessDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -LOCAL_ERROR → <code>FileTemplate#localErrorDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * -LOCAL_WRITE → <code>FileTemplate#localWriteDir</code> 을 생성한 파일의 저장 경로로 사용함<br>
-     * */
     private DirectoryType directoryType = DirectoryType.LOCAL_WRITE;
 
     /**
      * 생성될 파일의 인코딩을 지정하는 설정이다.<br>
-     * 이 속성이 지정되지 않았을 경우, 이 서비스의 <code>process(ServiceContext)</code> 메소드를 통해 전달된 <code>ServiceContext</code>의 <code>InterfaceInfo</code>가 참조하는
-     * <code>FileTemplate</code> 의 <code>charset<</code> 속성을 인코딩으로 사용한다.
+     * 이 속성이 지정되지 않았을 경우, 이 서비스의 {@code process(ServiceContext)} 메소드를 통해 전달된 {@code ServiceContext}의 {@code InterfaceInfo}가 참조하는
+     * {@code FileTemplate} 의 {@code charset<} 속성을 인코딩으로 사용한다.
      * */
     private Charset commonCharset;
 

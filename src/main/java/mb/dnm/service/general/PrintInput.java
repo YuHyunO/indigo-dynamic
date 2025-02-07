@@ -2,6 +2,7 @@ package mb.dnm.service.general;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.access.SizeCheckable;
 import mb.dnm.core.context.ServiceContext;
 import mb.dnm.service.ParameterAssignableService;
 import mb.dnm.util.MessageUtil;
@@ -14,17 +15,20 @@ import java.util.Map;
 
 
 /**
- * Input 파라미터로 들어온 데이터를 로그로 출력한다.
- * 지정된 input 파라미터가 없는 경우 아무것도 출력되지 않는다.
+ * Input 파라미터로 전달받은 데이터를 로그로 출력한다.
+ * <br>
+ * <br>
+ * *<b>Input</b>: 로그를 출력할 context 파라미터명<br>
+ * *<b>Input type</b>: {@link Object}<br>
  *
- * @see mb.dnm.service.ftp.FTPLogin
- *
- * @author Yuhyun O
- * @version 2024.09.12
- *
- * @Input List를 가져올 Directory의 경로
- * @InputType <code>Object</code>
- * */
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.general.PrintInput"&gt;
+ *     &lt;property name="input"                                      value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="printToJsonWhenCollectionOrMap"             value="<span style="color: black; background-color: #FAF3D4;">true or false</span>"/&gt;
+ *     &lt;property name="printToXmlWhenCollectionOrMap"              value="<span style="color: black; background-color: #FAF3D4;">true or false</span>"/&gt;
+ *     &lt;property name="indented"                                   value="<span style="color: black; background-color: #FAF3D4;">true or false</span>"/&gt;
+ * &lt;/bean&gt;</pre>
+ */
 @Slf4j
 @Setter
 public class PrintInput extends ParameterAssignableService implements Serializable {
@@ -73,13 +77,32 @@ public class PrintInput extends ParameterAssignableService implements Serializab
         }
     }
 
+    /**
+     * input의 타입이 {@link Collection} 또는 {@link Map} 인 경우 로그를 Json 형태로 출력할 지 여부
+     *
+     * @param printToJsonWhenCollectionOrMap the print to json when collection or map
+     */
     public void setPrintToJsonWhenCollectionOrMap(boolean printToJsonWhenCollectionOrMap) {
         this.printToXmlWhenCollectionOrMap = !printToJsonWhenCollectionOrMap;
         this.printToJsonWhenCollectionOrMap = printToJsonWhenCollectionOrMap;
     }
 
+    /**
+     * input의 타입이 {@link Collection} 또는 {@link Map} 인 경우 로그를 XML 형태로 출력할 지 여부
+     *
+     * @param printToXmlWhenCollectionOrMap the print to xml when collection or map
+     */
     public void setPrintToXmlWhenCollectionOrMap(boolean printToXmlWhenCollectionOrMap) {
         this.printToJsonWhenCollectionOrMap = !printToXmlWhenCollectionOrMap;
         this.printToXmlWhenCollectionOrMap = printToXmlWhenCollectionOrMap;
+    }
+
+    /**
+     * {@code this.printToXmlWhenCollectionOrMap = true} 또는 {@code this.printToXmlWhenCollectionOrMap = true} 인 경우 들여쓰기 하여 출력할 지 여부
+     *
+     * @param indented the indented
+     */
+    public void setIndented(boolean indented) {
+        this.indented = indented;
     }
 }

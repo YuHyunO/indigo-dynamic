@@ -21,43 +21,30 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * Input으로 전달받은 파일 경로로부터 파일의 데이터를 다운로드한다.<br>
- * dataType 속성이 FILE 또는 FILES 인 경우, 지정된 경로로 파일이 저장되며 다운로드 받은 File이 저장된 경로가 String 또는 List로 output 된다.(지정된 저장 경로가 존재하지 않는 경우 새로 생성함)<br>
- * downloadType 속성이 FILE 일 때 output 되는 데이터의 타입은 <code>String</code> 이며 FILES 일 때는 <code>List&lt;String&gt;</code> 으로 output 된다.<br>
- * dataType 속성이 BYTE_ARRAY 인 경우, 파일명과 파일의 데이터가 <code>Map&lt;String, byte[]&gt;</code> 형태로 담긴 리스트가 output 된다.<br>
- * FTP 파일의 데이터가 파일로 저장되도록 설정된 경우, 어느 경로에 파일을 저장할 지에 대한 정보는 <code>InterfaceInfo</code> 에 저장된 <code>FileTemplate</code> 의 속성들로부터 가져온다.<br>
- * <p><i>
- * 파일을 다운로드 하는 도중 에러가 발생하는 경우에 다음과 같이 처리하도록 설정할 수 있다.<br><br>
+ * FTP 서버에서 파일을 다운로드 한다.
+ * <br>
+ * <br>
+ * *<b>Input</b>: 다운로드 할 파일 또는 디렉터리의 경로<br>
+ * *<b>Input type</b>: {@code String}, {@code List<String>}, {@code Set<String>}, {@code FileList}
+ * <br>
+ * <br>
+ * *<b>Output</b>: 파일이 저장된 경로<br>
+ * *<b>Output type</b>: {@code String} (1건), {@code List<String>} (N건)
+ * <br>
+ * *<b>Error Output</b>: 다운로드를 실패한 파일의 FTP 경로<br>
+ * *<b>Error Output type</b>: {@code List<String>}
+ * <br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.ftp.DownloadFiles"&gt;
+ *     &lt;property name="sourceAlias"            value="<span style="color: black; background-color: #FAF3D4;">source alias</span>"/&gt;
+ *     &lt;property name="directoryType"          value="<span style="color: black; background-color: #FAF3D4;">DirectoryType</span>"/&gt;
+ *     &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ * &lt;/bean&gt;</pre>
  *
- * 1. 파일 다운로드 중 다운로드에 실패하면 다운로드에 성공했던 모든 파일을 파일 저장경로에서 삭제한 뒤 <code>Exception</code> 을 throw 한다.(기본 설정값)
- * (<code>downloadType</code> 이 BYTE_ARRAY인 경우 삭제절차는 없음)<br>
- * →설정방법: <code>deleteDownloadedFileWhenError</code>을 <code>true</code>로 지정하고 <code>ignoreErrorFile</code>을 <code>false</code>로 설정한다.<br><br>
- *
- * 2. 다운로드에 실패한 파일은 건너뛰고 계속 다운로드를 진행한 후, 실패한 파일의 FTP 서버 경로를 error output 으로 output 한다.<br>
- * →설정방법: <code>errorOutput</code>을 지정하고, <code>ignoreErrorFile</code>을 <code>true</code>로 설정한다.<br><br>
- *
- * 3. 파일 다운로드 중 다운로드에 실패하면 다운로드에 성공한 파일은 그대로 두고 <code>Exception</code> 을 throw 한다.
- * (단, <code>downloadType</code> 이 BYTE_ARRAY인 경우에는 byte array 데이터가 보존되지 않음)<br>
- * →설정방법: <code>deleteDownloadedFileWhenError</code>을 <code>false</code>로 지정하고 <code>ignoreErrorFile</code>을 <code>false</code>로 설정한다.<br><br>
- * 
- *</i></p>
- *
- * 보통 <code>mb.dnm.service.ftp.ListFiles</code> 서비스와 연계해서 사용한다.
  *
  * @see mb.dnm.service.ftp.ListFiles
  * @see mb.dnm.access.file.FileList
- *
- * @author Yuhyun O
- * @version 2024.09.12
- *
- * @Input 다운로드 받을 파일의 FTP서버 경로
- * @InputType <code>String</code>(1건) 또는 <code>List&lt;String&gt;</code> 또는 <code>Set&lt;String&gt;</code> 또는 <code>FileList</code>
- * @Output downloadType 속성이 FILE 또는 FILES 인 경우, 지정된 경로로 파일이 저장되며 다운로드 받은 File이 저장된 경로가 output 된다.<br>
- * downloadType 속성이 FILE 일 때는 output 되는 데이터 타입은 <code>String</code> 이며 FILES 일 때는 <code>List&lt;String&gt;</code> 으로 output 된다.<br>
- * downloadType 속성이 BYTE_ARRAY 인 경우, 파일명과 파일의 데이터가 <code>Map&lt;String, byte[]&gt;</code> 형태로 담긴 리스트가 output 된다.
- * @OutputType dataType(FILE): <code>String</code>, dataType(FILES): <code>List&lt;String&gt;</code>, dataType(BYTE_ARRAY): <code>List&lt;Map&lt;String, byte[]&gt;&gt;</code>
- * @ErrorOutput 파일을 다운로드 하는 중 에러가 발생하여 다운로드에 실패하는 경우 에러가 발생한 파일의 FTP서버 경로
- * @ErrorOutputType <code>List&lt;String&gt;</code>
  * */
 @Slf4j
 @Setter
@@ -67,7 +54,7 @@ public class DownloadFiles extends AbstractFTPService implements Serializable {
     /**
      * outPutDataType 속성에 따라 파일의 데이터가 어떤 식으로 저장될 지 결정된다.<br>
      * 기본값: FILE<br>
-     * -FILE (default) → <code>FileTemplate</code> 에서 directoryType과 일치하는 경로정보를 가져와서에서 파일로 저장된다.
+     * -FILE (default) → {@code FileTemplate} 에서 directoryType과 일치하는 경로정보를 가져와서에서 파일로 저장된다.
      * -BYTE_ARRAY → byte array 형태로 output 된다.
      * */
     private DataType downloadType = DataType.FILE;
@@ -80,33 +67,6 @@ public class DownloadFiles extends AbstractFTPService implements Serializable {
      * */
     private boolean deleteDownloadedFileWhenError = true;
 
-
-    /**
-     * outPutDataType 속성이 DataType.FILE 인 경우에만 이 속성이 유효하다.<br>
-     * directoryType 속성에 따라 <code>FileTemplate</code>에서 어떤 속성의 값을 목록을 가져올 경로로써 사용할 지 결정된다.<br>
-     * 이 속성을 설정하는데 있어 주의할 점은 설정한 directoryType이 REMOTE이든 LOCAL이든 상관없이 파일은 현재 어댑터 어플리케이션이 작동중인 하드웨어의 지정된 경로에 저장이 된다.
-     * 따라서 REMOTE라는 prefix를 가진 directoryType을 설정하더라도 원격 서버에 파일이 전송되어 저장되지 않는다.<br>
-     * 
-     * -기본값: <code>LOCAL_RECEIVE</code><br>
-     * -REMOTE_SEND → <code>FileTemplate#remoteSendDir</code> 에 파일이 저장됨<br>
-     * -REMOTE_RECEIVE → <code>FileTemplate#remoteReceiveDir</code> 에 파일이 저장됨<br>
-     * -REMOTE_TEMP → <code>FileTemplate#remoteTempDir</code> 에 파일이 저장됨<br>
-     * -REMOTE_SUCCESS → <code>FileTemplate#remoteSuccessDir</code> 에 파일이 저장됨<br>
-     * -REMOTE_ERROR → <code>FileTemplate#remoteErrorDir</code> 에 파일이 저장됨<br>
-     * -REMOTE_BACKUP → <code>FileTemplate#remoteBackupDir</code> 에 파일이 저장됨<br>
-     * -REMOTE_MOVE → <code>FileTemplate#remoteMoveDir</code> 에 파일이 저장됨<br>
-     * -REMOTE_COPY → <code>FileTemplate#remoteCopyDir</code> 에 파일이 저장됨<br>
-     * -REMOTE_WRITE → <code>FileTemplate#remoteWriteDir</code> 에 파일이 저장됨<br>
-     * -LOCAL_SEND → <code>FileTemplate#localSendDir</code> 에 파일이 저장됨<br>
-     * -LOCAL_RECEIVE → <code>FileTemplate#localReceiveDir</code> 에 파일이 저장됨<br>
-     * -LOCAL_TEMP → <code>FileTemplate#localTempDir</code> 에 파일이 저장됨<br>
-     * -LOCAL_SUCCESS → <code>FileTemplate#localSuccessDir</code> 에 파일이 저장됨<br>
-     * -LOCAL_ERROR → <code>FileTemplate#localErrorDir</code> 에 파일이 저장됨<br>
-     * -LOCAL_BACKUP → <code>FileTemplate#localBackupDir</code> 에 파일이 저장됨<br>
-     * -LOCAL_MOVE → <code>FileTemplate#localMoveDir</code> 에 파일이 저장됨<br>
-     * -LOCAL_COPY → <code>FileTemplate#localCopyDir</code> 에 파일이 저장됨<br>
-     * -LOCAL_WRITE → <code>FileTemplate#localWriteDir</code> 에 파일이 저장됨<br>
-     * */
     private DirectoryType directoryType = DirectoryType.LOCAL_RECEIVE;
 
     @Override

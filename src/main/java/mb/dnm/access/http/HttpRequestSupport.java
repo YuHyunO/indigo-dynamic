@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * The type Http request support.
+ */
 @Slf4j
 public class HttpRequestSupport implements Serializable {
 
@@ -31,6 +34,9 @@ public class HttpRequestSupport implements Serializable {
     private boolean clearHeadersAfterSend = true;
     private boolean clearParamsAfterSend = true;
 
+    /**
+     * Instantiates a new Http request support.
+     */
     public HttpRequestSupport() {
         this.headers = new HashMap<>();
         this.parameters = new HashMap<>();
@@ -38,6 +44,13 @@ public class HttpRequestSupport implements Serializable {
         this.formDataParams = new HashMap<>();
     }
 
+    /**
+     * Instantiates a new Http request support.
+     *
+     * @param connectTimeout the connect timeout
+     * @param readTimeout    the read timeout
+     * @param useCashes      the use cashes
+     */
     public HttpRequestSupport(int connectTimeout, int readTimeout, boolean useCashes) {
         this.headers = new HashMap<>();
         this.parameters = new HashMap<>();
@@ -48,22 +61,65 @@ public class HttpRequestSupport implements Serializable {
         this.useCashes = useCashes;
     }
 
+    /**
+     * Gets request.
+     *
+     * @param url the url
+     * @return the request
+     * @throws MalformedURLException the malformed url exception
+     * @throws IOException           the io exception
+     */
     public HttpResponseEntity getRequest(String url) throws MalformedURLException, IOException {
         return request(url, "GET", null, null, null);
     }
 
+    /**
+     * Gets request.
+     *
+     * @param url        the url
+     * @param parameters the parameters
+     * @return the request
+     * @throws MalformedURLException the malformed url exception
+     * @throws IOException           the io exception
+     */
     public HttpResponseEntity getRequest(String url, Map<String, String[]> parameters) throws MalformedURLException, IOException {
         return request(url, "GET", parameters, null, null);
     }
 
+    /**
+     * Post request http response entity.
+     *
+     * @param url the url
+     * @return the http response entity
+     * @throws MalformedURLException the malformed url exception
+     * @throws IOException           the io exception
+     */
     public HttpResponseEntity postRequest(String url) throws MalformedURLException, IOException {
         return request(url, "POST", null, null, null);
     }
 
+    /**
+     * Post request http response entity.
+     *
+     * @param url  the url
+     * @param body the body
+     * @return the http response entity
+     * @throws MalformedURLException the malformed url exception
+     * @throws IOException           the io exception
+     */
     public HttpResponseEntity postRequest(String url, byte[] body) throws MalformedURLException, IOException {
         return request(url, "POST", null, null, body);
     }
 
+    /**
+     * Post request http response entity.
+     *
+     * @param url  the url
+     * @param body the body
+     * @return the http response entity
+     * @throws MalformedURLException the malformed url exception
+     * @throws IOException           the io exception
+     */
     public HttpResponseEntity postRequest(String url, Object body) throws MalformedURLException, IOException {
         if (body instanceof String) {
             return postRequest(url, (String) body);
@@ -76,20 +132,53 @@ public class HttpRequestSupport implements Serializable {
         }
     }
 
+    /**
+     * Post request http response entity.
+     *
+     * @param url  the url
+     * @param body the body
+     * @return the http response entity
+     * @throws MalformedURLException the malformed url exception
+     * @throws IOException           the io exception
+     */
     public HttpResponseEntity postRequest(String url, String body) throws MalformedURLException, IOException {
         return request(url, "POST", null, null, body.getBytes());
     }
 
+    /**
+     * Post url encoded form data http response entity.
+     *
+     * @param url the url
+     * @return the http response entity
+     * @throws IOException the io exception
+     */
     public HttpResponseEntity postUrlEncodedFormData(String url) throws IOException {
         this.headers.put("Content-Type", "application/x-www-form-urlencoded");
         return request(url, "POST", null, headers, getParamsByte(this.formDataParams));
     }
 
+    /**
+     * Post url encoded form data http response entity.
+     *
+     * @param url            the url
+     * @param formDataParams the form data params
+     * @return the http response entity
+     * @throws IOException the io exception
+     */
     public HttpResponseEntity postUrlEncodedFormData(String url, Map<String, Object> formDataParams) throws IOException {
         this.headers.put("Content-Type", "application/x-www-form-urlencoded");
         return request(url, "POST", null, headers, getParamsByte(formDataParams));
     }
 
+    /**
+     * Post url encoded form data http response entity.
+     *
+     * @param url        the url
+     * @param parameters the parameters
+     * @param headers    the headers
+     * @return the http response entity
+     * @throws IOException the io exception
+     */
     public HttpResponseEntity postUrlEncodedFormData(String url, Map<String, String[]> parameters, Map<String, String> headers) throws IOException {
         if (headers == null) {
             headers = new HashMap<>();
@@ -98,11 +187,31 @@ public class HttpRequestSupport implements Serializable {
         return request(url, "POST", parameters, headers, getParamsByte(this.formDataParams));
     }
 
+    /**
+     * Post request http response entity.
+     *
+     * @param url  the url
+     * @param body the body
+     * @return the http response entity
+     * @throws MalformedURLException the malformed url exception
+     * @throws IOException           the io exception
+     */
     public HttpResponseEntity postRequest(String url, Map<String, Object> body) throws MalformedURLException, IOException {
         String jsonData = MessageUtil.mapToJson(body, false);
         return request(url, "POST", null, null, jsonData.getBytes());
     }
 
+    /**
+     * Request http response entity.
+     *
+     * @param url        the url
+     * @param method     the method
+     * @param parameters the parameters
+     * @param headers    the headers
+     * @param body       the body
+     * @return the http response entity
+     * @throws IOException the io exception
+     */
     public HttpResponseEntity request(String url, String method, Map<String, String[]> parameters, Map<String, String> headers, byte[] body) throws IOException {
         if (!pathParameters.isEmpty()) {
             url = getPathParamMappedUrl(url, this.pathParameters);
@@ -152,16 +261,34 @@ public class HttpRequestSupport implements Serializable {
         return new HttpResponseEntity(connection);
     }
 
+    /**
+     * Sets connect timeout.
+     *
+     * @param connectTimeout the connect timeout
+     */
     public void setConnectTimeout(int connectTimeout) {
         if (connectTimeout < 0) throw new IllegalArgumentException("The property 'connectTimeout' can't be lesser than 0");
         this.connectTimeout = connectTimeout;
     }
 
+    /**
+     * Sets read timeout.
+     *
+     * @param readTimeout the read timeout
+     */
     public void setReadTimeout(int readTimeout) {
         if (readTimeout < 0) throw new IllegalArgumentException("The property 'readTimeout' can't be lesser than 0");
         this.readTimeout = readTimeout;
     }
 
+    /**
+     * Gets path param mapped url.
+     *
+     * @param url            the url
+     * @param pathParameters the path parameters
+     * @return the path param mapped url
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
     protected String getPathParamMappedUrl(String url, List<String> pathParameters) throws UnsupportedEncodingException {
         if (url == null) {
             throw new IllegalArgumentException("The argument 'url' is null");
@@ -177,6 +304,14 @@ public class HttpRequestSupport implements Serializable {
         return mappedUrl.toString();
     }
 
+    /**
+     * Gets param mapped url.
+     *
+     * @param url        the url
+     * @param parameters the parameters
+     * @return the param mapped url
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
     protected String getParamMappedURL(String url, Map<String, String[]> parameters) throws UnsupportedEncodingException {
         if (url == null) {
             throw new IllegalArgumentException("The argument 'url' is null");
@@ -211,6 +346,12 @@ public class HttpRequestSupport implements Serializable {
         }
     }
 
+    /**
+     * Sets request headers.
+     *
+     * @param connection the connection
+     * @param headers    the headers
+     */
     protected void setRequestHeaders(HttpURLConnection connection, Map<String, String> headers) {
         if (headers != null && !headers.isEmpty()) {
             for (String headerName : headers.keySet()) {
@@ -255,27 +396,62 @@ public class HttpRequestSupport implements Serializable {
         return result;
     }
 
+    /**
+     * Add header.
+     *
+     * @param key   the key
+     * @param value the value
+     */
     public void addHeader(String key, String value) {
         this.headers.put(key, value);
     }
+
+    /**
+     * Add header.
+     *
+     * @param headers the headers
+     */
     public void addHeader(Map<String, String> headers) {
         for (String paramKey : headers.keySet()) {
             this.headers.put(paramKey, headers.get(paramKey));
         }
     }
 
+    /**
+     * Add parameter.
+     *
+     * @param key   the key
+     * @param value the value
+     */
     public void addParameter(String key, String value) {
         this.parameters.put(key, new String[]{value});
     }
 
+    /**
+     * Add parameter.
+     *
+     * @param key  the key
+     * @param flag the flag
+     */
     public void addParameter(String key, boolean flag) {
         this.parameters.put(key, new String[]{String.valueOf(flag)});
     }
 
+    /**
+     * Add parameter.
+     *
+     * @param key   the key
+     * @param value the value
+     */
     public void addParameter(String key, int value) {
         this.parameters.put(key, new String[]{String.valueOf(value)});
     }
 
+    /**
+     * Add path parameter.
+     *
+     * @param value the value
+     */
     public void addPathParameter(String value) {
         while (true) {
             if (value.startsWith("/")) {
@@ -289,6 +465,12 @@ public class HttpRequestSupport implements Serializable {
         this.pathParameters.add(value);
     }
 
+    /**
+     * Add path parameter.
+     *
+     * @param index the index
+     * @param value the value
+     */
     public void addPathParameter(int index, String value) {
         while (true) {
             if (value.startsWith("/")) {
@@ -309,14 +491,30 @@ public class HttpRequestSupport implements Serializable {
         }
     }
 
+    /**
+     * Add form data param.
+     *
+     * @param key   the key
+     * @param value the value
+     */
     public void addFormDataParam(String key, String value) {
         this.formDataParams.put(key, value);
     }
 
+    /**
+     * Sets clear headers after send.
+     *
+     * @param clearParamsAfterSend the clear params after send
+     */
     public void setClearHeadersAfterSend(boolean clearParamsAfterSend) {
         this.clearParamsAfterSend = clearParamsAfterSend;
     }
 
+    /**
+     * Sets clear params after send.
+     *
+     * @param clearParamsAfterSend the clear params after send
+     */
     public void setClearParamsAfterSend(boolean clearParamsAfterSend) {
         this.clearParamsAfterSend = clearParamsAfterSend;
     }

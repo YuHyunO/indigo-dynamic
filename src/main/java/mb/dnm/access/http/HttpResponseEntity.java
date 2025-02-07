@@ -12,6 +12,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The type Http response entity.
+ */
 @Slf4j
 public class HttpResponseEntity implements Serializable {
     private static final long serialVersionUID = -7186121775917736576L;
@@ -22,6 +25,12 @@ public class HttpResponseEntity implements Serializable {
     private int responseCode;
     private final int BUFFER_SIZE = 64 * 1024;
 
+    /**
+     * Instantiates a new Http response entity.
+     *
+     * @param connection the connection
+     * @throws IOException the io exception
+     */
     public HttpResponseEntity(HttpURLConnection connection) throws IOException {
         this.responseCode = connection.getResponseCode();
         this.body = getResponseBody(connection);
@@ -70,10 +79,20 @@ public class HttpResponseEntity implements Serializable {
         return bodyData;
     }
 
+    /**
+     * Get byte array body byte [ ].
+     *
+     * @return the byte [ ]
+     */
     public byte[] getByteArrayBody() {
         return this.body;
     }
 
+    /**
+     * Gets string body.
+     *
+     * @return the string body
+     */
     public String getStringBody() {
         if (body == null) {
             return null;
@@ -81,6 +100,13 @@ public class HttpResponseEntity implements Serializable {
         return new String(body);
     }
 
+    /**
+     * Gets string body.
+     *
+     * @param charSet the char set
+     * @return the string body
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
     public String getStringBody(String charSet) throws UnsupportedEncodingException {
         if (body == null) {
             return null;
@@ -88,6 +114,13 @@ public class HttpResponseEntity implements Serializable {
         return new String(body, charSet);
     }
 
+    /**
+     * Gets json body.
+     *
+     * @return the json body
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws JsonProcessingException      the json processing exception
+     */
     public Map<String, Object> getJsonBody() throws UnsupportedEncodingException, JsonProcessingException {
         if (body == null) {
             return null;
@@ -97,6 +130,14 @@ public class HttpResponseEntity implements Serializable {
         return objectMapper.readValue(getStringBody(), typeReference);
     }
 
+    /**
+     * Gets json body.
+     *
+     * @param charSet the char set
+     * @return the json body
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws JsonProcessingException      the json processing exception
+     */
     public Map<String, Object> getJsonBody(String charSet) throws UnsupportedEncodingException, JsonProcessingException {
         if (body == null) {
             return null;

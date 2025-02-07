@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The type Storage manager.
+ */
 @Slf4j
 public class StorageManager implements Serializable {
     private static final long serialVersionUID = 8454662346692851741L;
@@ -21,6 +24,9 @@ public class StorageManager implements Serializable {
     private boolean httpInterfaceEnabled = true;
     private boolean defaultInterfaceEnabled = true;
 
+    /**
+     * 새로운 {@code StorageManager} 객체를 생성한다. 인스턴스가 이미 존재하는 경우에는 생성하지 않는다.
+     */
     public StorageManager() {
         if (StorageManager.instance == null) {
             instance = this;
@@ -31,6 +37,12 @@ public class StorageManager implements Serializable {
         }
     }
 
+
+    /**
+     * {@code StorageManager} 객체에 접근한다.
+     *
+     * @return the storage manager
+     */
     public static StorageManager access() {
         if (StorageManager.instance == null) {
             new StorageManager();
@@ -38,6 +50,11 @@ public class StorageManager implements Serializable {
         return StorageManager.instance;
     }
 
+    /**
+     * {@code StorageManager}의 InterfaceRegistry 에 {@code InterfaceInfo} 객체들을 등록한다.
+     *
+     * @param interfaceInfos the interface infos
+     */
     public void setInterfaceRegistry(List<InterfaceInfo> interfaceInfos){
         for(InterfaceInfo info : interfaceInfos){
             String ifId = info.getInterfaceId();
@@ -84,6 +101,11 @@ public class StorageManager implements Serializable {
 
     }
 
+    /**
+     * {@code StorageManager}의 ServiceRegistry 에 Service-Strategies 를 등록한다.
+     *
+     * @param services the services
+     */
     public void setServiceRegistry(Map<String, List<Service>> services){
         for(String id : services.keySet()){
             List<Service> serviceList = services.get(id);
@@ -93,6 +115,11 @@ public class StorageManager implements Serializable {
         }
     }
 
+    /**
+     * {@code StorageManager}의 ErrorHandlerRegistry 에 ErrorHandlers 를 등록한다.
+     *
+     * @param errorHandlers the error handlers
+     */
     public void setErrorHandlerRegistry(Map<String, List<ErrorHandler>> errorHandlers){
         for(String id : errorHandlers.keySet()){
             List<ErrorHandler> errorHandlerList = errorHandlers.get(id);
@@ -103,8 +130,13 @@ public class StorageManager implements Serializable {
     }
 
     /**
-     * Get an InterfaceInfo by id
-     * */
+     * 인터페이스 ID 를 사용하여 {@code StorageManager}에 등록된 {@link InterfaceInfo} 객체를 가져온다.
+     *
+     * @param interfaceId the interface id
+     * @return {@code InterfaceInfo} 객체, 존재하지않는 경우 null
+     * @see InterfaceInfo
+     * @see InterfaceInfo#getInterfaceId()
+     */
     public InterfaceInfo getInterfaceInfo(String interfaceId) {
         if (interfaceId == null)
             return null;
@@ -112,8 +144,12 @@ public class StorageManager implements Serializable {
     }
 
     /**
-     * Get a service list by id
-     * */
+     * serviceId 를 사용하여 {@code StorageManager}에 등록된 ServiceStrategy 를 가져온다.
+     *
+     * @param id ID of serviceStrategy
+     * @return serviceStrategy
+     * @see InterfaceInfo#getServiceId()
+     */
     public List<Service> getServices(String id) {
         if (id == null)
             return null;
@@ -121,8 +157,12 @@ public class StorageManager implements Serializable {
     }
 
     /**
-     * Get an error handler list by id
-     * */
+     * errorHandlerId 를 사용하여 {@code StorageManager}에 등록된 ErrorHandler 를 가져온다.
+     *
+     * @param id errorHandlerId
+     * @return ErrorHandler
+     * @see InterfaceInfo#getErrorHandlerId()
+     */
     public List<ErrorHandler> getErrorHandlersById(String id) {
         if (id == null)
             return null;
@@ -130,8 +170,11 @@ public class StorageManager implements Serializable {
     }
 
     /**
+     * 인터페이스를 활성화 한다.
+     *
+     * @param interfaceId the interface id
      * @return The result of activation. It returns false when an InterfaceInfo is not exist.
-     * */
+     */
     public synchronized boolean activateInterface(String interfaceId) {
         if (interfaceId == null)
             return false;
@@ -140,8 +183,11 @@ public class StorageManager implements Serializable {
     }
 
     /**
+     * 인터페이스를 비활성화 한다.
+     *
+     * @param interfaceId the interface id
      * @return The result of activation. It returns false when an InterfaceInfo is not exist.
-     * */
+     */
     public synchronized boolean inactivateInterface(String interfaceId) {
         if (interfaceId == null)
             return false;
@@ -149,6 +195,13 @@ public class StorageManager implements Serializable {
         return true;
     }
 
+    /**
+     * Gets interface info of http request.
+     *
+     * @param url    the url
+     * @param method the method
+     * @return the interface info of http request
+     */
     public InterfaceInfo getInterfaceInfoOfHttpRequest(String url, String method) {
         if (httpRequestMappingRegistry.containsKey(url)) {
             String interfaceId = httpRequestMappingRegistry.get(url);
@@ -159,10 +212,20 @@ public class StorageManager implements Serializable {
         }
     }
 
+    /**
+     * Sets default interface enabled.
+     *
+     * @param defaultInterfaceEnabled the default interface enabled
+     */
     public void setDefaultInterfaceEnabled(boolean defaultInterfaceEnabled) {
         this.defaultInterfaceEnabled = defaultInterfaceEnabled;
     }
 
+    /**
+     * Gets interface infos.
+     *
+     * @return the interface infos
+     */
     public List<InterfaceInfo> getInterfaceInfos() {
         List<InterfaceInfo> interfaceInfos = new ArrayList<>();
         interfaceInfos.addAll(instance.interfaceRegistry.values());

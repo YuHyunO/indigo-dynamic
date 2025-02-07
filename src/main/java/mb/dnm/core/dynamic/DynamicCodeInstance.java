@@ -6,13 +6,6 @@ import org.springframework.core.io.Resource;
 
 import java.lang.reflect.Method;
 
-/**
- *
- *
- * @author Yuhyun O
- * @version 2024.09.30
- *
- * */
 @Slf4j
 public class DynamicCodeInstance {
     private final Resource resource;

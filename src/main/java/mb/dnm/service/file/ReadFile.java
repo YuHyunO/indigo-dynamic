@@ -3,6 +3,7 @@ package mb.dnm.service.file;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import mb.dnm.access.file.FileList;
 import mb.dnm.access.file.FileParser;
 import mb.dnm.access.file.FileParserTemplate;
 import mb.dnm.access.file.FileTemplate;
@@ -24,44 +25,46 @@ import java.util.*;
 
 /**
  * 파일의 데이터를 읽는다.<br>
- * 파일을 읽은 뒤 설정된 <code>FileTemplate.dataType</code> 또는 <code>outputDataType</code> 에 따라 output 되는 데이터의 타입이 달라진다.<br>
- * <i>
- *     <code>BYTE_ARRAY</code> 인 경우<br>
+ * 파일을 읽은 뒤 설정된 {@code FileTemplate.dataType} 또는 {@code outputDataType} 에 따라 output 되는 데이터의 타입이 달라진다.<br>
+ * <br>
+ * <br>
+ * *<b>Input</b>: 읽을 파일의 경로<br>
+ * *<b>Input type</b>: {@code String}
+ * <br>
+ * <br>
+ * *<b>Output</b>: 파일의 데이터<br>
+ * *<b>Output type</b>: {@code byte[]}, {@code String} ,{@code List<List<Object>>}, {@code List<Map<String, Object>>}
+ * <br>
+ * <br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ *     {@code outputDataType} 이 {@code BYTE_ARRAY} 인 경우<br>
  *     &nbsp;1. Input으로 전달된 파일경로에 있는 파일을 byte[]로 읽는다. (파일이 없는 경우 FileNotFoundException 발생)<br>
  *     &nbsp;2. 읽은 byte[]를 output 한다.<br><br>
  *
- *     <code>STRING</code> 인 경우<br>
+ *     {@code outputDataType} 이 {@code STRING} 인 경우<br>
  *     &nbsp;1. Input으로 전달된 파일경로에 있는 파일을 byte[]로 읽는다. (파일이 없는 경우 FileNotFoundException 발생)<br>
  *     &nbsp;2. 읽은 byte[]를 정해진 charset으로 인코딩하여 문자열로 변환한 뒤 output 한다.<br><br>
  *
- *     <code>LIST_OF_MAP</code> 인 경우<br>
+ *     {@code outputDataType} 이 {@code LIST_OF_MAP} 인 경우<br>
  *     &nbsp;1. Input으로 전달된 파일경로에 있는 파일의 IO Stream 을 open 한다. (파일이 없는 경우 FileNotFoundException 발생)<br>
- *     &nbsp;2. 아래에 속성에 따라 파일의 데이터를 Parsing 한다.(<code>metadataExist</code> 가 true 인 경우 메타데이터의 속성대로 Parsing 한다.)<br>
- *     <code>recordSeparator</code>, <code>delimiter</code>, <code>qualifier</code>, <code>replacementOfNullValue</code>,
- *     <code>replacementOfEmptyValue</code>, <code>replacementOfLineFeed</code>, <code>replacementOfCarriageReturn</code>
- *     , <code>headerExist</code>, <code>handleBinaryToString</code>, <code>handleBinaryAsItIs</code><br>
- *     &nbsp;3. <code>headerExist</code>가 true 인 경우 <code>List&lt;List&lt;Object&gt;</code> 를 output 하고, false 인 경우 <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 를 output 한다.<br><br>
- *
- * </i>
+ *     &nbsp;2. 아래에 속성에 따라 파일의 데이터를 Parsing 한다.({@code metadataExist} 가 true 인 경우 메타데이터의 속성대로 Parsing 한다.)<br>
+ *     {@code recordSeparator}, {@code delimiter}, {@code qualifier}, {@code replacementOfNullValue},
+ *     {@code replacementOfEmptyValue}, {@code replacementOfLineFeed}, {@code replacementOfCarriageReturn}
+ *     , {@code headerExist}, {@code handleBinaryToString}, {@code handleBinaryAsItIs}<br>
+ *     &nbsp;3. {@code headerExist}가 true 인 경우 {@code List<List<Object>>} 를 output 하고, false 인 경우 {@code List<Map<String, Object>>} 를 output 한다.<br><br></pre>
+ *<br>
+ *<br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.file.ReadFile"&gt;
+ *     &lt;property name="sourceAlias"            value="<span style="color: black; background-color: #FAF3D4;">source alias</span>"/&gt;
+ *     &lt;property name="directoryType"          value="<span style="color: black; background-color: #FAF3D4;">DirectoryType</span>"/&gt;
+ *     &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ * &lt;/bean&gt;</pre>
  *
  * @see FileTemplate
  * @see WriteFile
- *
- * @author Yuhyun O
- * @version 2024.09.20
- *
- * @Input 읽을 파일의 경로
- * @InputType
- * <code>String</code><br>
- * <code>java.nio.file.Path</code><br>
- * <code>java.io.File</code>
- *
- * @Output 읽은 파일의 데이터
- * @OutputType
- * <code>byte[]</code><br>
- * <code>String <code><br>
- * <code>List&lt;List&lt;Object&gt; </code><br>
- * <code>List&lt;Map&lt;String, Object&gt; </code><br>
+
  *
  * */
 @Slf4j
@@ -70,9 +73,9 @@ public class ReadFile extends SourceAccessService implements Serializable {
     private static final long serialVersionUID = -6076772516465372292L;
     /**
      * 읽을 파일의 인코딩을 지정하는 설정이다.<br>
-     * 이 속성이 지정되지 않았을 경우, 이 서비스의 <code>process(ServiceContext)</code> 메소드를 통해 전달된 <code>ServiceContext</code>의 <code>InterfaceInfo</code>가 참조하는
-     * <code>FileTemplate</code> 의 <code>charset<</code> 속성을 인코딩으로 사용한다.<br>
-     * <code>commonCharset</code>을 등록하는 경우 모든 인터페이스의 인코딩은 이 서비스의 설정을 따른다.
+     * 이 속성이 지정되지 않았을 경우, 이 서비스의 {@code process(ServiceContext)} 메소드를 통해 전달된 {@code ServiceContext}의 {@code InterfaceInfo}가 참조하는
+     * {@code FileTemplate} 의 {@code charset<} 속성을 인코딩으로 사용한다.<br>
+     * {@code commonCharset}을 등록하는 경우 모든 인터페이스의 인코딩은 이 서비스의 설정을 따른다.
      * */
     private Charset commonCharset;
 
@@ -80,18 +83,18 @@ public class ReadFile extends SourceAccessService implements Serializable {
      * 기본값: null<br>
      *
      * 파일의 내용을 읽은 뒤 어떤 타입으로 output을 할 지에 대한 설정이다.<br>
-     * 이 속성이 지정되지 않았을 경우, 이 서비스의 <code>process(ServiceContext)</code> 메소드를 통해 전달된 <code>ServiceContext</code>의 <code>InterfaceInfo</code>가 참조하는
-     * <code>FileTemplate</code> 의 <code>dataType<</code> 속성을 사용한다.<br><br>
+     * 이 속성이 지정되지 않았을 경우, 이 서비스의 {@code process(ServiceContext)} 메소드를 통해 전달된 {@code ServiceContext}의 {@code InterfaceInfo}가 참조하는
+     * {@code FileTemplate} 의 {@code dataType<} 속성을 사용한다.<br><br>
      * <i>-설정 가능한 타입과 설명<br>
-     *     &nbsp;<code>BYTE_ARRAY</code>: 파일의 데이터를 읽은 뒤 <code>byte[]</code>로 output 한다.<br>
-     *     &nbsp;<code>STRING</code>: 파일의 데이터를 설정된 charset 으로 읽은 뒤 <code>String</code>으로 output 한다.<br>
-     *     &nbsp;<code>PARSED_TEXT</code>: 파일의 데이터를 설정된 charset 으로 읽은 뒤 정해진 형식대로 parsing 하여 <code>List&lt;List&lt;Object&gt;</code> 또는 <code>List&lt;Map&lt;String, Object&gt;&gt;</code>로 output 한다.<br>
-     *     &nbsp;&nbsp;-<code>headerExist</code>가 false 인 경우 → <code>List&lt;List&lt;Object&gt;</code> 즉, <code>List&lt;List&lt;데이터&gt;</code><br>
-     *     &nbsp;&nbsp;-<code>headerExist</code>가 true 인 경우 → <code>List&lt;Map&lt;String, Object&gt;&gt;</code> 즉, <code>List&lt;Map&lt;컬럼명, 데이터&gt;&gt;</code>
+     *     &nbsp;{@code BYTE_ARRAY}: 파일의 데이터를 읽은 뒤 {@code byte[]}로 output 한다.<br>
+     *     &nbsp;{@code STRING}: 파일의 데이터를 설정된 charset 으로 읽은 뒤 {@code String}으로 output 한다.<br>
+     *     &nbsp;{@code PARSED_TEXT}: 파일의 데이터를 설정된 charset 으로 읽은 뒤 정해진 형식대로 parsing 하여 {@code List&lt;List&lt;Object&gt;} 또는 {@code List&lt;Map&lt;String, Object&gt;&gt;}로 output 한다.<br>
+     *     &nbsp;&nbsp;-{@code headerExist}가 false 인 경우 → {@code List&lt;List&lt;Object&gt;} 즉, {@code List&lt;List&lt;데이터&gt;}<br>
+     *     &nbsp;&nbsp;-{@code headerExist}가 true 인 경우 → {@code List&lt;Map&lt;String, Object&gt;&gt;} 즉, {@code List&lt;Map&lt;컬럼명, 데이터&gt;&gt;}
      * </i>
      * <br>
      * <br>
-     * <code>outputDataType</code>을 설정하는 경우 모든 인터페이스는 이 서비스의 설정을 따른다.
+     * {@code outputDataType}을 설정하는 경우 모든 인터페이스는 이 서비스의 설정을 따른다.
      * */
     private DataType outputDataType;
 
@@ -149,7 +152,7 @@ public class ReadFile extends SourceAccessService implements Serializable {
      * 파일 내용을 읽은 뒤 output할 데이터의 타입이 PARSED_TEXT 인 경우
      * 파일의 내용 가장 상단에 파일 인코딩, Parsing 을 위한 정보 등이 기입되어 있는지에 대한 설정이다.
      * 이 속성이 true인 경우 파일 내용에서 메타데이터를 분석하여 그 정보를 기반으로 파일을 Parsing 한다.<br>
-     * 메타데이터의 형식은 <code>mb.dnm.service.file.WriteFile</code> 의 형식을 따르며, metadataExist = true 이지만
+     * 메타데이터의 형식은 {@code mb.dnm.service.file.WriteFile} 의 형식을 따르며, metadataExist = true 이지만
      * 메타데이터의 속성 중 특정 값이 하나라도 없는 경우 Exception이 발생한다.
      *
      * @see WriteFile

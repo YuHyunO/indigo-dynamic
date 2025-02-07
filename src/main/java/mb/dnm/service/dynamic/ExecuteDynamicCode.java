@@ -13,21 +13,24 @@ import mb.dnm.storage.InterfaceInfo;
 import java.io.Serializable;
 
 /**
- * DynamicCode 를 실행한다.<br>
- * ServiceStorage에 등록된  <code>ExecuteDynamicCode</code> 서비스의 수와 <code>InterfaceInfo</code>의 <code>dynamicCodeSequence</code>에 등록된 dynamic code의 수는 동일해야한다.<br>
- * <code>ExecuteDynamicCode</code>가 실행될 때 마다 각 <code>dynamicCodeSequence</code>의 code 가 소진되기 때문이다.
+ * DynamicCode 를 실행한다.
+ * <br>
+ * <br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;!-- {@link mb.dnm.storage.InterfaceInfo}의 dynamicCodeSequence에 등록된 순서대로 실행하는 경우--&gt;
+ * &lt;bean class="mb.dnm.service.dynamic.ExecuteDynamicCode"/&gt;
  *
- * @see InterfaceInfo#getDynamicCodeSequence()
- * @see ServiceContext#hasMoreDynamicCodes()
- * @see ServiceContext#nextDynamicCodeId()
- * @see ServiceContext#hasMoreErrorDynamicCodes()
- * @see ServiceContext#nextErrorDynamicCodeId() 
+ * &lt;!-- {@link mb.dnm.storage.InterfaceInfo}의 dynamicCodeSequence에 등록된 특정 codeId를 지정하여 실행하는 경우--&gt;
+ * &lt;bean class="mb.dnm.service.dynamic.ExecuteDynamicCode"&gt;
+ *     &lt;property name="codeId"                value="<span style="color: black; background-color: #FAF3D4;">namespace.codeID</span>"/&gt;
+ * &lt;/bean&gt;</pre>
  *
- * @author Yuhyun O
- * @version 2024.09.30
- *
- * @Throws InvalidServiceConfigurationException <code>InterfaceInfo</code>의 <code>dynamicCodeSequence</code>에 등록된 code가 더이상 존재하지 않는 경우
- * */
+ * @see InterfaceInfo#getDynamicCodeSequence() InterfaceInfo#getDynamicCodeSequence()
+ * @see ServiceContext#hasMoreDynamicCodes() ServiceContext#hasMoreDynamicCodes()
+ * @see ServiceContext#nextDynamicCodeId() ServiceContext#nextDynamicCodeId()
+ * @see ServiceContext#hasMoreErrorDynamicCodes() ServiceContext#hasMoreErrorDynamicCodes()
+ * @see ServiceContext#nextErrorDynamicCodeId() ServiceContext#nextErrorDynamicCodeId()
+ */
 @Slf4j
 public class ExecuteDynamicCode extends AbstractService implements Serializable {
 
@@ -75,6 +78,11 @@ public class ExecuteDynamicCode extends AbstractService implements Serializable 
 
     }
 
+    /**
+     * 실행할 codeId를 등록한다.
+     *
+     * @param codeId the code id
+     */
     public void setCodeId(String codeId) {
         if (codeId == null)
             return;

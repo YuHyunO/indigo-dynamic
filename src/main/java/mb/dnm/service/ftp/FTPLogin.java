@@ -12,18 +12,18 @@ import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.Serializable;
 
+
 /**
- * <code>FTPLogin</code>의 <code>sourceName</code> 또는 <code>sourceAlias</code> 속성이나, <code>InterfaceInfo</code>클래스의  <code>getSourceNameByAlias(String)</code>메소드 통해 <code>FTPSourceProvider</code>로부터 가져온 FTP source에 접속(로그인)하는 서비스 클래스이다.<br>
- *
- * @see AbstractFTPService
- * @see AbstractFTPService#getSourceAlias()
- * @see AbstractFTPService#getSourceName()
- * @see AbstractFTPService#getFTPSourceName(InterfaceInfo)
- *
- * @author Yuhyun O
- * @version 2024.09.09
- *
- * */
+ * FTP 서버에 로그인한다.<br>
+ * FTP 서버 접속 정보(서버, 아이피, 패스워드 등)는 {@link mb.dnm.access.ftp.FTPClientTemplate}에 설정되어있다.<br>
+ * {@code FTPLogin}에 등록된 {@code sourceAlias}를 사용하여 {@link InterfaceInfo}에서 접속할 FTP 서버접속정보를 찾는다.
+ * <br>
+ * <br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.ftp.FTPLogin"&gt;
+ *     &lt;property name="sourceAlias"                  value="<span style="color: black; background-color: #FAF3D4;">source alias</span>"/&gt;
+ * &lt;/bean&gt;</pre>
+ */
 @Slf4j
 public class FTPLogin extends AbstractFTPService implements Serializable {
 

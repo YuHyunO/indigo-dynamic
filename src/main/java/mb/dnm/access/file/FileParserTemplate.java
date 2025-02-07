@@ -49,4 +49,5 @@ public class FileParserTemplate implements Serializable {
         this.handleBinaryData = handleBinaryData;
     }
 
+
 }

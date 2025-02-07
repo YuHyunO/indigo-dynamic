@@ -5,10 +5,443 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
+<bean class="mb.dnm.storage.InterfaceInfo"  name="DB2DB default">
+    <property name="interfaceId"                 value="인터페이스 ID"/>
+    <property name="interfaceName"               value="인터페이스명"/>
+    <property name="sourceCode"                  value="송신시스템 코드"/>
+    <property name="targetCode"                  value="수신시스템 코드"/>
+    <property name="loggingWhenNormal"           value="true"/>
+    <property name="loggingWhenError"            value="true"/>
+    <property name="querySequence"               value="DB_SRC_MAIN$@{if_id}.SELECT,
+                                                        DB_TGT_MAIN$@{if_id}.INSERT,
+                                                        DB_SRC_MAIN$@{if_id}.SUCCESS_UPDATE"/>
+    <property name="errorDynamicCodeSequence"    value="COMMON.CHECK_ERROR_TYPE"/>
+    <property name="errorQuerySequence"          value="DB_SRC_MAIN$@{if_id}.ERROR_UPDATE"/>
+    <property name="serviceId"                   value="$P_DB2DB_Sel_Ins_Upd"/>
+    <property name="errorHandlerId"              value="$EH_DB2DB"/>
+</bean>
+
+<bean class="mb.dnm.storage.InterfaceInfo">
+    <property name="interfaceId"                 value="인터페이스 ID"/>
+    <property name="interfaceName"               value="인터페이스명"/>
+    <property name="sourceCode"                  value="송신시스템 코드"/>
+    <property name="targetCode"                  value="수신시스템 코드"/>
+    <property name="loggingWhenNormal"           value="true"/>
+    <property name="loggingWhenError"            value="true"/>
+    <property name="querySequence"               value="DB_SRC_MAIN$@{if_id}.SELECT, DB_TGT_MAIN$@{if_id}.INSERT, DB_SRC_SUB$@{if_id}.SUCCESS_UPDATE"/>
+    <property name="errorDynamicCodeSequence"    value="COMMON.CHECK_ERROR_TYPE"/>
+    <property name="errorQuerySequence"          value="DB_SRC_SUB$@{if_id}.ERROR_UPDATE"/>
+    <property name="serviceId"                   value="$P_DB2DB_Sel_Ins_Upd_Large"/>
+</bean>
+
+<bean class="mb.dnm.storage.InterfaceInfo">
+    <property name="interfaceId"                 value="인터페이스 ID"/>
+    <property name="interfaceName"               value="인터페이스명"/>
+    <property name="sourceCode"                  value="송신시스템 코드"/>
+    <property name="targetCode"                  value="수신시스템 코드"/>
+    <property name="loggingWhenNormal"           value="true"/>
+    <property name="loggingWhenError"            value="true"/>
+    <property name="querySequence"               value="DB_SRC_MAIN$@{if_id}.SELECT_M,
+                                                        DB_SRC_MAIN$@{if_id}.SELECT_D,
+                                                        DB_TGT_MAIN$@{if_id}.INSERT_D,
+                                                        DB_SRC_MAIN$@{if_id}.SUCCESS_UPDATE"/>
+    <property name="errorQuerySequence"          value="DB_SRC_MAIN$@{if_id}.ERROR_UPDATE"/>
+    <property name="serviceId"                   value="$P_DB2DB_Master_Detail"/>
+    <property name="errorHandlerId"              value="$EH_LOGGING"/>
+</bean>
 
 
+<bean class="mb.dnm.storage.InterfaceInfo">
+    <property name="interfaceId"            value="인터페이스 ID"/>
+    <property name="interfaceName"          value="인터페이스명"/>
+    <property name="sourceCode"             value="송신시스템 코드"/>
+    <property name="targetCode"             value="수신시스템 코드"/>
+    <property name="loggingWhenNormal"      value="true"/>
+    <property name="loggingWhenError"       value="true"/>
+    <property name="sourceAliases"          value="SRC:FTPClient 템플릿 명"/>
+    <property name="querySequence"          value="DB_SRC_MAIN$@{if_id}.INSERT"/>
+    <property name="dynamicCodeSequence"    value="@{if_id}.PARSING_FILE"/>
+    <property name="serviceId"              value="$P_FTP2DB_default"/>
+    <property name="fileTemplates">
+        <list>
+            <bean class="mb.dnm.access.file.FileTemplate">
+                <property name="templateName"        value="FTPClient 템플릿 명"/>
+                <property name="remoteSendDir"       value="/송신 디렉터리"/>
+                <property name="remoteSuccessDir"    value="/송신 디렉터리/succ/@{YYYYMMDD}"/>
+                <property name="remoteErrorDir"      value="/송신 디렉터리/err/@{YYYYMMDD}"/>
+                <property name="localTempDir"        value="/app/indigo/FILE_WORK/송신시스템 코드/@{if_id}"/>
+                <property name="fileNamePattern"     value="파일명 prefix *"/>
+                <property name="type"                value="FILE"/>
+                <property name="dataType"            value="STRING"/>
+                <property name="charset"             value="MS949"/>
+            </bean>
+        </list>
+    </property>
+</bean>
+
+<bean class="mb.dnm.storage.InterfaceInfo"  name="DB2FTP default">
+    <property name="interfaceId"            value="인터페이스 ID"/>
+    <property name="interfaceName"          value="인터페이스명"/>
+    <property name="sourceCode"             value="송신시스템 코드"/>
+    <property name="targetCode"             value="수신시스템 코드"/>
+    <property name="loggingWhenNormal"      value="true"/>
+    <property name="loggingWhenError"       value="true"/>
+    <property name="sourceAliases"          value="TGT:JJC"/>
+    <property name="querySequence"          value="DB_SRC_MAIN$@{if_id}.SELECT, DB_SRC_MAIN$@{if_id}.UPDATE"/>
+    <property name="dynamicCodeSequence"    value="@{if_id}.MAKE_FILEDATA"/>
+    <property name="serviceId"              value="$P_DB2FTP_default"/>
+    <property name="errorHandlerId"         value="$EH_DB2FTP"/>
+    <property name="fileTemplates">
+        <list>
+            <bean class="mb.dnm.access.file.FileTemplate">
+                <property name="templateName"        value="FTPClient 템플릿 명"/>
+                <property name="localTempDir"        value="/app/indigo/FILE_WORK/송신시스템 코드/@{if_id}"/>
+                <property name="remoteReceiveDir"    value="/sen/cur"/>
+                <property name="charset"             value="파일인코딩"/>
+            </bean>
+        </list>
+    </property>
+</bean>
 
     <util:map id="serviceStrategies">
+
+<entry key="$P_DB2FTP_default">
+    <list>
+        <bean class="mb.dnm.service.db.Select">
+            <description>Source DB 에서 연계 대상 데이터를 조회한다.</description>
+            <property name="output"             value="data_list"/>
+        </bean>
+        <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+            <description>연계 대상 데이터가 없으면 프로세스를 종료한다.</description>
+            <property name="input"              value="data_list"/>
+            <property name="output"             value="no_logging_flag"/>
+            <property name="outputValue"        value="Y"/>
+        </bean>
+        <bean class="mb.dnm.service.general.GetSize">
+            <description>데이터의 개수를 확인한다.</description>
+            <property name="input"              value="data_list"/>
+            <property name="output"             value="tx_count"/>
+        </bean>
+        <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode">
+            <description>파일명(file_name) 과 파일내용(file_content), 업데이트 파라미터(update_param)를 output 한다.</description>
+            <property name="description"        value="파일명과 내용을 생성한다."/>
+        </bean>
+        <bean class="mb.dnm.service.file.WriteFile">
+            <property name="description"        value="파일을 생성 후 내용을 작성한다."/>
+            <property name="sourceAlias"        value="TGT"/>
+            <property name="filenameInput"      value="file_name"/>
+            <property name="input"              value="file_content"/>
+            <property name="directoryType"      value="LOCAL_TEMP"/>
+            <property name="output"             value="file_loc"/>
+        </bean>
+        <bean class="mb.dnm.service.db.StartTransaction"/>
+        <bean class="mb.dnm.service.db.Update">
+            <description>Select한 데이터(data_list)를 파라미터로 사용하여 처리결과를 Update 한다.</description>
+            <property name="description"        value="Source DB 에 처리결과를 Update 한다."/>
+            <property name="input"              value="update_param"/>
+        </bean>
+        <bean class="mb.dnm.service.ftp.UploadFiles">
+            <property name="description"        value="생성한 파일을 FTP 서버에 업로드 한다."/>
+            <property name="sourceAlias"        value="TGT"/>
+            <property name="input"              value="file_loc"/>
+            <property name="output"             value="remote_file_loc"/>
+            <property name="directoryType"      value="REMOTE_RECEIVE"/>
+        </bean>
+        <bean class="mb.dnm.service.db.EndTransaction"/>
+        <bean class="mb.dnm.service.file.DeleteFiles">
+            <description>연계 완료 후 로컬에 생성했던 파일을 삭제한다.</description>
+            <property name="ignoreError"        value="true"/>
+            <property name="input"              value="file_loc"/>
+        </bean>
+    </list>
+</entry>
+
+<entry key="$P_DB2DB_Sel_Ins_Upd_Large">
+    <list>
+        <bean class="mb.dnm.service.db.Select">
+            <property name="output"             value="tx_count"/>
+            <property name="handleResultSet"    value="true"/>
+            <property name="resultHandlingSupportFactory">
+                <bean class="mb.dnm.access.db.ResultHandlingSupportFactory">
+                    <property name="fetchedInputName"   				value="data_list"/>
+                    <property name="fetchSize"          				value="1000"/>
+                    <property name="enforcePassTransactionToContexts"   value="false"/>
+                    <property name="resultHandlingProcessor">
+                        <bean class="mb.dnm.service.general.IterationGroup">
+                            <property name="createNewContextEachLoop"       value="true"/>
+                            <property name="services">
+                                <list>
+                                    <bean class="mb.dnm.service.db.StartTransaction"/>
+                                    <bean class="mb.dnm.service.db.Insert">
+                                        <property name="description"        value="Target DB 에 데이터를 Insert 한다."/>
+                                        <property name="input"              value="data_list"/>
+                                    </bean>
+                                    <bean class="mb.dnm.service.db.Update">
+                                        <property name="description"        value="Source DB 에 성공 결과를 Update 한다."/>
+                                        <property name="input"              value="data_list"/>
+                                    </bean>
+                                    <bean class="mb.dnm.service.db.Commit"/>
+                                </list>
+                            </property>
+                            <property name="errorHandlers">
+                                <list>
+                                    <bean class="mb.dnm.exeption.handler.ServiceProcessableErrorHandler">
+                                        <property name="ignoreException"            value="true"/>
+                                        <property name="services">
+                                            <list>
+                                                <bean class="mb.dnm.service.db.Rollback">
+                                                    <property name="description"    value="에러가 발생한 인터페이스의 트랜잭션을 롤백한다."/>
+                                                </bean>
+                                                <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode">
+                                                    <property name="codeId"         value="COMMON.CHECK_ORACLE_DB_ERROR"/>
+                                                </bean>
+                                                <bean class="mb.dnm.service.db.Update">
+                                                    <property name="description"    value="Source DB 에 처리결과(에러)를 Update 한다."/>
+                                                    <property name="input"          value="data_list"/>
+                                                </bean>
+                                            </list>
+                                        </property>
+                                    </bean>
+                                </list>
+                            </property>
+                            <property name="callbacks">
+                                <description>로깅을 위한 콜백 프로세스</description>
+                                <list>
+                                    <ref bean="custom_logging"/>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                </bean>
+            </property>
+        </bean>
+        <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+            <property name="input"              value="tx_count"/>
+            <property name="output"             value="no_logging_flag"/>
+            <property name="outputValue"        value="Y"/>
+        </bean>
+    </list>
+</entry>
+
+
+
+<entry key="$P_DB2DB_Master_Detail">
+    <list>
+        <bean class="mb.dnm.service.general.OutputCustomData">
+            <property name="output"         value="no_logging_flag"/>
+            <property name="customData"     value="Y"/>
+        </bean>
+        <bean class="mb.dnm.service.db.Select">
+            <description>Source DB 에서 연계 대상 데이터를 조회한다.</description>
+            <property name="output"             value="master_data_list"/>
+        </bean>
+        <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+            <description>연계 대상 데이터가 없으면 프로세스를 종료한다.</description>
+            <property name="input"              value="master_data_list"/>
+        </bean>
+        <bean class="mb.dnm.service.general.IterationGroup">
+            <description>Master 데이터의 수만큼 Detail 데이터를 추출하여 수신 DB에 데이터를 적재한다.</description>
+            <property name="input"                          value="master_data_list"/>
+            <property name="iterationInputName"             value="master_data"/>
+            <property name="fetchSize"                      value="1"/>
+            <property name="createNewContextEachLoop"       value="true"/>
+            <property name="services">
+                <description>연계대상파일의 수만큼 아래에 정의된 프로세스를 순서대로 반복</description>
+                <list>
+                    <bean class="mb.dnm.service.db.StartTransaction"/>
+                    <bean class="mb.dnm.service.db.Select">
+                        <property name="description"        value="Detail 데이터를 조회한다."/>
+                        <property name="input"              value="master_data"/>
+                        <property name="output"             value="detail_data_list"/>
+                    </bean>
+                    <bean class="mb.dnm.service.general.GetSize">
+                        <property name="input"              value="detail_data_list"/>
+                        <property name="output"             value="tx_count"/>
+                    </bean>
+                    <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode">
+                        <property name="codeId"             value="COMMON.MAP_DATA"/>
+                    </bean>
+                    <bean class="mb.dnm.service.db.Insert">
+                        <property name="description"        value="Target DB 에 Detail 데이터를 Insert 한다."/>
+                        <property name="input"              value="detail_data_list"/>
+                    </bean>
+                    <bean class="mb.dnm.service.db.Update">
+                        <property name="description"        value="Source DB 에 처리결과를 Update 한다."/>
+                        <property name="input"              value="master_data"/>
+                    </bean>
+                    <bean class="mb.dnm.service.db.Commit"/>
+                </list>
+            </property>
+            <property name="errorHandlers">
+                <list>
+                    <bean class="mb.dnm.exeption.handler.ServiceProcessableErrorHandler">
+                        <property name="ignoreException"            value="true"/>
+                        <property name="services">
+                            <list>
+                                <bean class="mb.dnm.service.db.Rollback"/>
+                                <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode">
+                                    <property name="codeId"         value="COMMON.CHECK_ORACLE_DB_ERROR"/>
+                                </bean>
+                                <bean class="mb.dnm.service.db.Update">
+                                    <property name="description"    value="Source DB 에 처리결과(에러)를 Update 한다."/>
+                                    <property name="input"          value="master_data"/>
+                                </bean>
+                            </list>
+                        </property>
+                    </bean>
+                </list>
+            </property>
+            <property name="callbacks">
+                <description>로깅을 위한 콜백 프로세스</description>
+                <list>
+                    <ref bean="custom_logging"/>
+                </list>
+            </property>
+        </bean>
+    </list>
+</entry>
+
+
+
+
+<entry key="$P_FTP2DB_default">
+    <list>
+        <bean class="mb.dnm.service.ftp.ListFiles">
+            <property name="description"     	value="FTP 서버에서 연계할 파일목록을 확인한다."/>
+            <property name="sourceAlias"        value="SRC"/>
+            <property name="directoryType"      value="REMOTE_SEND"/>
+            <property name="output"             value="remote_file_list"/>
+        </bean>
+        <bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty">
+            <description>연계 대상 파일이 없으면 프로세스를 종료한다.</description>
+            <property name="input"              value="remote_file_list"/>
+            <property name="output"             value="no_logging_flag"/>
+            <property name="outputValue"        value="Y"/>
+        </bean>
+        <bean class="mb.dnm.service.general.GetSize">
+            <description>연계 대상 파일의 개수를 확인한다.</description>
+            <property name="input"      		value="remote_file_list"/>
+            <property name="output"     		value="tx_count"/>
+        </bean>
+        <bean class="mb.dnm.service.general.PauseProcess">
+            <description>파일이 쓰여지는 도중 읽는 것을 방지하기 위해 프로세스를 잠시 멈춘다</description>
+            <property name="millisecond"        value="1000"/>
+        </bean>
+        <bean class="mb.dnm.service.general.IterationGroup">
+            <description>FTP 서버의 대상파일의 수만큼 IterationGroup 의 services 를 반복한다.</description>
+            <property name="input"                                  value="remote_file_list"/>
+            <property name="iterationInputName"                     value="remote_file"/>
+            <property name="fetchSize"                              value="1"/>
+            <property name="createNewContextEachLoop"               value="true"/>
+            <property name="continueDespiteError"                   value="true"/>
+            <property name="passSessionToContexts"                  value="true"/>
+            <property name="services">
+                <description>연계대상파일의 수만큼 아래에 정의된 프로세스를 순서대로 반복</description>
+                <list>
+                    <bean class="mb.dnm.service.general.OutputCustomData">
+                        <description>로그 내용 중 연계 데이터 건수를 지정하기 위한 변수를 output</description>
+                        <property name="output"         value="tx_count"/>
+                        <property name="castType"       value="int"/>
+                        <property name="customData"     value="1"/>
+                    </bean>
+                    <bean class="mb.dnm.service.ftp.DownloadFiles">
+                        <property name="description"    value="연계 대상 파일을 Indigo 연계서버(로컬)로 다운로드한다."/>
+                        <property name="input"          value="remote_file"/>
+                        <property name="sourceAlias"    value="SRC"/>
+                        <property name="directoryType"  value="LOCAL_TEMP"/>
+                        <property name="output"         value="local_file"/>
+                    </bean>
+                    <bean class="mb.dnm.service.file.ReadFile">
+                        <property name="description"    value="파일을 읽는다."/>
+                        <property name="sourceAlias"    value="SRC"/>
+                        <property name="input"          value="local_file"/>
+                        <property name="output"         value="file_data"/>
+                    </bean>
+                    <bean class="mb.dnm.service.file.DeleteFiles">
+                        <property name="description"     value="읽은 파일을 연계서버(로컬)에서 삭제한다."/>
+                        <property name="input"           value="local_file"/>
+                    </bean>
+                    <bean class="mb.dnm.service.dynamic.ExecuteDynamicCode">
+                        <description>파일의 데이터를 파싱 후 file_data 라는 이름으로 매핑된 데이터를 output 한다.</description>
+                        <property name="description"     value="연계 대상 파일을 파싱한다."/>
+                    </bean>
+                    <bean class="mb.dnm.service.db.StartTransaction"/>
+                    <bean class="mb.dnm.service.db.Insert">
+                        <property name="description"     value="DB에 데이터를 Insert 한다."/>
+                        <property name="input"           value="file_data"/>
+                        <property name="output"          value="select_result"/>
+                    </bean>
+                    <bean class="mb.dnm.service.ftp.MoveFiles">
+                        <property name="description"    value="연계성공한 파일을 FPT 서버의 성공 경로로 파일을 이동한다."/>
+                        <property name="input"          value="remote_file"/>
+                        <property name="sourceAlias"    value="SRC"/>
+                        <property name="directoryType"  value="REMOTE_SUCCESS"/>
+                    </bean>
+                    <bean class="mb.dnm.service.general.PauseProcess">
+                        <description>다음 파일을 처리하기 전 프로세스를 일시중지한다.</description>
+                        <property name="millisecond"     value="1000"/>
+                    </bean>
+                    <bean class="mb.dnm.service.db.EndTransaction"/>
+                </list>
+            </property>
+            <property name="errorHandlers">
+                <description>에러 발생 시 처리 프로세스 정의</description>
+                <list>
+                    <bean class="mb.dnm.exeption.handler.ExecuteServiceErrorHandler">
+                        <property name="service">
+                            <bean class="mb.dnm.service.db.Rollback">
+                                <property name="description"    value="DB 트랜잭션을 롤백한다."/>
+                            </bean>
+                        </property>
+                    </bean>
+                    <bean class="mb.dnm.exeption.handler.ExecuteServiceErrorHandler">
+                        <property name="service">
+                            <bean class="mb.dnm.service.file.DeleteFiles">
+                                <property name="description"     	value="파일을 연계서버(로컬)에서 삭제한다."/>
+                                <property name="input"              value="local_file_list"/>
+                            </bean>
+                        </property>
+                    </bean>
+                    <bean class="mb.dnm.exeption.handler.ExecuteServiceErrorHandler">
+                        <property name="service">
+                            <bean class="mb.dnm.service.ftp.MoveFiles">
+                                <property name="description"    value="FPT 서버의 에러경로로 파일을 이동한다."/>
+                                <property name="input"          value="remote_file"/>
+                                <property name="sourceAlias"    value="SRC"/>
+                                <property name="directoryType"  value="REMOTE_ERROR"/>
+                            </bean>
+                        </property>
+                    </bean>
+                    <bean class="mb.dnm.exeption.handler.ExecuteServiceErrorHandler">
+                        <property name="service">
+                            <bean class="mb.dnm.service.general.OutputCustomData">
+                                <property name="output"         value="no_logging_flag"/>
+                                <property name="customData"     value="Y"/>
+                            </bean>
+                        </property>
+                    </bean>
+                </list>
+            </property>
+            <property name="callbacks">
+                <description>로깅을 위한 콜백 프로세스</description>
+                <list>
+                    <ref bean="custom_logging"/>
+                </list>
+            </property>
+        </bean>
+        <bean class="mb.dnm.service.general.OutputCustomData">
+            <property name="output"         value="no_logging_flag"/>
+            <property name="customData"     value="Y"/>
+        </bean>
+    </list>
+</entry>
+
+
+
+
+
+
+
         <!-- serviceStrategies 내부의 빈 공간에 $P 입력 후 Ctrl+Space 키를 누른뒤 원하는 패턴을 선택 -->
         <entry key="$TEST">
             <list>
@@ -177,7 +610,12 @@
         </entry>
 
     </util:map>
-
+    <bean id="custom_logging"  class="dw.loex.callback.CustomLoggingCallback">
+        <description>IterationGroup 에서 사용되는 로깅 Callback.</description>
+        <property name="dataCountInput"         value="tx_count"/>
+        <property name="errorDataCountInput"    value="tx_error_count"/>
+        <property name="loggingAdapterUrl"      value="http://127.0.0.1:28901/indigo-api/post/log"/>
+    </bean>
 </beans>
 
 

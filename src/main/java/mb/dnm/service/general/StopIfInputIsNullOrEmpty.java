@@ -11,19 +11,24 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- *
  * Input이 Null이거나 Empty 인 경우 프로세스를 중단한다
  *
- * @author Yuhyun O
- * @version 2024.09.26
+ * <br>
+ * <br>
+ * *<b>Input</b>: null / empty / 0 을 체크할 input 파라미터명<br>
+ * *<b>Input type</b>: {@link Map}, {@link Collection}, {@code Array}, {@link Number}, {@link SizeCheckable}
+ * <br>
+ * <br>
+ * *<b>Output</b>: 조건이 부합하는 경우 output 할 파라미터명<br>
+ * *<b>Output type</b>: {@code Object}<br>
  *
- * @Input Null 또는 Empty 를 체크할 input의 이름
- * @InputType <code>Map</code> or <code>Collection</code> or <code>SizeCheckable</code>
- * @Output 프로세스를 중단하고 나서 Callback 프로세스 등에서 사용할 목적으로 중단에 대한 정보를 담고 있는 변수가 필요한 경우 output 할 변수의 이름
- * @OutputValue output이 지정된 경우 output 할 변수의 값
- * @OutputType <code>Object</code>
- *
- * */
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;bean class="mb.dnm.service.general.StopIfInputIsNullOrEmpty"&gt;
+ *     &lt;property name="input"                 value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ *     &lt;property name="outputValue"           value="<span style="color: black; background-color: #FAF3D4;">input 파라미터 값</span>"/&gt;
+ * &lt;/bean&gt;</pre>
+ */
 @Slf4j
 @Setter
 public class StopIfInputIsNullOrEmpty extends ParameterAssignableService implements Serializable {
@@ -100,5 +105,14 @@ public class StopIfInputIsNullOrEmpty extends ParameterAssignableService impleme
             }
         }
 
+    }
+
+    /**
+     * Sets output value.
+     *
+     * @param outputValue the output value
+     */
+    public void setOutputValue(Object outputValue) {
+        this.outputValue = outputValue;
     }
 }

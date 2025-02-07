@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Service processable error handler.
+ */
 @Slf4j
 @Setter
 public class ServiceProcessableErrorHandler extends AbstractErrorHandler implements Serializable {
@@ -42,6 +45,11 @@ public class ServiceProcessableErrorHandler extends AbstractErrorHandler impleme
 
     }
 
+    /**
+     * Sets services.
+     *
+     * @param services the services
+     */
     public void setServices(List<Service> services) {
         for (Service service : services) {
             if (AbstractService.class.isAssignableFrom(service.getClass())) {

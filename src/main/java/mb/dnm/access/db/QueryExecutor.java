@@ -19,7 +19,6 @@ import java.util.Map;
 /**
  * {@code QueryExecutor}는 데이터베이스 쿼리 작업을 수행하는 객체이다. MyBatis 라이브러리를 기반으로 작동한다.<br><br>
  *
- * @author Yuhyun O
  * @see ExecutorTemplate
  * @see DataSourceProvider
  */
@@ -83,8 +82,8 @@ public class QueryExecutor implements Serializable {
     /**
      * Select 쿼리를 실행하여 결과를 {@code List<Map<String, Object>>} 로 반환한다.
      *
-     * @param txCtx       TransactionContext 객체
-     * @param sqlId       실행될 Select 쿼리의 ID
+     * @param txCtx TransactionContext 객체
+     * @param sqlId 실행될 Select 쿼리의 ID
      * @return 실행된 Select 쿼리의 결과 List. 결과가 없는 경우 빈 List가 반환된다.
      */
     public List<Map<String, Object>> doSelect(TransactionContext txCtx, String sqlId) {

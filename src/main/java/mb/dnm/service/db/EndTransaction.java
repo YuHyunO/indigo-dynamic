@@ -25,20 +25,28 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <code>StartTransaction</code> 에 의해 시작된 트랜잭션 그룹을 종료한다.<br>
- * 트랜잭션 그룹이 존재하지 않으면 이 서비스의 호출은 아무런 효과도 없다.<br>
- * Commit 또는 Rollback 의 수행되는 기준은 <code>EndTransaction</code> 서비스가 호출되는 시점에서 <code>ServiceContext</code> 에 에러 발생이력 존재여부를 따른다.
- * 에러 발생 이력이 존재하면 Rollback, 존재하지 않으면 Commit 된다.
-
+ * {@link StartTransaction} 에 의해 시작된 트랜잭션을 Commit 또는 Rollback 한다.<br>
+ * {@link ServiceContext}에 오류 이력이 존재하면 rollback, 존재하지 않으면 commit 처리된다.<br>
+ * 트랜잭션 그룹이 존재하지 않으면 이 서비스의 호출은 아무런 효과도 없다.
+ * <br>
+ * <br>
+ *<pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;!-- 인터페이스가 사용하는 모든 트랜잭션을 commit 또는 rollback --&gt;
+ * &lt;bean class="mb.dnm.service.db.EndTransaction"/&gt;
+ *
+ * &lt;!-- Alias로 지정된 Database의 트랜잭션만 commit 또는 rollback --&gt;
+ * &lt;bean class="mb.dnm.service.db.EndTransaction"&gt;
+ *     &lt;property name="sourceAlias"              value="<span style="color: black; background-color: #FAF3D4;">DB source alias</span>"/&gt;
+ * &lt;/bean&gt;</pre>
+ *
  * @see StartTransaction
+ * @see EndTransaction
+ * @see Rollback
  * @see Select
  * @see Insert
  * @see Delete
  * @see Update
  * @see CallProcedure
- *
- * @author Yuhyun O
- * @version 2024.09.05
  *
  * */
 @Slf4j

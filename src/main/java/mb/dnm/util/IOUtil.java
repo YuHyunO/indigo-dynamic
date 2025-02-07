@@ -2,9 +2,19 @@ package mb.dnm.util;
 
 import java.io.*;
 
+/**
+ * The type Io util.
+ */
 public class IOUtil {
     private IOUtil() {}
 
+    /**
+     * Get all bytes from an InputStream as byte [ ].
+     *
+     * @param in the in
+     * @return the byte [ ]
+     * @throws IOException the io exception
+     */
     public static byte[] getAllBytes(InputStream in) throws IOException {
         byte[] bytes = null;
         BufferedInputStream bis = null;

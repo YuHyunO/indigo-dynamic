@@ -14,6 +14,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
+/**
+ * The type Http servlet request entity.
+ */
 @Slf4j
 public class HttpServletRequestEntity implements Serializable {
     private static final long serialVersionUID = 2088174028218642348L;
@@ -41,6 +44,12 @@ public class HttpServletRequestEntity implements Serializable {
     private int contentLength;
     private final int BUFFER_SIZE = 8 * 1024;
 
+    /**
+     * Instantiates a new Http servlet request entity.
+     *
+     * @param request the request
+     * @throws IOException the io exception
+     */
     public HttpServletRequestEntity(HttpServletRequest request) throws IOException {
         this.request = request;
         this.body = getRequestBody();
@@ -66,6 +75,12 @@ public class HttpServletRequestEntity implements Serializable {
         return headers;
     }
 
+    /**
+     * Gets header.
+     *
+     * @param key the key
+     * @return the header
+     */
     public String getHeader(String key) {
         return headers.get(key.toLowerCase());
     }
@@ -116,18 +131,43 @@ public class HttpServletRequestEntity implements Serializable {
         return bodyData;
     }
 
+    /**
+     * Get byte array body byte [ ].
+     *
+     * @return the byte [ ]
+     */
     public byte[] getByteArrayBody() {
         return this.body;
     }
 
+    /**
+     * Gets string body.
+     *
+     * @return the string body
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
     public String getStringBody() throws UnsupportedEncodingException {
         return new String(body);
     }
 
+    /**
+     * Gets string body.
+     *
+     * @param charSet the char set
+     * @return the string body
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
     public String getStringBody(String charSet) throws UnsupportedEncodingException {
         return new String(body, charSet);
     }
 
+    /**
+     * Gets json body.
+     *
+     * @return the json body
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws JsonProcessingException      the json processing exception
+     */
     public Map<String, Object> getJsonBody() throws UnsupportedEncodingException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<Map<String, Object>> typeReference = new TypeReference<Map<String,Object>>() {};
@@ -138,6 +178,14 @@ public class HttpServletRequestEntity implements Serializable {
         return objectMapper.readValue(bodyStr, typeReference);
     }
 
+    /**
+     * Gets json body.
+     *
+     * @param charSet the char set
+     * @return the json body
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws JsonProcessingException      the json processing exception
+     */
     public Map<String, Object> getJsonBody(String charSet) throws UnsupportedEncodingException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<Map<String, Object>> typeReference = new TypeReference<Map<String,Object>>() {};

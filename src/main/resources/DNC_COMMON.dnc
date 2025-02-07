@@ -10,7 +10,7 @@
 		"ORA-01407", //NULL to NOT NULL COLUMN
 		"ORA-01438", //Data 길이
 		"ORA-01722", //Data 길이
-		"ORA-12899"  //Data 길이
+		"ORA-12899"  //Data 길이git pu
 	};
 	
 	List<ErrorTrace> errorList = ctx.getErrorTraces();

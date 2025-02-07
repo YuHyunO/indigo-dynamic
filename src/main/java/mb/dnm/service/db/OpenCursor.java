@@ -15,23 +15,8 @@ import java.util.Set;
 
 
 /**
- * Database의 Cursor 를 open 한다.
- * <code>Fetch</code> 서비스와 연계해서 사용한다.<br>
- *
- * <i>이 서비스는 트랜잭션 그룹이 열려있는 경우에만 사용 가능하다.(StartTransaction 서비스 참고)</i>
- *
- * @see mb.dnm.service.db.Fetch
- * @see mb.dnm.service.db.StartTransaction
- * @see mb.dnm.service.db.EndTransaction
- * @see mb.dnm.storage.InterfaceInfo#setQuerySequence(String)
- * @see mb.dnm.storage.InterfaceInfo#getQuerySequence()
- *
- * @author Yuhyun O
- * @version 2024.09.23
- *
- * @Throws cursor문이 잘못되었거나 Cursor를 open할 수 없는 경우
- * */
-
+ * The type Open cursor.
+ */
 @Slf4j
 @Setter
 public class OpenCursor extends ParameterAssignableService implements Serializable {
@@ -81,6 +66,11 @@ public class OpenCursor extends ParameterAssignableService implements Serializab
         this.exceptionHandlingMode = exceptionHandlingMode;
     }
 
+    /**
+     * Sets query id.
+     *
+     * @param queryId the query id
+     */
     public void setQueryId(String queryId) {
         if (queryId == null)
             return;

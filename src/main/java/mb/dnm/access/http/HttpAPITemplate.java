@@ -119,4 +119,156 @@ public class HttpAPITemplate implements Serializable {
         }
     }
 
+    /**
+     * Gets front url.
+     *
+     * @return the front url
+     */
+    public String getFrontUrl() {
+        return frontUrl;
+    }
+
+    /**
+     * Sets front url.
+     *
+     * @param frontUrl the front url
+     */
+    public void setFrontUrl(String frontUrl) {
+        this.frontUrl = frontUrl;
+    }
+
+    /**
+     * Gets front methods.
+     *
+     * @return the front methods
+     */
+    public Set<HttpMethod> getFrontMethods() {
+        return frontMethods;
+    }
+
+    /**
+     * Sets front methods.
+     *
+     * @param frontMethods the front methods
+     */
+    public void setFrontMethods(Set<HttpMethod> frontMethods) {
+        this.frontMethods = frontMethods;
+    }
+
+    /**
+     * Gets backend url.
+     *
+     * @return the backend url
+     */
+    public String getBackendUrl() {
+        return backendUrl;
+    }
+
+    /**
+     * Sets backend url.
+     *
+     * @param backendUrl the backend url
+     */
+    public void setBackendUrl(String backendUrl) {
+        this.backendUrl = backendUrl;
+    }
+
+    /**
+     * Gets backend method.
+     *
+     * @return the backend method
+     */
+    public String getBackendMethod() {
+        return backendMethod;
+    }
+
+    /**
+     * Sets backend method.
+     *
+     * @param backendMethod the backend method
+     */
+    public void setBackendMethod(String backendMethod) {
+        this.backendMethod = backendMethod;
+    }
+
+    /**
+     * Gets accept.
+     *
+     * @return the accept
+     */
+    public String getAccept() {
+        return accept;
+    }
+
+    /**
+     * Sets accept.
+     *
+     * @param accept the accept
+     */
+    public void setAccept(String accept) {
+        this.accept = accept;
+    }
+
+    /**
+     * Gets accept encoding.
+     *
+     * @return the accept encoding
+     */
+    public String getAcceptEncoding() {
+        return acceptEncoding;
+    }
+
+    /**
+     * Sets accept encoding.
+     *
+     * @param acceptEncoding the accept encoding
+     */
+    public void setAcceptEncoding(String acceptEncoding) {
+        this.acceptEncoding = acceptEncoding;
+    }
+
+    /**
+     * Gets content types.
+     *
+     * @return the content types
+     */
+    public List<String> getContentTypes() {
+        return contentTypes;
+    }
+
+    /**
+     * Sets content types.
+     *
+     * @param contentTypes the content types
+     */
+    public void setContentTypes(List<String> contentTypes) {
+        this.contentTypes = contentTypes;
+    }
+
+    /**
+     * Gets content encoding.
+     *
+     * @return the content encoding
+     */
+    public String getContentEncoding() {
+        return contentEncoding;
+    }
+
+    /**
+     * Gets response headers.
+     *
+     * @return the response headers
+     */
+    public Map<String, String> getResponseHeaders() {
+        return responseHeaders;
+    }
+
+    /**
+     * Sets response headers.
+     *
+     * @param responseHeaders the response headers
+     */
+    public void setResponseHeaders(Map<String, String> responseHeaders) {
+        this.responseHeaders = responseHeaders;
+    }
 }

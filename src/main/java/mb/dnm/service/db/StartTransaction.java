@@ -11,31 +11,27 @@ import java.util.Set;
 
 
 /**
- * 새로운 Transaction Group 을 시작한다.<br>
- * 
- * 트랜잭션은 mb.dnm.service.db 패키지에 존재하는 서비스를 사용하는 경우에만 적용된다.
- * 각각의 <code>ServiceContext</code> 마다 트랜잭션이 적용되며, <code>StartTransaction</code> 서비스가 호촐되면
- * 트랜잭션이 존재하지 않는 경우는 새로운 트랜잭션을 시작하고 트랜잭션이 이미 존재하는 경우는 그 트랜잭션에 참여한다.<br><br>
- * 
- * 트랜잭션이 종료되는 시점은 다음과 같다.<br>
- * <i>
- *     1. <code>EndTransaction</code> 서비스가 호출됨으로써 Commit 또는 Rollback<br>
- *     2. 서비스 Chaining 증 Exception 발생 시 Rollback<br>
- *     3. 위 두 경우에 해당되지 않는 경우, 서비스 Chaining 종료 후 <code>TransactionCleanupCallback</code>에 의해 Commit 또는 Rollback
- * </i>
- * <br><br>
+ * 여러 DB 작업을 하나의 트랜잭션으로 설정한다.<br>
+ * 이미 존재하는 트랜잭션에 대해 중복으로 설정되지 않는다.
+ * <br>
+ * <br>
+ *<pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;!-- 인터페이스가 사용하는 모든 트랜잭션을 grouping --&gt;
+ * &lt;bean class="mb.dnm.service.db.StartTransaction"/&gt;
  *
- * <b>! Stored Procedure 또는 Function 내에 commit 이나 rollback 이 구문이 존재하는 경우는 트랜잭션 관리가 불가능하다.</b>
+ * &lt;!-- Alias로 지정된 Database의 트랜잭션만 grouping --&gt;
+ * &lt;bean class="mb.dnm.service.db.StartTransaction"&gt;
+ *     &lt;property name="sourceAlias"              value="<span style="color: black; background-color: #FAF3D4;">DB source alias</span>"/&gt;
+ * &lt;/bean&gt;</pre>
  *
+ * @see StartTransaction
  * @see EndTransaction
+ * @see Rollback
  * @see Select
  * @see Insert
  * @see Delete
  * @see Update
  * @see CallProcedure
- *
- * @author Yuhyun O
- * @version 2024.09.05
  *
  * */
 @Slf4j

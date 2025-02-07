@@ -101,6 +101,9 @@ public class InterfaceInfo implements Serializable {
      */
     protected String[] errorQuerySequenceArr;
 
+    /**
+     * The Executor names.
+     */
     protected Set<String> executorNames;
     /**
      * DB 트랜잭션을 생성할 때 트랜잭션 Timeout(second) 에 대한 설정이다.
@@ -143,13 +146,13 @@ public class InterfaceInfo implements Serializable {
      * 쿼리 Sequence는 아래처럼 문자열로 작성하며, 여러개인 경우 실행되어야 되는 쿼리의 순서대로 콤마(,)로 구분한다.<br>
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      * "{@link mb.dnm.access.db.ExecutorTemplate}의 executorName" + "$" + "Mybatis Mapper 파일 namespace" + . + "Mybatis Query ID"</pre>
-     *
+     * <p>
      * "Mybatis Mapper 파일 namespace" 를 {@code InterfaceInfo}의 인터페이스 ID로 지정하는 경우 {@code @{if_id}} 알리아스를 사용해 지정할 수 있다.
      * <br>
      * 등록된 쿼리는 아래의 서비스에서 소진된다.<br>
      * {@link mb.dnm.service.db.Select}, {@link mb.dnm.service.db.Update}, {@link mb.dnm.service.db.Insert}, {@link mb.dnm.service.db.Delete}, {@link mb.dnm.service.db.CallProcedure}
      * <br><br>
-     *
+     * <p>
      * Example: {@link mb.dnm.access.db.DataSourceProvider}
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      * &lt;bean class="mb.dnm.access.db.DataSourceProvider"&gt;
@@ -171,7 +174,7 @@ public class InterfaceInfo implements Serializable {
      * 	&lt;/property&gt;
      * &lt;/bean&gt;
      * </pre><br>
-     *
+     * <p>
      * Example: SQL_MAPPER.xml
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      * &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
@@ -191,10 +194,10 @@ public class InterfaceInfo implements Serializable {
      *    &lt;/update&gt;
      *
      * &lt;/mapper&gt;</pre><br>
-     *
+     * <p>
      * Example: {@link InterfaceInfo}
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
-     *&lt;bean class="mb.dnm.storage.InterfaceInfo""&gt;
+     * &lt;bean class="mb.dnm.storage.InterfaceInfo""&gt;
      *    &lt;property name="interfaceId"            value="IF_TEST"/&gt;
      *                 .
      *                 .
@@ -203,7 +206,7 @@ public class InterfaceInfo implements Serializable {
      *    &lt;property name="targetCode"             value="TGT"/&gt;
      *    <span style="color: black; background-color: #FAF3D4;">&lt;property name="querySequence"          value="SRC_DB@{if_id}.SELECT, TGT_DB@{if_id}.INSERT, SRC_DB@{if_id}.UPDATE"/&gt;</span>
      *    &lt;property name="serviceId"              value="SELECT_INSERT_UPDATE"/&gt;
-     *&lt;/bean&gt;
+     * &lt;/bean&gt;
      *
      * >SRC_DB@{if_id}.SELECT : namespace 가 IF_TEST 이고 id가 SELECT 인 쿼리가 SRC_DB(DB_1)에서 실행됨.
      * >TGT_DB@{if_id}.INSERT : namespace 가 IF_TEST 이고 id가 INSERT 인 쿼리가 TGT_DB(DB_2)에서 실행됨.
@@ -216,10 +219,10 @@ public class InterfaceInfo implements Serializable {
      * @see mb.dnm.service.db.Insert
      * @see mb.dnm.service.db.Delete
      * @see mb.dnm.service.db.CallProcedure
-     * @see ServiceContext#hasMoreQueryMaps()
-     * @see ServiceContext#nextQueryMap()
-     * @see ServiceContext#setCurrentQueryOrder(int)
-     * @see ServiceContext#getCurrentQueryOrder()
+     * @see ServiceContext#hasMoreQueryMaps() ServiceContext#hasMoreQueryMaps()
+     * @see ServiceContext#nextQueryMap() ServiceContext#nextQueryMap()
+     * @see ServiceContext#setCurrentQueryOrder(int) ServiceContext#setCurrentQueryOrder(int)
+     * @see ServiceContext#getCurrentQueryOrder() ServiceContext#getCurrentQueryOrder()
      */
     public void setQuerySequence(String querySequence) {
         this.querySequenceArr = parseQuerySequence(querySequence);
@@ -227,7 +230,7 @@ public class InterfaceInfo implements Serializable {
 
     /**
      * {@link mb.dnm.core.ServiceProcessor} 의 Error-Handling 과정에서 사용되는 errorQuerySequence를 지정한다.<br><br>
-     *
+     * <p>
      * errorQuerySequence에 등록된 쿼리는 Service-Chaining의 Error-Handling 과정 중의 아래의 서비스에서 소진된다.<br>
      * {@link mb.dnm.service.db.Select}, {@link mb.dnm.service.db.Update}, {@link mb.dnm.service.db.Insert}, {@link mb.dnm.service.db.Delete}, {@link mb.dnm.service.db.CallProcedure}
      * <br><br>
@@ -254,10 +257,10 @@ public class InterfaceInfo implements Serializable {
      *    &lt;/update&gt;
      *
      * &lt;/mapper&gt;</pre><br>
-     *
+     * <p>
      * Example: {@link InterfaceInfo}
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
-     *&lt;bean class="mb.dnm.storage.InterfaceInfo""&gt;
+     * &lt;bean class="mb.dnm.storage.InterfaceInfo""&gt;
      *    &lt;property name="interfaceId"            value="IF_TEST"/&gt;
      *                 .
      *                 .
@@ -268,19 +271,20 @@ public class InterfaceInfo implements Serializable {
      *    <span style="color: black; background-color: #FAF3D4;">&lt;property name="errorQuerySequence"     value="SRC_DB@{if_id}.UPDATE_WHEN_ERROR"/&gt;</span>
      *    &lt;property name="serviceId"              value="SELECT_INSERT_UPDATE"/&gt;
      *    &lt;property name="errorHandlerId"         value="ERROR_UPDATE"/&gt;
-     *&lt;/bean&gt;</pre><br><br>
-     *
+     * &lt;/bean&gt;</pre><br><br>
+     * <p>
      * >SRC_DB@{if_id}.SELECT : namespace 가 IF_TEST 이고 id가 ERROR_UPDATE 인 쿼리가 SRC_DB(DB_1)에서 실행됨.
+     *
      * @param errorQuerySequence the error query sequence
      * @see mb.dnm.service.db.Select
      * @see mb.dnm.service.db.Update
      * @see mb.dnm.service.db.Insert
      * @see mb.dnm.service.db.Delete
      * @see mb.dnm.service.db.CallProcedure
-     * @see ServiceContext#hasMoreErrorQueryMaps()
-     * @see ServiceContext#nextErrorQueryMap()
-     * @see ServiceContext#setCurrentErrorQueryOrder(int)
-     * @see ServiceContext#getCurrentErrorQueryOrder()
+     * @see ServiceContext#hasMoreErrorQueryMaps() ServiceContext#hasMoreErrorQueryMaps()
+     * @see ServiceContext#nextErrorQueryMap() ServiceContext#nextErrorQueryMap()
+     * @see ServiceContext#setCurrentErrorQueryOrder(int) ServiceContext#setCurrentErrorQueryOrder(int)
+     * @see ServiceContext#getCurrentErrorQueryOrder() ServiceContext#getCurrentErrorQueryOrder()
      */
     public void setErrorQuerySequence(String errorQuerySequence) {
         this.errorQuerySequenceArr = parseQuerySequence(errorQuerySequence);
@@ -294,13 +298,13 @@ public class InterfaceInfo implements Serializable {
      * "#namespace" 를 {@code InterfaceInfo}의 인터페이스 ID로 지정하는 경우 {@code @{if_id}} 알리아스를 사용해 지정할 수 있다.<br>
      * 등록된 DNC는 {@link mb.dnm.service.dynamic.ExecuteDynamicCode}에서 소진된다.
      * <br><br>
-     *
+     * <p>
      * Example: {@link mb.dnm.access.dynamic.DynamicCodeProvider}
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      * &lt;bean class="mb.dnm.access.dynamic.DynamicCodeProvider"&gt;
      *     &lt;property name="codeLocations"      value="classpath*:*.dnc"/&gt;
      * &lt;/bean&gt;</pre><br>
-     *
+     * <p>
      * Example : DNC_COMMON.dnc
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      * #namespace: <span style="color: black; background-color: #FAF3D4;">COMMON</span>
@@ -308,7 +312,7 @@ public class InterfaceInfo implements Serializable {
      * #{
      *    //Logging data
      * }#</pre><br>
-     *
+     * <p>
      * Example : DNC_IF_TEST.dnc
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      * #namespace: <span style="color: black; background-color: #FAF3D4;">IF_TEST</span>
@@ -317,10 +321,10 @@ public class InterfaceInfo implements Serializable {
      *    //Mapping data
      * }#
      * </pre><br>
-     *
+     * <p>
      * Example: {@link InterfaceInfo}
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
-     *&lt;bean class="mb.dnm.storage.InterfaceInfo""&gt;
+     * &lt;bean class="mb.dnm.storage.InterfaceInfo""&gt;
      *    &lt;property name="interfaceId"            value="IF_TEST"/&gt;
      *                 .
      *                 .
@@ -329,15 +333,16 @@ public class InterfaceInfo implements Serializable {
      *    &lt;property name="targetCode"             value="TGT"/&gt;
      *    <span style="color: black; background-color: #FAF3D4;">&lt;property name="dynamicCodeSequence"    value="@{if_id}.MAP_DATA, COMMON.LOGGING"/&gt;</span>
      *    &lt;property name="serviceId"              value="EXECUTE_DNC"/&gt;
-     *&lt;/bean&gt;
+     * &lt;/bean&gt;
      *
      * </pre>
+     *
      * @param dynamicCodeSequence the dynamic code sequence
      * @see mb.dnm.service.dynamic.ExecuteDynamicCode
-     * @see ServiceContext#hasMoreDynamicCodes()
-     * @see ServiceContext#nextDynamicCodeId()
-     * @see ServiceContext#setCurrentDynamicCodeOrder(int)
-     * @see ServiceContext#getCurrentDynamicCodeOrder()
+     * @see ServiceContext#hasMoreDynamicCodes() ServiceContext#hasMoreDynamicCodes()
+     * @see ServiceContext#nextDynamicCodeId() ServiceContext#nextDynamicCodeId()
+     * @see ServiceContext#setCurrentDynamicCodeOrder(int) ServiceContext#setCurrentDynamicCodeOrder(int)
+     * @see ServiceContext#getCurrentDynamicCodeOrder() ServiceContext#getCurrentDynamicCodeOrder()
      */
     public void setDynamicCodeSequence(String dynamicCodeSequence) {
         this.dynamicCodeSequenceArr = parseDynamicCodeSequence(dynamicCodeSequence);
@@ -351,13 +356,13 @@ public class InterfaceInfo implements Serializable {
      * "#namespace" 를 {@code InterfaceInfo}의 인터페이스 ID로 지정하는 경우 {@code @{if_id}} 알리아스를 사용해 지정할 수 있다.<br>
      * 등록된 DNC는 {@link mb.dnm.service.dynamic.ExecuteDynamicCode}에서 소진된다.
      * <br><br>
-     *
+     * <p>
      * Example: {@link mb.dnm.access.dynamic.DynamicCodeProvider}
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      * &lt;bean class="mb.dnm.access.dynamic.DynamicCodeProvider"&gt;
      *     &lt;property name="codeLocations"      value="classpath*:*.dnc"/&gt;
      * &lt;/bean&gt;</pre><br>
-     *
+     * <p>
      * Example : DNC_COMMON.dnc
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      * #namespace: <span style="color: black; background-color: #FAF3D4;">COMMON</span>
@@ -365,41 +370,41 @@ public class InterfaceInfo implements Serializable {
      * #{
      *    //Logging data
      * }#</pre><br>
-     *
+     * <p>
      * #code_id : <span style="color: black; background-color: #FAF3D4;">HANDLE_ERROR</span>
      * #{
-     *    //Handle error
+     * //Handle error
      * }#</pre><br>
-     *
+     * <p>
      * Example : DNC_IF_TEST.dnc
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
      * #namespace: <span style="color: black; background-color: #FAF3D4;">IF_TEST</span>
      * #code_id : <span style="color: black; background-color: #FAF3D4;">MAP_DATA</span>
      * #{
-     *    //Mapping data
+     * //Mapping data
      * }#
      * </pre><br>
-     *
+     * <p>
      * Example: {@link InterfaceInfo}
      * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
-     *&lt;bean class="mb.dnm.storage.InterfaceInfo""&gt;
-     *    &lt;property name="interfaceId"            value="IF_TEST"/&gt;
-     *                 .
-     *                 .
-     *                 .
-     *    &lt;property name="sourceCode"                  value="SRC"/&gt;
-     *    &lt;property name="targetCode"                  value="TGT"/&gt;
-     *    &lt;property name="dynamicCodeSequence"         value="@{if_id}.MAP_DATA, COMMON.LOGGING"/&gt;
-     *    <span style="color: black; background-color: #FAF3D4;">&lt;property name="errorDynamicCodeSequence"    value="COMMON.HANDLE_ERROR"/&gt;</span>
-     *    &lt;property name="serviceId"                   value="EXECUTE_DNC"/&gt;
-     *&lt;/bean&gt;</pre>
+     * &lt;bean class="mb.dnm.storage.InterfaceInfo""&gt;
+     * &lt;property name="interfaceId"            value="IF_TEST"/&gt;
+     * .
+     * .
+     * .
+     * &lt;property name="sourceCode"                  value="SRC"/&gt;
+     * &lt;property name="targetCode"                  value="TGT"/&gt;
+     * &lt;property name="dynamicCodeSequence"         value="@{if_id}.MAP_DATA, COMMON.LOGGING"/&gt;
+     * <span style="color: black; background-color: #FAF3D4;">&lt;property name="errorDynamicCodeSequence"    value="COMMON.HANDLE_ERROR"/&gt;</span>
+     * &lt;property name="serviceId"                   value="EXECUTE_DNC"/&gt;
+     * &lt;/bean&gt;</pre>
      *
      * @param errorDynamicCodeSequence the error dynamic code sequence
      * @see mb.dnm.service.dynamic.ExecuteDynamicCode
-     * @see ServiceContext#hasMoreErrorDynamicCodes()
-     * @see ServiceContext#nextErrorDynamicCodeId()
-     * @see ServiceContext#setCurrentErrorDynamicCodeOrder(int)
-     * @see ServiceContext#getCurrentErrorDynamicCodeOrder()
+     * @see ServiceContext#hasMoreErrorDynamicCodes() ServiceContext#hasMoreErrorDynamicCodes()
+     * @see ServiceContext#nextErrorDynamicCodeId() ServiceContext#nextErrorDynamicCodeId()
+     * @see ServiceContext#setCurrentErrorDynamicCodeOrder(int) ServiceContext#setCurrentErrorDynamicCodeOrder(int)
+     * @see ServiceContext#getCurrentErrorDynamicCodeOrder() ServiceContext#getCurrentErrorDynamicCodeOrder()
      */
     public void setErrorDynamicCodeSequence(String errorDynamicCodeSequence) {
         this.errorDynamicCodeSequenceArr = parseDynamicCodeSequence(errorDynamicCodeSequence);
@@ -408,7 +413,7 @@ public class InterfaceInfo implements Serializable {
     /**
      * {@code dynamicCodeSequence}를 가져온다.
      *
-     * @return the string [ ]
+     * @return the dynamicCode sequence queue.
      */
     public String[] getDynamicCodeSequence() {
         return dynamicCodeSequenceArr;
@@ -417,7 +422,7 @@ public class InterfaceInfo implements Serializable {
     /**
      * {@code errorDynamicCodeSequence}를 가져온다.
      *
-     * @return the string [ ]
+     * @return the errorDynamicCode sequence queue.
      */
     public String[] getErrorDynamicCodeSequence() {
         return errorDynamicCodeSequenceArr;
@@ -495,10 +500,168 @@ public class InterfaceInfo implements Serializable {
     }
 
     /**
-     * {@code InterfaceInfo}가 사용하는 DB/FTP/JMS 등의 source 에 접근할 때 사용할 알리아스를 지정한다.
+     * {@code InterfaceInfo}가 사용하는 FTP/JMS 등의 source 에 접근할 때 사용할 알리아스를 지정한다.
+     * <br>
+     * DB/FTP/JMS 와 같은 source 는 {@link mb.dnm.access.ftp.FTPSourceProvider}의 {@code ftpClients}, {@link mb.dnm.access.jms.JMSSourceProvider}의 {@code jmsTemplates} 등을 의미한다.
+     * <br>
+     * <br>
+     * Example : {@link mb.dnm.access.ftp.FTPSourceProvider}, {@link mb.dnm.access.ftp.FTPClientTemplate}
+     * <br>아래의 {@code FTPSourceProvider} 에는 2개의 FTP 서버접속 설정이 등록되어 있다.
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     * &lt;bean class="mb.dnm.access.ftp.FTPSourceProvider"&gt;
+     *     &lt;property name="ftpClients"&gt;
+     *         &lt;list&gt;
+     *             &lt;bean class="mb.dnm.access.ftp.FTPClientTemplate"&gt;
+     *                 &lt;property name="templateName"               value="<span style="color: black; background-color: #FAF3D4;">ELD_FTP_SERVER</span>"/&gt;
+     *                 &lt;property name="host"                       value="10.2.456.789"/&gt;
+     *                 &lt;property name="port"                       value="20"/&gt;
+     *                 &lt;property name="user"                       value="ELD_USER"/&gt;
+     *                 &lt;property name="password"                   value="12345"/&gt;
+     *                 &lt;property name="controlEncoding"            value="MS949"/&gt;
+     *                 &lt;property name="serverLanguageCode"         value="ko_KR"/&gt;
+     *                 &lt;property name="serverKey"                  value="WINDOWS"/&gt;
+     *                 &lt;property name="debugCommandAndReply"       value="false"/&gt;
+     *             &lt;/bean&gt;
+     *             &lt;bean class="mb.dnm.access.ftp.FTPClientTemplate"&gt;
+     *                 &lt;property name="templateName"               value="<span style="color: black; background-color: #FAF3D4;">HEZ_FTP_SERVER</span>"/&gt;
+     *                 &lt;property name="host"                       value="12.2.345.678"/&gt;
+     *                 &lt;property name="port"                       value="20"/&gt;
+     *                 &lt;property name="user"                       value="HEZ_USER"/&gt;
+     *                 &lt;property name="password"                   value="12345"/&gt;
+     *                 &lt;property name="controlEncoding"            value="UTF-8"/&gt;
+     *                 &lt;property name="serverLanguageCode"         value="ko_KR"/&gt;
+     *                 &lt;property name="serverKey"                  value="MS949"/&gt;
+     *                 &lt;property name="debugCommandAndReply"       value="false"/&gt;
+     *             &lt;/bean&gt;
+     *         &lt;/list&gt;
+     *     &lt;/property&gt;
+     * &lt;/bean&gt;
+     * </pre>
+     * <br>
+     * Example : {@link StorageManager}, {@code Service-Strategy}
+     * <br>
+     * {@code MOVE_FTP} service-strategy 는 {@code sourceAlias}가 <span style="color: black; background-color: #e69ed1;">SRC</span>인
+     * FTP server에 접속하여  {@code directoryType}이 {@code REMOTE_SEND} 인 디렉터리 경로에 있는 파일을<br>{@code sourceAlias}가 <span style="color: black; background-color: #b1c4f0;">TGT</span>인
+     * FTP server의 {@code directoryType}이 {@code REMOTE_RECEIVE} 인 디렉터리 경로에 업로드하는 프로세스가 정의되어있다.
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     * &lt;!-- StorageManager --&gt;
+     * &lt;bean class="mb.dnm.storage.StorageManager"&gt;
+     *     &lt;property name="defaultInterfaceEnabled" value="true"/&gt;
+     *     &lt;property name="interfaceRegistry"       ref="interfaces"/&gt;
+     *     &lt;property name="serviceRegistry"         ref="serviceStrategies"/&gt;
+     *     &lt;property name="errorHandlerRegistry"    ref="errorHandlers"/&gt;
+     * &lt;/bean&gt;
      *
+     * &lt;!-- Service-Strategy --&gt;
+     * &lt;util:map id="serviceStrategies"&gt;
+     *
+     *     &lt;entry key="MOVE_FTP"&gt;
+     *         &lt;description&gt;FTP to FTP Move&lt;/description&gt;
+     *         &lt;list&gt;
+     *             &lt;bean class="mb.dnm.service.ftp.ListFiles"&gt;
+     *                 &lt;property name="description"        value="FTP 서버에서 다운로드할 파일목록을 확인한다."/&gt;
+     *                 &lt;property name="sourceAlias"        value="<span style="color: black; background-color: #e69ed1;">SRC</span>"/&gt;
+     *                 &lt;property name="directoryType"      value="REMOTE_SEND"/&gt;
+     *                 &lt;property name="output"             value="remote_file_list"/&gt;
+     *             &lt;/bean&gt;
+     *                         .
+     *                         .
+     *                         .
+     *             &lt;bean class="mb.dnm.service.ftp.DownloadFiles"&gt;
+     *                 &lt;property name="description"        value="연계 대상 파일을 Indigo 연계서버(로컬)로 다운로드한다."/&gt;
+     *                 &lt;property name="input"              value="remote_file_list"/&gt;
+     *                 &lt;property name="sourceAlias"        value="<span style="color: black; background-color: #e69ed1;">SRC</span>"/&gt;
+     *                 &lt;property name="directoryType"      value="LOCAL_TEMP"/&gt;
+     *                 &lt;property name="output"             value="local_file_list"/&gt;
+     *             &lt;/bean&gt;
+     *                         .
+     *                         .
+     *                         .
+     *             &lt;bean class="mb.dnm.service.ftp.UploadFiles"&gt;
+     *                 &lt;property name="description"        value="생성한 파일을 FTP 서버에 업로드 한다."/&gt;
+     *                 &lt;property name="input"              value="local_file_list"/&gt;
+     *                 &lt;property name="sourceAlias"        value="<span style="color: black; background-color: #b1c4f0;">TGT</span>"/&gt;
+     *                 &lt;property name="directoryType"      value="REMOTE_RECEIVE"/&gt;
+     *             &lt;/bean&gt;
+     *                         .
+     *                         .
+     *                         .
+     *         &lt;/list&gt;
+     *     &lt;/entry&gt;
+     *                         .
+     *                         .
+     *                         .
+     * &lt;/util:map&gt;
+     * </pre>
+     * <br>
+     * <br>
+     * Example : {@link InterfaceInfo}, {@link FileTemplate}<br>
+     * {@code InterfaceInfo}에 등록된 {@code FileTemplate} 설정의 {@code templateName} 속성은
+     * {@code FTPSourceProvider}에 등록된 {@code FTPClientTemplate} 중 사용할 {@code FTPClientTemplate}의
+     * {@code templateName}과 동일하게 설정한다.
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     * &lt;bean class="mb.dnm.storage.InterfaceInfo"&gt;
+     *     &lt;property name="interfaceId"                value="IF_ELD_to_HEZ"/&gt;
+     *     			  .
+     *     			  .
+     *     			  .
+     *     &lt;property name="sourceAliases"              value="<span style="color: black; background-color: #e69ed1;">SRC</span></span>:<span style="color: black; background-color: #FAF3D4;">ELD_FTP_SERVER</span>, <span style="color: black; background-color: #b1c4f0;">TGT</span>:<span style="color: black; background-color: #FAF3D4;">HEZ_FTP_SERVER</span>"/&gt;
+     *     &lt;property name="serviceId"                  value="MOVE_FTP"/&gt;
+     *     &lt;property name="fileTemplates"&gt;
+     *         &lt;list&gt;
+     *             &lt;bean class="mb.dnm.access.file.FileTemplate"&gt;
+     *                 &lt;property name="templateName"        value="<span style="color: black; background-color: #FAF3D4;">ELD_FTP_SERVER</span>"/&gt;
+     *                 &lt;property name="remoteSendDir"       value="/rec/cur"/&gt; &lt;!-- REMOTE_SEND --&gt;
+     *                 &lt;property name="remoteSuccessDir"    value="/rec/cur/succ/@{YYYYMMDD}"/&gt; &lt;!-- REMOTE_SUCCESS --&gt;
+     *                 &lt;property name="remoteErrorDir"      value="/rec/cur/err/@{YYYYMMDD}"/&gt; &lt;!-- REMOTE_ERROR --&gt;
+     *                 &lt;property name="localTempDir"        value="/app/indigo/FILE_WORK/ELD/@{if_id}"/&gt; &lt;!-- LOCAL_TEMP --&gt;
+     *                 &lt;property name="fileNamePattern"     value="RA0*"/&gt;
+     *                 &lt;property name="type"                value="FILE"/&gt;
+     *                 &lt;property name="dataType"            value="STRING"/&gt;
+     *                 &lt;property name="charset"             value="MS949"/&gt;
+     *             &lt;/bean&gt;
+     *             &lt;bean class="mb.dnm.access.file.FileTemplate"&gt;
+     *                 &lt;property name="templateName"        value="<span style="color: black; background-color: #FAF3D4;">HEZ_FTP_SERVER</span>"/&gt;
+     *                 &lt;property name="remoteReceiveDir"    value="/sen/cur"/&gt; &lt;!-- REMOTE_RECEIVE --&gt;
+     *                 &lt;property name="localTempDir"        value="/app/indigo/FILE_WORK/HEZ/@{if_id}"/&gt; &lt;!-- LOCAL_TEMP --&gt;
+     *                 &lt;property name="charset"             value="MS949"/&gt;
+     *             &lt;/bean&gt;
+     *         &lt;/list&gt;
+     *     &lt;/property&gt;
+     * &lt;/bean&gt;
+     *
+     * &lt;bean class="mb.dnm.storage.InterfaceInfo"&gt;
+     *     &lt;property name="interfaceId"                value="IF_HEZ_to_ELD"/&gt;
+     *     			  .
+     *     			  .
+     *     			  .
+     *     &lt;property name="sourceAliases"              value="<span style="color: black; background-color: #e69ed1;">SRC</span>:<span style="color: black; background-color: #FAF3D4;">HEZ_FTP_SERVER</span>, <span style="color: black; background-color: #b1c4f0;">TGT</span>:<span style="color: black; background-color: #FAF3D4;">ELD_FTP_SERVER</span>"/&gt;
+     *     &lt;property name="serviceId"                  value="MOVE_FTP"/&gt;
+     *     &lt;property name="fileTemplates"&gt;
+     *         &lt;list&gt;
+     *             &lt;bean class="mb.dnm.access.file.FileTemplate"&gt;
+     *                 &lt;property name="templateName"        value="<span style="color: black; background-color: #FAF3D4;">HEZ_FTP_SERVER</span>"/&gt;
+     *                 &lt;property name="remoteSendDir"       value="/rec/cur"/&gt; &lt;!-- REMOTE_SEND --&gt;
+     *                 &lt;property name="remoteSuccessDir"    value="/rec/cur/succ/@{YYYYMMDD}"/&gt; &lt;!-- REMOTE_SUCCESS --&gt;
+     *                 &lt;property name="remoteErrorDir"      value="/rec/cur/err/@{YYYYMMDD}"/&gt; &lt;!-- REMOTE_ERROR --&gt;
+     *                 &lt;property name="localTempDir"        value="/app/indigo/FILE_WORK/HEZ/@{if_id}"/&gt; &lt;!-- LOCAL_TEMP --&gt;
+     *                 &lt;property name="fileNamePattern"     value="RA0*"/&gt;
+     *                 &lt;property name="type"                value="FILE"/&gt;
+     *                 &lt;property name="dataType"            value="STRING"/&gt;
+     *                 &lt;property name="charset"             value="MS949"/&gt;
+     *             &lt;/bean&gt;
+     *             &lt;bean class="mb.dnm.access.file.FileTemplate"&gt;
+     *                 &lt;property name="templateName"        value="<span style="color: black; background-color: #FAF3D4;">ELD_FTP_SERVER</span>"/&gt;
+     *                 &lt;property name="remoteReceiveDir"    value="/sen/cur"/&gt; &lt;!-- REMOTE_RECEIVE --&gt;
+     *                 &lt;property name="localTempDir"        value="/app/indigo/FILE_WORK/ELD/@{if_id}"/&gt; &lt;!-- LOCAL_TEMP --&gt;
+     *                 &lt;property name="charset"             value="MS949"/&gt;
+     *             &lt;/bean&gt;
+     *         &lt;/list&gt;
+     *     &lt;/property&gt;
+     * &lt;/bean&gt;</pre>
      *
      * @param aliasExpression the alias expression
+     * @see mb.dnm.service.SourceAccessService
      */
     public void setSourceAliases(String aliasExpression) {
         aliasExpression = aliasExpression.trim();
@@ -535,7 +698,37 @@ public class InterfaceInfo implements Serializable {
     }
 
     /**
-     * Gets source name by alias.
+     * 알리아스를 사용하여 sourceName을 가져온다.<br>
+     * Example : INTERFACE.xml
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     * &lt;bean class="mb.dnm.storage.InterfaceInfo"&gt;
+     *     &lt;property name="interfaceId"                value="IF_ELD_to_HEZ"/&gt;
+     *     			  .
+     *     			  .
+     *     			  .
+     *     &lt;property name="sourceAliases"              value="<span style="color: black; background-color: #e69ed1;">SRC</span></span>:<span style="color: black; background-color: #FAF3D4;">ELD_FTP_SERVER</span>, <span style="color: black; background-color: #b1c4f0;">TGT</span>:<span style="color: black; background-color: #FAF3D4;">HEZ_FTP_SERVER</span>"/&gt;
+     *     &lt;property name="serviceId"                  value="MOVE_FTP"/&gt;
+     *     &lt;property name="fileTemplates"&gt;
+     *         &lt;list&gt;
+     *                      .
+     *                      .
+     *                      .
+     *         &lt;/list&gt;
+     *     &lt;/property&gt;
+     * &lt;/bean&gt;</pre>
+     * <br>
+     * Example code : GetSourceNameByAliasExample.java
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *  InterfaceInfo info = StorageManager.access().getInterfaceInfo("IF_ELD_to_HEZ");
+     *  String srcSource = info.getSourceNameByAlias("SRC");
+     *  String tgtSource = info.getSourceNameByAlias("TGT");
+     *
+     *  System.out.println("Source FTP system: " + srcSource);
+     *  System.out.println("Target FTP system: " + tgtSource);
+     *
+     *  >>Result :
+     *      Source FTP system: ELD_FTP_SERVER
+     *      Target FTP system: HEZ_FTP_SERVER</pre>
      *
      * @param alias the alias
      * @return the source name by alias
@@ -548,9 +741,10 @@ public class InterfaceInfo implements Serializable {
     }
 
     /**
-     * Sets file templates.
+     * {@code InterfaceInfo}에 {@link FileTemplate} 을 등록한다.
      *
      * @param fileTemplates the file templates
+     * @see FileTemplate
      */
     public void setFileTemplates(List<FileTemplate> fileTemplates) {
         String templateName = null;
@@ -566,10 +760,11 @@ public class InterfaceInfo implements Serializable {
     }
 
     /**
-     * Gets file template.
+     * {@code InterfaceInfo} 에 {@link FileTemplate}을 등록할 때 지정했던 {@code templateName} 속성을 사용하여 {@link FileTemplate} 객체를 가져온다.
      *
-     * @param templateName the template name
-     * @return the file template
+     * @param templateName {@code FileTemplate}의 {@code templateName}
+     * @return {@code FileTemplate} 객체
+     * @see FileTemplate
      */
     public FileTemplate getFileTemplate(String templateName) {
         try {
@@ -580,25 +775,50 @@ public class InterfaceInfo implements Serializable {
     }
 
     /**
-     * Get query sequence string [ ].
+     * {@code InterfaceInfo}에 등록된 {@code querySequence} 배열(큐)를 가져온다.
      *
-     * @return the string [ ]
+     * @return {@code querySequence} 배열(큐)
      */
     public String[] getQuerySequence() {
         return querySequenceArr;
     }
 
     /**
-     * Get error query sequence string [ ].
+     * {@code InterfaceInfo}에 등록된 {@code errorQuerySequence} 배열(큐)를 가져온다.
      *
-     * @return the string [ ]
+     * @return {@code errorQuerySequence} 배열(큐)
      */
     public String[] getErrorQuerySequence() {
         return errorQuerySequenceArr;
     }
 
     /**
-     * Sets front http method.
+     * {@code InterfaceInfo}의 HTTP 수신 Method 를 지정한다.
+     * <br>
+     * <p>
+     * Example : INTERFACE.xml
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     * &lt;bean class="mb.dnm.storage.InterfaceInfo"&gt;
+     *     &lt;property name="interfaceId"                value="IF_HTTP"/&gt;
+     *     			  .
+     *     			  .
+     *     			  .
+     *     &lt;property name="frontHttpUrl"               value="/v1/api/@{if_id}"/&gt;
+     *     &lt;property name="frontHttpMethod"            value="POST"/&gt;
+     * &lt;/bean&gt;</pre>
+     * <p>
+     * Example code : GetInterfaceInfoOfHttpRequest.java
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *  //A client sent an HTTP request to the /v1/api/IF_HTTP
+     *  String requestPath = "/v1/api/IF_HTTP";
+     *  String requestMethod = "POST";
+     *
+     *  InterfaceInfo info = StorageManager.access().getInterfaceInfoOfHttpRequest(requestPath, requestMethod);
+     *  if (info == null) {
+     *      //return HTTP Code 404(Not Found)
+     *  } else {
+     *      //Process interface
+     *  }</pre>
      *
      * @param methods the methods
      */
@@ -623,9 +843,34 @@ public class InterfaceInfo implements Serializable {
     }
 
     /**
-     * Sets front http url.
+     * {@code InterfaceInfo}의 HTTP 수신 URL 을 지정한다.
+     * url에 @{if_id} 가 포함된 경우 interfaceId 속성으로 대체된다.<br>
+     * <p>
+     * Example : INTERFACE.xml
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     * &lt;bean class="mb.dnm.storage.InterfaceInfo"&gt;
+     *     &lt;property name="interfaceId"                value="IF_HTTP"/&gt;
+     *     			  .
+     *     			  .
+     *     			  .
+     *     &lt;property name="frontHttpUrl"               value="/v1/api/@{if_id}"/&gt;
+     *     &lt;property name="frontHttpMethod"            value="POST"/&gt;
+     * &lt;/bean&gt;</pre>
+     * <p>
+     * Example code : GetInterfaceInfoOfHttpRequest.java
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *  //A client sent an HTTP request to the /v1/api/IF_HTTP
+     *  String requestPath = "/v1/api/IF_HTTP";
+     *  String requestMethod = "POST";
      *
-     * @param httpUrl the http url
+     *  InterfaceInfo info = StorageManager.access().getInterfaceInfoOfHttpRequest(requestPath, requestMethod);
+     *  if (info == null) {
+     *      //return HTTP Code 404(Not Found)
+     *  } else {
+     *      //Process interface
+     *  }</pre>
+     *
+     * @param httpUrl the methods
      */
     public void setFrontHttpUrl(String httpUrl) {
         if (httpAPITemplate == null) {
@@ -635,7 +880,7 @@ public class InterfaceInfo implements Serializable {
     }
 
     /**
-     * Gets front http url.
+     * {@code InterfaceInfo} 에 등록된 HTTP URL을 가져온다
      *
      * @return the front http url
      */
@@ -646,4 +891,75 @@ public class InterfaceInfo implements Serializable {
         return httpAPITemplate.getFrontUrl();
     }
 
+    /**
+     * Gets interface id.
+     *
+     * @return the interface id
+     */
+    public String getInterfaceId() {
+        return interfaceId;
+    }
+
+    /**
+     * Gets interface name.
+     *
+     * @return the interface name
+     */
+    public String getInterfaceName() {
+        return interfaceName;
+    }
+
+    /**
+     * Gets description.
+     *
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Gets source code.
+     *
+     * @return the source code
+     */
+    public String getSourceCode() {
+        return sourceCode;
+    }
+
+    /**
+     * Gets target code.
+     *
+     * @return the target code
+     */
+    public String getTargetCode() {
+        return targetCode;
+    }
+
+    /**
+     * Gets service id.
+     *
+     * @return the service id
+     */
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    /**
+     * Gets error handler id.
+     *
+     * @return the error handler id
+     */
+    public String getErrorHandlerId() {
+        return errorHandlerId;
+    }
+
+    /**
+     * Is activated boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isActivated() {
+        return activated;
+    }
 }

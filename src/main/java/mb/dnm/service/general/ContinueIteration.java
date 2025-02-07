@@ -12,8 +12,6 @@ import mb.dnm.service.ParameterAssignableService;
  *
  * @author Yuhyun O
  * @version 2024.11.25
- * @Input
- * @InputType <code>String</code>
  * */
 @Slf4j
 public class ContinueIteration extends ParameterAssignableService {

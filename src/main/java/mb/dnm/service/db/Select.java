@@ -16,27 +16,65 @@ import java.util.Set;
 
 
 /**
- * Database에 SELECT Query를 처리하여 결과를 가져온다.
- * Query에 대한 정보는 <code>InterfaceInfo</code> class의 <code>querySequence</code>로부터 가져온다.
+ * Database Select 쿼리를 실행한다.<br>
+ * 실행할 쿼리는 Mapper xml 파일에 등록이 되어있어야한다.
  * <br>
- * SELECT parameter가 <code>List</code> 형태로 전달되는 경우 SELECT 문이 <code>List</code>의 size만큼 반복되어 합산된 결과가 Output 된다.
  * <br>
- * Input 데이터가 Null 인 경우에도 query는 수행된다.
- * handleResultSet 속성이 true 인 경우 ResultHandlingSupportFactory에 등록된 IterationGroup을 조작하여 Select 쿼리 결과를 한 건씩 핸들링 할 수 있다.
+ * *<b>Input</b>: Select 쿼리 실행 시 사용할 파라미터<br>
+ * *<b>Input type</b>: {@code Map<String, Object>}
+ * <br>
+ * <br>
+ * *<b>Output</b>: DB 조회 결과 / DB 조회 결과 수(handleResultSet=true 인 경우)<br>
+ * *<b>Output type</b>: {@code List<Map<String, Object>>} / {code int}(handleResultSet=true 인 경우)
+ * <br>
+ * <br>
+ * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+ * &lt;!-- {@link mb.dnm.storage.InterfaceInfo}의 querySequence에 등록된 queryId 순서대로 실행하는 경우--&gt;
+ * &lt;bean class="mb.dnm.service.db.Select"&gt;
+ *     &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ * &lt;/bean&gt;
  *
- * @see mb.dnm.storage.InterfaceInfo#setQuerySequence(String)
- * @see mb.dnm.storage.InterfaceInfo#getQuerySequence()
+ * &lt;!-- {@link mb.dnm.storage.InterfaceInfo}의 querySequence에 등록된 특정 queryId를 지정하여 실행하는 경우--&gt;
+ * &lt;bean class="mb.dnm.service.db.Select"&gt;
+ *     &lt;property name="queryId"                value="<span style="color: black; background-color: #FAF3D4;">queryId 만을 입력한다(executorName X / namespace X)</span>"/&gt;
+ *     &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ * &lt;/bean&gt;
  *
- * @author Yuhyun O
- * @version 2024.09.05
- * @Input Select query 시 사용될 parameter
- * @InputType <code>Map&lt;String, Object&gt;</code> or <code>List&lt;Map&lt;String, Object&gt;&gt;</code>
- * @Output Select 쿼리의 결과 또는 Select 된 rows 의 개수(handleResultSet 속성이 true 인 경우)
- * @OutputType <code>List&lt;Map&lt;String, Object&gt;&gt;</code> or <code>int</code>(handleResultSet 속성이 true 인 경우)
+ * &lt;!-- {@code handleResultSet}이 true 인 경우 --&gt;
+ * &lt;bean class="mb.dnm.service.db.Select"&gt;
+ *     &lt;property name="input"                  value="<span style="color: black; background-color: #FAF3D4;">input 파라미터명</span>"/&gt;
+ *     &lt;property name="output"                 value="<span style="color: black; background-color: #FAF3D4;">output 파라미터명</span>"/&gt;
+ *     &lt;property name="handleResultSet"        value="<span style="color: black; background-color: #FAF3D4;">true or false</span>"/&gt;
+ *     &lt;property name="resultHandlingSupportFactory"&gt;
+ *         &lt;bean class="mb.dnm.access.db.ResultHandlingSupportFactory"&gt;
+ *             &lt;property name="fetchedInputName"   value="data"/&gt;
+ *             &lt;property name="fetchSize"          value="1"/&gt;
+ *             &lt;property name="enforcePassTransactionToContexts"   value="false"/&gt;
+ *             &lt;property name="resultHandlingProcessor"&gt;
+ *                 &lt;bean class="mb.dnm.service.general.IterationGroup"&gt;
+ *                     &lt;property name="createNewContextEachLoop"       value="true"/&gt;
+ *                     &lt;property name="services"&gt;
+ *                         &lt;list&gt;
+ *                         &lt;/list&gt;
+ *                     &lt;/property&gt;
+ *                     &lt;property name="errorHandlers"&gt;
+ *                         &lt;list&gt;
+ *                         &lt;/list&gt;
+ *                     &lt;/property&gt;
+ *                     &lt;property name="callbacks"&gt;
+ *                     &lt;/property&gt;
+ *                 &lt;/bean&gt;
+ *             &lt;/property&gt;
+ *     	&lt;/bean&gt;
+ * &lt;/property&gt;
+ * &lt;/bean&gt;</pre>
  *
- * @Exceptions <code>IllegalArgumentException</code>: Input parameter의 type이 지원되지 않는 타입인 경우 <br> <code>InvalidServiceConfigurationException</code>: QuerySequnce queue에서 더 이상 실행할 query를 찾지 못했을 때
- * */
-
+ * @see ResultHandlingSupport
+ * @see ResultHandlingSupportFactory
+ * @see mb.dnm.service.general.IterationGroup
+ */
 @Slf4j
 @Setter
 public class Select extends ParameterAssignableService implements Serializable {
@@ -147,11 +185,56 @@ public class Select extends ParameterAssignableService implements Serializable {
         this.exceptionHandlingMode = exceptionHandlingMode;
     }
 
+    /**
+     * {@code Select} service 가 사용할 queryId를 등록한다.<br>
+     * queryId 속성을 사용하려면 사용하려는 쿼리가 {@link mb.dnm.storage.InterfaceInfo}의 querySequence에 등록되어 있어야 한다.
+     * <br>
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     * &lt;bean class="mb.dnm.storage.InterfaceInfo""&gt;
+     *     &lt;property name="interfaceId"            value="IF_TEST"/&gt;
+     *                  .
+     *                  .
+     *                  .
+     *     &lt;property name="sourceCode"             value="SRC"/&gt;
+     *     &lt;property name="targetCode"             value="TGT"/&gt;
+     *     &lt;property name="querySequence"          value="SRC_DB@{if_id}.SELECT, TGT_DB@{if_id}.INSERT, SRC_DB@{if_id}.UPDATE"/&gt;
+     *     &lt;property name="serviceId"              value="SELECT_INSERT_UPDATE"/&gt;
+     * &lt;/bean&gt;</pre>
+     * <br>
+     * Example : setQueryId
+     * <pre style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+     *     &lt;property name="queryId"             value="SELECT"/&gt;
+     *     or
+     *     &lt;property name="queryId"             value="INSERT"/&gt;
+     *     or
+     *     &lt;property name="queryId"             value="UPDATE"/&gt;</pre>
+     * <b>주의사항</b>: queryId 속성을 사용하는 경우, 해당 service-strategy 에서는 다른 모든 DB 쿼리작업을 하는 Service에서도 queryId 속성을 사용하여야 한다.
+     *
+     * @param queryId the query id
+     */
     public void setQueryId(String queryId) {
         if (queryId == null)
             return;
         if (queryId.trim().isEmpty())
             return;
         this.queryId = queryId;
+    }
+
+    /**
+     * Sets handle result set.
+     *
+     * @param handleResultSet the handle result set
+     */
+    public void setHandleResultSet(boolean handleResultSet) {
+        this.handleResultSet = handleResultSet;
+    }
+
+    /**
+     * Sets result handling support factory.
+     *
+     * @param resultHandlingSupportFactory the result handling support factory
+     */
+    public void setResultHandlingSupportFactory(ResultHandlingSupportFactory resultHandlingSupportFactory) {
+        this.resultHandlingSupportFactory = resultHandlingSupportFactory;
     }
 }
