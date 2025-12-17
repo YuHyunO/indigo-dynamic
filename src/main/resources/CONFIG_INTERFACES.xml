@@ -7,69 +7,106 @@
 
     <util:list id="interfaces">
 
-        <bean class="mb.dnm.storage.InterfaceInfo"  name="DB2DB Sel-Ins-Upd">
-            <property name="interfaceId"                 value="?{인터페이스ID}"/>
-            <property name="interfaceName"               value="?{인터페이스명}"/>
-            <property name="sourceCode"                  value="?{송신시스템코드}"/>
-            <property name="targetCode"                  value="?{수신시스템코드}"/>
+        <bean class="mb.dnm.storage.InterfaceInfo"  name="DB2DB default">
+            <property name="interfaceId"                 value="인터페이스 ID"/>
+            <property name="interfaceName"               value="인터페이스명"/>
+            <property name="sourceCode"                  value="송신시스템 코드"/>
+            <property name="targetCode"                  value="수신시스템 코드"/>
             <property name="loggingWhenNormal"           value="true"/>
             <property name="loggingWhenError"            value="true"/>
-            <property name="querySequence"               value="?{송신DB템플릿명}$@{if_id}.SELECT, ?{수신DB템플릿명}$@{if_id}.INSERT, ?{송신DB템플릿명}$@{if_id}.SUCCESS_UPDATE"/>
+            <property name="querySequence"               value="DB1$@{if_id}.SELECT,
+                                                                Db2$@{if_id}.INSERT,
+                                                                DB1$@{if_id}.SUCCESS_UPDATE"/>
             <property name="errorDynamicCodeSequence"    value="COMMON.CHECK_ERROR_TYPE"/>
-            <property name="errorQuerySequence"          value="?{송신DB템플릿명}$@{if_id}.ERROR_UPDATE"/>
+            <property name="errorQuerySequence"          value="DB1$$@{if_id}.ERROR_UPDATE"/>
             <property name="serviceId"                   value="$P_DB2DB_Sel_Ins_Upd"/>
             <property name="errorHandlerId"              value="$EH_DB2DB"/>
         </bean>
 
-        <bean class="mb.dnm.storage.InterfaceInfo"  name="DB2DB Sel(Large)-Ins-Upd">
-            <property name="interfaceId"                 value="?{인터페이스ID}"/>
-            <property name="interfaceName"               value="?{인터페이스명}"/>
-            <property name="sourceCode"                  value="?{송신시스템코드}"/>
-            <property name="targetCode"                  value="?{수신시스템코드}"/>
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"                 value="인터페이스 ID"/>
+            <property name="interfaceName"               value="인터페이스명"/>
+            <property name="sourceCode"                  value="송신시스템 코드"/>
+            <property name="targetCode"                  value="수신시스템 코드"/>
             <property name="loggingWhenNormal"           value="true"/>
             <property name="loggingWhenError"            value="true"/>
-            <property name="querySequence"               value="?{송신DB템플릿명}$@{if_id}.SELECT, ?{수신DB템플릿명}$@{if_id}.INSERT, ?{송신DB템플릿명}$@{if_id}.SUCCESS_UPDATE"/>
+            <property name="querySequence"               value="DB1$@{if_id}.SELECT,
+                                                                DB2$@{if_id}.INSERT,
+                                                                DB1$@{if_id}.SUCCESS_UPDATE"/>
+            <property name="errorDynamicCodeSequence"    value="COMMON.CHECK_ERROR_TYPE"/>
+            <property name="errorQuerySequence"          value="DB1$@{if_id}.ERROR_UPDATE"/>
             <property name="serviceId"                   value="$P_DB2DB_Sel_Ins_Upd_Large"/>
         </bean>
 
         <bean class="mb.dnm.storage.InterfaceInfo">
-            <property name="interfaceId"            value="INTERFACE_CONTROLLER"/>
-            <property name="controllerInterface"    value="true"/>
-            <property name="frontHttpUrl"           value="/indigo/adapter/control-interface"/>
-            <property name="frontHttpMethod"        value="POST"/>
-            <property name="loggingWhenNormal"      value="false"/>
-            <property name="loggingWhenError"       value="false"/>
-            <property name="serviceId"              value="INTERFACE_CONTROL"/>
+            <property name="interfaceId"                 value="인터페이스 ID"/>
+            <property name="interfaceName"               value="인터페이스명"/>
+            <property name="sourceCode"                  value="송신시스템 코드"/>
+            <property name="targetCode"                  value="수신시스템 코드"/>
+            <property name="loggingWhenNormal"           value="true"/>
+            <property name="loggingWhenError"            value="true"/>
+            <property name="querySequence"               value="DB1$@{if_id}.SELECT_Mater,
+                                                                DB1$@{if_id}.SELECT_Detail,
+                                                                DB2$@{if_id}.INSERT_Detail,
+                                                                DB1$@{if_id}.SUCCESS_Master_UPDATE"/>
+            <property name="errorQuerySequence"          value="DB1$@{if_id}.ERROR_Master_UPDATE"/>
+            <property name="serviceId"                   value="$P_DB2DB_Master_Detail"/>
+            <property name="errorHandlerId"              value="$EH_LOGGING"/>
         </bean>
 
-        <bean class="mb.dnm.storage.InterfaceInfo" 	name="File2DB default">
-            <property name="activated"                  value="true"/>
-            <property name="controllerInterface"        value="true"/>
-            <property name="interfaceId"                value=""/>
-            <property name="interfaceName"              value=""/>
-            <property name="description"                value=""/>
-            <property name="frontHttpUrl"               value=""/>
-            <property name="frontHttpMethod"            value=""/>
-            <property name="sourceCode"                 value=""/>
-            <property name="targetCode"                 value=""/>
-            <property name="loggingWhenNormal"          value="true"/>
-            <property name="loggingWhenError"           value="true"/>
-            <property name="sourceAliases"              value="SRC:LTR_FTP, MQ:ESB"/>
-            <property name="querySequence"         	    value="LOEX$@{if_id}.INSERT"/>
-            <property name="errorQuerySequence"         value="LOEX$@{if_id}.INSERT"/>
-            <property name="dynamicCodeSequence"        value="@{if_id}.MAP_DATA"/>
-            <property name="errorDynamicCodeSequence"   value="@{if_id}.MAP_DATA"/>
-            <property name="serviceId"                  value="$P_FTP2DB_default"/>
-            <property name="errorHandlerId"             value="$P_FTP2DB_default"/>
+
+        <bean class="mb.dnm.storage.InterfaceInfo">
+            <property name="interfaceId"            value="IF_FTP2DB"/>
+            <property name="interfaceName"          value="인터페이스명"/>
+            <property name="sourceCode"             value="송신시스템 코드"/>
+            <property name="targetCode"             value="수신시스템 코드"/>
+            <property name="loggingWhenNormal"      value="true"/>
+            <property name="loggingWhenError"       value="true"/>
+            <property name="sourceAliases"          value="SRC:FTP1"/>
+            <property name="querySequence"          value="DB3$@{if_id}.INSERT"/>
+            <property name="dynamicCodeSequence"    value="@{if_id}.MAP_DATA"/>
+            <property name="serviceId"              value="$P_FTP2DB_default"/>
             <property name="fileTemplates">
                 <list>
                     <bean class="mb.dnm.access.file.FileTemplate">
-                        <property name="templateName"        value="LTR_FTP"/>
-
+                        <property name="templateName"        value="FTP1"/>
+                        <property name="remoteSendDir"       value="/송신-디렉터리"/>
+                        <property name="remoteSuccessDir"    value="/송신-디렉터리/succ/@{YYYYMMDD}"/>
+                        <property name="remoteErrorDir"      value="/송신-디렉터리/err/@{YYYYMMDD}"/>
+                        <property name="localTempDir"        value="/app/FILE_WORK/송신시스템-코드/@{if_id}"/>
+                        <property name="fileNamePattern"     value="파일명 prefix *"/>
+                        <property name="type"                value="FILE"/>
+                        <property name="dataType"            value="STRING"/>
+                        <property name="charset"             value="MS949"/>
                     </bean>
                 </list>
             </property>
         </bean>
+
+        <bean class="mb.dnm.storage.InterfaceInfo"  name="DB2FTP default">
+            <property name="interfaceId"            value="IF_DB2FTP"/>
+            <property name="interfaceName"          value="인터페이스명"/>
+            <property name="sourceCode"             value="송신시스템 코드"/>
+            <property name="targetCode"             value="수신시스템 코드"/>
+            <property name="loggingWhenNormal"      value="true"/>
+            <property name="loggingWhenError"       value="true"/>
+            <property name="sourceAliases"          value="TGT:FTP2"/>
+            <property name="querySequence"          value="DB4$@{if_id}.SELECT, DB4$@{if_id}.UPDATE"/>
+            <property name="dynamicCodeSequence"    value="@{if_id}.MAKE_FILEDATA"/>
+            <property name="serviceId"              value="$P_DB2FTP_default"/>
+            <property name="errorHandlerId"         value="$EH_DB2FTP"/>
+            <property name="fileTemplates">
+                <list>
+                    <bean class="mb.dnm.access.file.FileTemplate">
+                        <property name="templateName"        value="FTP1"/>
+                        <property name="localTempDir"        value="/app/FILE_WORK/송신시스템 코드/@{if_id}"/>
+                        <property name="remoteReceiveDir"    value="/sen/cur"/>
+                        <property name="charset"             value="파일인코딩"/>
+                    </bean>
+                </list>
+            </property>
+        </bean>
+
     </util:list>
 
 

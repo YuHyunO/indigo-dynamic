@@ -76,7 +76,7 @@ public class DynamicCodeCompiler {
             }
             try {
                 classLoader = Thread.currentThread().getContextClassLoader();
-                InputStream is = classLoader.getResourceAsStream("dynamic_templates/.AbstractDynamicCode.template");
+                InputStream is = classLoader.getResourceAsStream("old/dynamic_templates/.AbstractDynamicCode.template");
 
                 String template = new String(IOUtil.getAllBytes(is));
                 dynamicCodeTemplates.put(AbstractDynamicCode.class.getName(), template);

@@ -1,0 +1,60 @@
+#namespace: IF_DB2FTP
+
+
+파일명과 데이터를 생성
+#code_id: MAKE_FILEDATA
+#import custom.util.CustomUtil;
+#{
+	StringBuilder filename = new StringBuilder();
+	Date startTime = ctx.getStartTime();
+	filename.append("TEST_")
+			.append(TimeUtil.getFormattedTime(startTime, TimeUtil.MMDD))
+			.append(
+				StringUtil.lpad(CustomUtil.hexString(TimeUtil.getFormattedTime(startTime, TimeUtil.HHmm)), 3, 0)				
+			);	
+	
+	StringBuilder fileContent = new StringBuilder();
+	
+	//헤더 생성
+	fileContent.append("&")
+		  	.append("H")
+		  	.append(TimeUtil.getFormattedTime(startTime, TimeUtil.YYYYMMDDHHmm))
+            .append("TEST_");	
+	fileContent = new StringBuilder(
+					CustomUtil.rpad(fileContent.toString(), 117, " ") + "#");
+	
+	
+	//본문 데이터 생성
+	List<Map<String, Object>> dataList = (List<Map<String, Object>>) getInput(ctx, "data_list");
+	for (Map<String, Object> row : dataList) {
+	    fileContent.append("\r\n")
+                   .append("&M")
+                   .append(CustomUtil.rpad(row.get("OWNERID"), 4, " "))
+                   .append(CustomUtil.rpad(row.get("RECEIPTDATE"), 8, " "))
+                   .append(CustomUtil.rpad(row.get("RECEIPTTYPE"), 2, " "))
+                   .append(CustomUtil.rpad(row.get("REQUESTDATE"), 8, " "))
+                   .append(CustomUtil.rpad(row.get("REQUESTID"), 18, " "))
+                   .append(row.get("DESCRIPTION"))
+                   .append(CustomUtil.rpad("", 8, " "))
+                   .append("#");
+                
+       row.put("FILENAME", filename.toString());                             
+	}
+	
+	//마지막행 데이터 생성
+	fileContent.append("\r\n")
+			   .append(CustomUtil.rpad("&F" + CustomUtil.rpadfront(dataList.size(), 9, "0"), 111, " "))
+			   .append("#");
+			   
+	setOutputValue(ctx, "update_param", dataList);			   
+	setOutputValue(ctx, "file_name", filename.toString());			   
+	setOutputValue(ctx, "file_content", fileContent.toString());
+               		   
+}#
+
+
+
+
+
+
+

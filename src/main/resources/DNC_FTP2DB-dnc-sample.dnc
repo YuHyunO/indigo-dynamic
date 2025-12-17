@@ -1,0 +1,84 @@
+#namespace: IF_FTP2DB
+
+
+데이터를 매핑하는 코드
+
+
+#code_id: MAP_DATA
+#import custom.util.CustomUtil;
+#{
+
+	Object inputVal = getInput(ctx, "file_data");
+	Object inputFileName = getInput(ctx, "local_file");
+  	String fileName = new File(String.valueOf(inputFileName)).getName();
+	
+	String[] filerows = ((String) inputVal).split("\n");
+	
+	List<Map<String, Object>> parsedData = new ArrayList<>();
+	
+	int totalLineCnt = filerows.length;
+	int i = 0;
+	
+	int lastCount = 0;	//파일의 마지막 부분에 적혀있는 부분에서 추출할 데이터 건수를 의미한다.
+	boolean headerChecked = false;
+		
+	for (String line : filerows) {
+		if (line.trim().isEmpty()) {			
+			--totalLineCnt;
+			continue;
+		}
+	
+		Map<String, Object> oneRow = new HashMap<>();
+		String and = line.substring(0, 1); //파일의 라인의 가장 첫번째 문자인 & 를 의미한다.
+		String define = line.substring(1, 2); //파일의 각 라인에서 & 문자 다음에 나오는 H/M/D/F 중 하나를 의미한다.
+				
+      
+      	if (!headerChecked) { //파일의 가장 첫번째라인 H 를 체크
+      		if (!define.equals("H")) {
+      	    	throw new Exception("파일 시작 라인이 없습니다.");
+      		}
+      		headerChecked = true;
+      		continue;
+      		
+      	} else if (define.equals("F")) {//파일의 가장 마지막 라인 F 를 체크 		  
+            lastCount = Integer.parseInt(line.substring(2, 11).trim());
+            if (i != lastCount) {
+                throw new Exception("파일의 실제 라인 수와 종료 라인에 기재된 라인수가 다릅니다. 실제 라인 수:" + i + " / 기재된 라인수:" + lastCount);    
+            }
+            break;
+            
+      	} else {   	      	              
+          oneRow.put("DEFINEID", StringUtil.trim(CustomUtil.substring(line, 1, 2)));
+          oneRow.put("OWNERID", StringUtil.trim(CustomUtil.substring(line, 3, 4)));
+          oneRow.put("CUSTID", StringUtil.trim(CustomUtil.substring(line, 7, 10)));
+          oneRow.put("CUSTNAME", StringUtil.trim(CustomUtil.substring(line, 17, 50)));
+          /*
+          * 파일 데이터를 파싱하여 맵핑하는 로직 작성
+          * */
+          oneRow.put("ENDFLAG", StringUtil.trim(CustomUtil.substring(line, 440, 1)));      	  
+          
+          oneRow.put("FILENAME", fileName);
+          oneRow.put("INTERFACE_MST_SEQ", i + 1); //1부터 시작
+      	
+      	  parsedData.add(oneRow);      
+      	  ++i;
+      	}	
+
+	}
+	
+  	setOutputValue(ctx, "tx_count", lastCount);
+	setOutputValue(ctx, "file_data", parsedData);
+
+}#
+
+
+
+
+
+
+
+
+
+
+
+

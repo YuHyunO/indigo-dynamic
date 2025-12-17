@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="euc-kr"?>
+<!--<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <bean class="org.apache.commons.dbcp.BasicDataSource" id="ORACLE_DB">
+        <description/>
+        <property name="url" value="jdbc:oracle:thin:@192.168.0.100:1521/DB1"/>
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="username" value="DummyUserName"/>
+        <property name="password" value="DummyPassword"/>
+        <property name="defaultAutoCommit" value="false"/>
+    </bean>
+
+    <bean class="org.apache.commons.dbcp.BasicDataSource" id="POSTGRESQL_DB">
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+        <property name="url" value="jdbc:postgresql://192.168.0.101:5432/app_dev?sslmode=disable"/>
+        <property name="username" value="DummyUserName"/>
+        <property name="password" value="DummyPassword"/>
+        <property name="defaultAutoCommit"  value="false"/>
+    </bean>
+
+    <bean class="org.apache.commons.dbcp.BasicDataSource" id="MSSQL_DB">
+        <property name="url" value="jdbc:sqlserver://192.168.0.102:1433;databaseName=TEST"/>
+        <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+        <property name="username" value="DummyUserName"/>
+        <property name="password" value="DummyPassword"/>
+        <property name="defaultAutoCommit" value="false"/>
+    </bean>
+
+    <bean class="org.apache.commons.dbcp.BasicDataSource" id="HANA_DB">
+        <property name="url" value="jdbc:sap://192.168.0.103:30241/autocommit=false"/>
+        <property name="driverClassName" value="com.sap.db.jdbc.Driver"/>
+        <property name="username" value="DummyUserName"/>
+        <property name="password" value="DummyPassword"/>
+        <property name="defaultAutoCommit" value="false"/>
+    </bean>
+
+</beans>

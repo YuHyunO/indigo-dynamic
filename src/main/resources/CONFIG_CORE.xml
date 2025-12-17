@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="euc-kr"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd" >
 
-    <import resource="commons_configure.xml"/>
-    <import resource="config_INTERFACES.xml"/>
-    <import resource="config_SERVICES.xml"/>
-    <import resource="config_ERROR_HANDLERS.xml"/>
+    <import resource="CONFIG_INTERFACES.xml"/>
+    <import resource="CONFIG_SERVICES.xml"/>
+    <import resource="CONFIG_ERROR_HANDLERS.xml"/>
+    <import resource="CONFIG_DATASOURCE.xml"/>
 
     <!-- Storage Manager -->
     <bean class="mb.dnm.storage.StorageManager">
@@ -13,13 +13,35 @@
         <property name="serviceRegistry" ref="serviceStrategies"/>
         <property name="errorHandlerRegistry" ref="errorHandlers"/>
     </bean>
-    <!-- * MS949, UTF-8, etc -->
-    <!--* UNIX, UNIX_LTRIM, VMS, WINDOWS, OS/2, OS/400, AS/400, MVS, TYPE: L8, NETWARE, MACOS PETER -->
+
     <!-- ※DB Access Component -->
     <bean class="mb.dnm.access.db.DataSourceProvider">
         <property name="queryExecutors">
             <list>
-
+                <bean class="mb.dnm.access.db.ExecutorTemplate">
+                    <property name="templateName"    value="DB1"/>
+                    <property name="dataSource"      ref="ORACLE_DB"/>
+                    <property name="configLocation"  value="mybatis-confiuration.xml"/>
+                    <property name="mapperLocations" value="classpath:SQL_*.xml"/>
+                </bean>
+                <bean class="mb.dnm.access.db.ExecutorTemplate">
+                    <property name="templateName"    value="DB2"/>
+                    <property name="dataSource"      ref="POSTGRESQL_DB"/>
+                    <property name="configLocation"  value="mybatis-confiuration.xml"/>
+                    <property name="mapperLocations" value="classpath:SQL_*.xml"/>
+                </bean>
+                <bean class="mb.dnm.access.db.ExecutorTemplate">
+                    <property name="templateName"    value="DB3"/>
+                    <property name="dataSource"      ref="MSSQL_DB"/>
+                    <property name="configLocation"  value="mybatis-confiuration.xml"/>
+                    <property name="mapperLocations" value="classpath:SQL_*.xml"/>
+                </bean>
+                <bean class="mb.dnm.access.db.ExecutorTemplate">
+                    <property name="templateName"    value="DB4"/>
+                    <property name="dataSource"      ref="HANA_DB"/>
+                    <property name="configLocation"  value="mybatis-confiuration.xml"/>
+                    <property name="mapperLocations" value="classpath:SQL_*.xml"/>
+                </bean>
             </list>
         </property>
     </bean>
@@ -28,20 +50,40 @@
     <bean class="mb.dnm.access.ftp.FTPSourceProvider">
         <property name="ftpClients">
             <list>
+                <bean class="mb.dnm.access.ftp.FTPClientTemplate">
+                    <property name="templateName" value="FTP1"/>
+                    <property name="host" value="192.168.0.200"/>
+                    <property name="port" value="21"/>
+                    <property name="user" value="DummyUser"/>
+                    <property name="password" value="DummyPassword"/>
+                    <!-- * MS949, UTF-8, etc -->
+                    <property name="controlEncoding" value="UTF-8"/>
+                    <property name="serverLanguageCode" value="ko_KR"/>
+                    <!--* UNIX, UNIX_LTRIM, VMS, WINDOWS, OS/2, OS/400, AS/400, MVS, TYPE: L8, NETWARE, MACOS PETER -->
+                    <property name="serverKey" value="UNIX"/>
+                    <property name="debugCommandAndReply" value="false"/>
+                </bean>
+                <bean class="mb.dnm.access.ftp.FTPClientTemplate">
+                    <property name="templateName" value="FTP1"/>
+                    <property name="host" value="192.168.0.201"/>
+                    <property name="port" value="21"/>
+                    <property name="user" value="DummyUser"/>
+                    <property name="password" value="DummyPassword"/>
+                    <!-- * MS949, UTF-8, etc -->
+                    <property name="controlEncoding" value="UTF-8"/>
+                    <property name="serverLanguageCode" value="ko_KR"/>
+                    <!--* UNIX, UNIX_LTRIM, VMS, WINDOWS, OS/2, OS/400, AS/400, MVS, TYPE: L8, NETWARE, MACOS PETER -->
+                    <property name="serverKey" value="UNIX"/>
+                    <property name="debugCommandAndReply" value="false"/>
+                </bean>
             </list>
         </property>
     </bean>
 
-    <!-- ※Adapter Web Server -->
-    <bean class="mb.dnm.dispatcher.http.HttpDispatcherServer" init-method="start">
-        <property name="port"       value="?{어댑터 포트 + 100}"/><!-- * 권장포트: 어댑터 포트 + 100 -->
-    </bean>
-
-
     <!-- ※DynamicCode Repository -->
     <bean class="mb.dnm.access.dynamic.DynamicCodeProvider">
         <property name="compilerThreadCount"  value="5"/>
-        <property name="codeLocations"      value="classpath*:*.dnc"/>
+        <property name="codeLocations"      value="classpath*:DNC_*.dnc"/>
     </bean>
 
 </beans>

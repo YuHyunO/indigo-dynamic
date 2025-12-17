@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="인터페이스 ID">
+
+    <select id="SELECT" resultType="java.util.HashMap">
+        SELECT PK_COL_A,
+               COL_B,
+               COL_C,
+            .
+            .
+            .
+            COL_Z
+
+        FROM DB_Source.TABLE
+        WHERE FLAG_COL = 'new data'
+    </select>
+
+    <insert id="INSERT">
+        INSERT INTO DB_Target.TABLE (
+            PK_COL_A,
+            COL_B,
+            COL_C,
+            .
+            .
+            .
+            COL_Z
+        )
+        VALUES (
+                   #{PK_COL_A},
+                   #{COL_B},
+                   #{COL_C},
+                   #{  .  }
+                   #{  .  }
+                   #{  .  }
+                   #{COL_Z}
+               )
+    </insert>
+
+    <update id="SUCCESS_UPDATE">
+        UPDATE DB_Source.TABLE
+        SET FLAG_COL        = 'complete'
+        WHERE PK_COL_A = #{PK_COL_A}
+    </update>
+
+    <update id="ERROR_UPDATE">
+        UPDATE DB_Source.TABLE
+        SET FLAG_COL        = 'error'
+        WHERE PK_COL_A = #{PK_COL_A}
+    </update>
+
+    <select id="SELECT_Mater" resultType="java.util.HashMap">
+        SELECT PK_COL_A,
+               COL_B,
+               COL_C,
+            .
+            .
+            .
+            COL_Z
+
+        FROM DB_Source.MASTER_TABLE
+        WHERE FLAG_COL = 'new data'
+    </select>
+
+    <select id="SELECT_Detail" resultType="java.util.HashMap">
+        SELECT PK_COL_A,
+               COL_B,
+               COL_C,
+            .
+            .
+            .
+            COL_Z
+
+        FROM DB_Source.DETAIL_TABLE
+        WHERE MASTER_PK = #{PK_COL_A}
+    </select>
+
+    <insert id="INSERT_Detail">
+        INSERT INTO DB_Target.DETAIL_TABLE (
+            PK_COL_A,
+            COL_B,
+            COL_C,
+            .
+            .
+            .
+            COL_Z
+        )
+        VALUES (
+                   #{PK_COL_A},
+                   #{COL_B},
+                   #{COL_C},
+                   #{  .  }
+                   #{  .  }
+                   #{  .  }
+                   #{COL_Z}
+               )
+    </insert>
+
+    <update id="SUCCESS_Master_UPDATE">
+        UPDATE DB_Source.MASTER_TABLE
+        SET FLAG_COL        = 'complete'
+        WHERE PK_COL_A = #{PK_COL_A}
+    </update>
+
+    <update id="ERROR_Master_UPDATE">
+        UPDATE DB_Source.MASTER_TABLE
+        SET FLAG_COL        = 'error'
+        WHERE PK_COL_A = #{PK_COL_A}
+    </update>
+
+</mapper>
+
+
+
+
+
