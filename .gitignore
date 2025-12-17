@@ -9,3 +9,7 @@ target/
 *.iml
 *.ipr
 /libs/
+/project-repository/
+/src/main/resources/old/
+/src/test/java/old/
+/etc/
