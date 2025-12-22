@@ -87,10 +87,12 @@ Indigo-Dynamic-Adapter는 INDIGO ESB 솔루션을 기반으로 작동하는 데�
 **컴포넌트 조립 방식**은 TIBCO BusinessWorks의 Activity 조립 구조를 벤치마킹하여 개발되었으며, Low-Code 방식으로 인터페이스 개발 생산성을 향상시키고 유지보수성을 극대화합니다.
 
 ![architecture-1](img/architecture-1.png)
+
 기본 아키텍쳐
 
 
 ![service-process-example](img/service-process-example.png)
+
 서비스(기능) 컴포넌트 조합 예시
 
 ### 주요 특징
