@@ -1,4 +1,5 @@
 # Indigo-Dynamic-Adapter
+⚠️임시공개
 
 ## 목차
 
