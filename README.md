@@ -133,34 +133,31 @@ Indigo-Dynamic-Adapter는 다음과 같은 요소로 구성되었습니다:
 
 ### 데이터 흐름
 
-```
-1. 인터페이스 이벤트 발생
-   ↓
-2. Dispatcher가 이벤트 수신
-   ↓
-3. StorageManager에서 InterfaceInfo 조회
-   ↓
-4. ServiceContext 생성 (txId, 시작시간 등 초기화)
-   ↓
-5. ServiceProcessor.unfoldServices() 호출
-   ↓
-6. Service-Chaining 실행
-   ├─ 각 Service가 ServiceContext에서 Input 데이터 조회
-   ├─ Service 기능 수행
-   ├─ 결과를 ServiceContext에 Output으로 저장
-   └─ 다음 Service로 데이터 전달
-   ↓
-7. 에러 발생 시 Error-Handling 실행
-   ├─ ErrorHandler 조회
-   ├─ 에러 처리 전략 실행
-   └─ (Rollback, 알림, 대체 경로 등)
-   ↓
-8. Callback 실행
-   ├─ TransactionCleanupCallback
-   ├─ SessionCleanupCallback
-   └─ 커스텀 Callback
-   ↓
-9. ServiceContext 소멸
+```mermaid
+flowchart TD
+    A[인터페이스 이벤트 발생] --> B[Dispatcher가 이벤트 수신]
+    B --> C[StorageManager에서 InterfaceInfo 조회]
+    C --> D["ServiceContext 생성<br/>(txId, 시작시간 등 초기화)"]
+    D --> E[ServiceProcessor.unfoldServices 호출]
+    E --> F[Service-Chaining 실행]
+    
+    F --> G["각 Service: Input 데이터 조회<br/>(ServiceContext에서)"]
+    G --> H[Service 기능 수행]
+    H --> I["결과를 ServiceContext에<br/>Output으로 저장"]
+    I --> J{다음 Service 존재?}
+    J -->|예| G
+    J -->|아니오| K{에러 발생?}
+    
+    K -->|예| L[Error-Handling 실행]
+    L --> M[ErrorHandler 조회]
+    M --> N["에러 처리 전략 실행<br/>(Rollback, 알림, 대체 경로 등)"]
+    N --> O[Callback 실행]
+    
+    K -->|아니오| O
+    O --> P[TransactionCleanupCallback]
+    P --> Q[SessionCleanupCallback]
+    Q --> R[커스텀 Callback]
+    R --> S[ServiceContext 소멸]
 ```
 ![life-cycle-of-a-service-context](img/life-cycle-of-a-service-context.png)
 
